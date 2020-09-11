@@ -15,7 +15,7 @@ const db = {
         http => {
             http.request.on('data', async d => {
                 console.log(__dirname)
-                if (d == undefined) {
+                if (d == undefined||d===null) {
                     console.log("d is" + d)
                 } else {
                     /**@type {{ applyuser: string, sendData: { username: string, content: string, date: string|number,isread:number } }} */
