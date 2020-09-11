@@ -2,25 +2,6 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"type": "npm",
-			"script": "ele",
-			"group": "test",
-			"problemMatcher": [],
-			"label": "npm: ele",
-			"detail": "chcp 65001 && electron ."
-		},
-		{
-			"type": "npm",
-			"script": "node",
-			"group": {
-				"kind": "test",
-				"isDefault": true
-			},
-			"problemMatcher": [],
-			"label": "npm: nodejs",
-			"detail": "chcp 65001 &&  node ./mynodetest/start.js"
-		},
-		{
 			"type": "typescript",
 			"tsconfig": "tsconfig.json",
 			"problemMatcher": [

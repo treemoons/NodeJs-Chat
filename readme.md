@@ -3,7 +3,7 @@
 ## this is client window for chat with others.
 -  adds below:
  ```html
- <script src:"./myWebChat/chat.html"></script>
+ <script src:"./NodeJs-Chat/myWebChat/chat.html"></script>
  ```
 - than you can just use the function 
 ```js
@@ -32,7 +32,7 @@ initialFrameTheme({
     showChatWindow : (username, bubbleFrameEle) => { // prepare to load your friend-data to the window
     }, 
     waitDivshow : { //dot of waiting
-    isShow: true,
+    isShow: true,  //whether enable to use
     begin: () => { document.getElementsByClassName('move')[0].style.display : 'block' },//shown
     end: () => { document.getElementsByClassName('move')[0].style.display : 'none' } }// hidden
 })
@@ -42,9 +42,9 @@ initialFrameTheme({
 > # **NodeJs** 
 -  Use grammar ES6 at latest,node version -v14.8
 
-- just node  `start.js`
+- just  `node ${workspaceFolder}/myNodeTest/start.js`
 
-- all route in directory named controllers
+- all route in the directory named controllers
 
 - file `"./myNodeTest/data"` is sqlite3 for test
  
@@ -66,7 +66,7 @@ let sigleChat= {
 ---
 ># **Electron**
 
-- build for chat ,for easy test. electron version -v10.1.1
+- build for chat ,in order to test easier. 
 
 - thus eletron 
  
