@@ -51,7 +51,7 @@ initialFrameTheme({
  `package.json` in order to use ES6,written
 `{"type":"module"}`
 
-***regular the format of data,which persons who talked each onter aiv***
+***regular the format of data,which persons who talked each onther via***
 ```ts
 let sigleChat= { 
     applyuser: string,
