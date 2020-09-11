@@ -1,0 +1,27 @@
+{
+  "name": "test",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "mytest": "chcp 65001 && electron .",
+    "test": "node ./mynodetest/start.js"
+  },
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "atob": "^2.1.2",
+    "btoa": "^1.2.1",
+    "cookie-parser": "^1.4.5",
+    "electron": "^10.1.1",
+    "electron-rebuild": "^2.0.0",
+    "express": "^4.17.1",
+    "moment": "^2.27.0",
+    "node": "^14.8.0",
+    "sqlite3": "^5.0.0",
+    "typescript": "^4.0.2"
+  },
+  "devDependencies": {},
+  "keywords": []
+}
