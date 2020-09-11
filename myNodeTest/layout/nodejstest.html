@@ -1,0 +1,91 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+
+    <body>
+        <form action="/api/login/thisistestparam" method="POST">
+            <input type="text" name="username" value="treemoons" id=""> <br>
+            <input type="text" name="password" value="1234" id=""><br>
+            <input type="submit">
+        </form>
+        <button onclick="test()">
+            测试
+        </button>
+        <script>
+            let json = JSON.stringify({
+                    applyuser: 'username',
+                    sendData: {
+                        username: 'name', content: 'data', date: new Date().getDate().toString(),isread:0
+                    }
+                });
+
+            let test = () => getAjaxData({
+                url: '/api/chatto/ii?ttt=00089d&yy====',
+                success: e => {
+                    if (JSON.parse(e).status == 1)
+                        alert("成功,查看cookie")
+                    else
+                        alert("失败,查看cookie")
+                },
+                data: json
+            })
+            /**
+             * 获取并操作Ajax数据
+             *@param { { url: string, success: (text:string)=>void), failed ?: 
+                    (text:string)=>void, data ?: string, method ?: string, reqestHeader ?:{headername: string,headervalue:string} } object  options
+             */
+            function getAjaxData({
+                url,
+                success,
+                failed = error => {
+                    console.log(`error of failed data : ${error}`);
+                },
+                data = '',
+                method = 'POST',
+                reqestHeader = {
+                    headername: 'Content-Type',
+                    headervalue: 'application/x-www-form-urlencoded'
+                }
+            }) {
+                debugger;
+                // open(url,'_blank')
+                var ajax = new XMLHttpRequest();
+                ajax.open(method, url);
+                ajax.setRequestHeader(reqestHeader.headername, reqestHeader.headervalue);
+                ajax.setRequestHeader('Set-Cookie', 'name=username');
+                ajax.send(data);
+                ajax.onreadystatechange = function () {
+                    if (ajax.readyState == 4) {
+                        if (ajax.status == 200) {
+                            try {
+                                success(ajax.responseText);
+                            } catch (error) {
+                                console.log(`error of success data : ${error}`);
+                            }
+                        } else {
+                            failed(ajax.responseText);
+                        }
+                    }
+                }
+            }
+        </script>
+        <p>
+            <script>
+                document.write(json);
+            </script>
+        </p>
+        <p>
+            <script>
+                document.write(typeof json);
+            </script>
+        </p>
+    </body>
+    <strong>cookie 默认不支持存储中文，如果存储中文需先使用 encodeURIComponent 方法进行转译，将转译后的结果存入
+        cookie，在浏览器获取 cookie 需使用 decodeURIComponent 方法转回中文。</strong>
+
+</html>
