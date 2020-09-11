@@ -37,16 +37,21 @@ initialFrameTheme({
     end: () => { document.getElementsByClassName('move')[0].style.display : 'none' } }// hidden
 })
 ```
+---
+
 > # **NodeJs** 
 -  Use grammar ES6 at latest,node version -v14.8
 
-- just node  ```start.js```
+- just node  `start.js`
 
 - all route in directory named controllers
 
-- file ```"./myNodeTest/data"``` is sqlite3 for test
+- file `"./myNodeTest/data"` is sqlite3 for test
+ 
+ `package.json` in order to use ES6,written
+`{"type":"module"}`
 
->regular the format of  data
+***regular the format of data,which persons who talked each onter aiv***
 ```ts
 let sigleChat= { 
     applyuser: string,
@@ -58,12 +63,14 @@ let sigleChat= {
     }
 }
 ```
+---
 ># **Electron**
 
 - build for chat ,for easy test. electron version -v10.1.1
 
 - thus eletron 
- dependencise in package.json
+ 
+***dependencise*** in `"${wordspaceFolder}/package.json"`
 ```json
 "dependencies": {
     "atob": "^2.1.2",
