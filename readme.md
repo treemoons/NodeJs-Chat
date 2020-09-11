@@ -46,7 +46,7 @@ initialFrameTheme({
 
 - file ```"./myNodeTest/data"``` is sqlite3 for test
 
->regular the formate of  data
+>regular the format of  data
 ```ts
 let sigleChat= { 
     applyuser: string,
@@ -62,6 +62,7 @@ let sigleChat= {
 
 - build for chat ,for easy test. electron version -v10.1.1
 
+- thus eletron 
  dependencise in package.json
 ```json
 "dependencies": {

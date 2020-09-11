@@ -1,4 +1,4 @@
-﻿const { app, BrowserWindow } = require('electron');
+﻿const  { app, BrowserWindow } =require('electron');
 // const t=require('./TEST/test')
 var win
 async function createWindow() {
