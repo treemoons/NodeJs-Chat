@@ -4,20 +4,19 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "mytest": "chcp 65001 && electron .",
-    "test": "node ./mynodetest/start.js"
+    "ele": "chcp 65001 && electron . ",
+    "node": "chcp 65001 && cd e:/partJob/NodeJs-Chat/myNodeTest && node ./start.js"
   },
-  "type": "module",
   "author": "",
   "license": "ISC",
-  "dependencies": {
+  "dependencies": {},
+  "devDependencies": {
     "atob": "^2.1.2",
     "btoa": "^1.2.1",
-    "electron": "^10.1.1",
+    "electron": "10.1.1",
     "node": "^14.8.0",
     "sqlite3": "^5.0.0",
     "typescript": "^4.0.2"
   },
-  "devDependencies": {},
   "keywords": []
 }
