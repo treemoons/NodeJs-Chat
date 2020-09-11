@@ -7,7 +7,7 @@
 			"group": "test",
 			"problemMatcher": [],
 			"label": "npm: ele",
-			"detail": "chcp 65001 && electron .",
+			"detail": "chcp 65001 && electron ."
 		},
 		{
 			"type": "npm",
@@ -18,7 +18,7 @@
 			},
 			"problemMatcher": [],
 			"label": "npm: nodejs",
-			"detail": "chcp 65001 &&  node ./mynodetest/start.js",
+			"detail": "chcp 65001 &&  node ./mynodetest/start.js"
 		},
 		{
 			"type": "typescript",
