@@ -7,39 +7,76 @@
         <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
         <!-- <link rel="stylesheet" href="./css/site.css"> -->
         <style>
-            html,body{
+            html,
+            body {
                 height: 100%;
             }
-            *{
-               
+
+            * {
+
                 margin: 0;
                 padding: 0;
             }
-            .frame{
+
+            .frame {
                 width: 100%;
                 height: 100%;
-                overflow:hidden;
+                overflow: hidden;
                 background-color: aquamarine;
+            }
+
+            object {
+                height: 100vh;
+                width: 100%;
             }
         </style>
     </head>
 
     <body>
         <p>
-            <h1>Hello World!</h1>
-            We are using node
-            <script>document.write(process.versions.node)</script>,
+            <script defer type="module" src="./test.js"></script>
+        <p class="pp"></p>
+        <button onclick="c()">测试</button>
+        <script>
+            function c() {
+                let p = document.getElementsByClassName('pp')[0];
+                p.id = 'p';
+                console.log('%c go to a', 'color:red;background-color:yellow')
+                const a = Window.test
+                // const a = ''.a
+                test();
+                try{ a();}catch{console.log('a -------------err')}
+                // aatest();
+            }
+        </script>
+        <!-- <script type="module">
+            let p = document.getElementsByClassName('pp')[0];
+            p.id = 'p';
+            import test from './test/chat-frame.js';
+
+             function a() { //文件内只要使用window导出的有无export均可使用
+                console.log('aaaaaaaa')
+            }
+            export function aatest() {
+                console.log('aatest')
+            }
+            // window.test=test;
+            // window.a=a;
+        </script> -->
+        <!-- <object data="./myWebChat/chat.html" type="text/html"></object> -->
+        <h1>Hello World!</h1>
+        We are using node
+        <!-- <script>document.write(process.versions.node)</script>,
             Chrome
             <script>document.write(process.versions.chrome)</script>,
             and Electron
-            <script>document.write(process.versions.electron)</script>.
+            <script>document.write(process.versions.electron)</script>. -->
         </p>
         <!-- <object class="frame" data="./test.html" type=""></object> -->
         <!-- <iframe src="./test.html" frameborder="0" width="1000">dd</iframe> -->
-        <script>
-            
-            // document.getElementsByTagName("iframe")[0].style.width= window.getComputedStyle(document.body). height;
-            // console.log(screen.height)
+        <!-- <script src="./test/chat-frame.js"> -->
+        // document.getElementsByTagName("iframe")[0].style.width= window.getComputedStyle(document.body). height;
+        // console.log(screen.height)
         </script>
         <!-- <a href="./test.html"> ss</a> -->
     </body>

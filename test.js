@@ -1,3 +1,6 @@
-export default function test() {
-    console.log('test')
+import test from './test/chat-frame.js';
+ function a() {
+    console.log(test)
 }
+window.test = test;
+window.a=a;
