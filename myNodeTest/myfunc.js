@@ -65,6 +65,7 @@ export function getSpanDate(
     date.setMilliseconds(date.getMilliseconds() + milliseconds);
     return date;
 }
+/**当天获取凌晨时间 */
 export function getTodayDawn() {
     let date = new Date();
     date.setHours(0);
@@ -74,7 +75,7 @@ export function getTodayDawn() {
     return date;
 }
 /**
- * @param {string} fmt 
+ * @param {string} fmt 毫秒不可设置位数
  */
 Date.prototype.formatDate = function (fmt) {
     let o = {
@@ -109,5 +110,3 @@ Date.prototype.formatDate = function (fmt) {
     }
     return fmt;
 }
-let t = Buffer.from('cetes', 'ascii');
-console.log(t.toString('base64'));

@@ -1,12 +1,12 @@
 ﻿import { readFile } from 'fs';
-import { createServer } from 'http';
+import http from 'http';
 import { parse } from 'url';
 import * as routes from './controllers.js';
 function start() {
     /**
      * 
-     * @param {http.Http2ServerRequest} request
-     * @param {http.Http2ServerResponse} response 
+     * @param {http.IncomingMessage} request
+     * @param {http.ServerResponse} response 
      */
     function onRequest(request, response) {
         console.log(request.url);
@@ -88,7 +88,7 @@ function start() {
         }
     }
 
-    createServer(onRequest).listen(8888);
+    http.createServer(onRequest).listen(8888);
     console.log("Server has started.see'http://127.0.0.1:8888'");
 }
 start()
