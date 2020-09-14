@@ -134,7 +134,7 @@ class ChatDataSigleList {
     userpic;
 
     /**我们在一起的话❤
-     * @type {[]}
+     * @type {ChatData[]}
      */
     chatdata = [];
 
@@ -307,7 +307,7 @@ class BuildBubblesFrame {
             let resend = this.sigleChat.children[0].children[0];
             let chatdata = {
                 applyuser: 'username',
-                sendData: {
+                sentdata: {
                     username: name, content: data, date: new Date().formatDate('yyyyMMdd.HHmmss')
                 }
             };

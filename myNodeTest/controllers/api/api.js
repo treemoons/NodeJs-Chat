@@ -3,7 +3,7 @@
     btoaEncrypt,
     buildCookie,
     __dirname,
-    getTodayDawn
+    getTodayDawn, atobDecrypt
 } from '../../myfunc.js'; //相对该文件的相对位置
 import {
     IncomingMessage,
@@ -15,11 +15,13 @@ const {
 } = sqlite3modlue;
 let sqlite3 = new Database('.\\data.db'); //node运行时，启动的文件夹的相对位置
 sqlite3.all(
-    `SELECT * FROM CHATDATA `, (err, rows) => {
+    `SELECT * FROM CHATDATA where date> '20200914' `, (err, rows) => {
         console.log(rows)
     }
 )
-const db = {
+/**@type {number} */
+export let encodingTimes = 10;
+export default {
     default: http => {
         try {
             console.log(a.p)
@@ -35,7 +37,7 @@ const db = {
                 if (d == undefined || d === null) {
                     console.log("d is" + d)
                 } else {
-                    /**@type {{ applyuser: string, sendData: { username: string, content: string, date: string|number,isread:number } }} */
+                    /**@type {{ applyuser: string, sentdata: { username: string, content: string, date: string|number,isread:number } }} */
                     let data = JSON.parse(d);
                     let msg = {
                         status: 0,
@@ -53,30 +55,28 @@ const db = {
                     }
 
                     function insertSql() {
-                        sqlite3.serialize(() => {
-                            sqlite3.run(`INSERT INTO CHATDATA(USERNAME,PEERNAME,CONTENT,DATE,ISREAD) VALUES(?,?,?,?,?);`,
-                                [data.applyuser, data.sendData.username, data.sendData.content, data.sendData.date, data.sendData.isread],
-                                err => {
-                                    console.log(err)
-                                    if (err != undefined || err != null) {
-                                        msg.msg = err.message;
-                                    } else {
-                                        msg.status = 1;
-                                        sqlite3.get('SELECT * FROM CHATDATA', (err, rows) => {
-                                            console.log(rows);
-                                            msg.msg = rows;
-                                        })
-                                    }
-                                    http.response.end(JSON.stringify(msg))
-                                });
-                        });
+                        sqlite3.run(`INSERT INTO CHATDATA(USERNAME,PEERNAME,CONTENT,DATE,ISREAD) VALUES(?,?,?,?,?);`,
+                            [data.applyuser, data.sentdata.username, data.sentdata.content, data.sentdata.date, data.sentdata.isread],
+                            err => {
+                                console.log(err)
+                                if (err != undefined || err != null) {
+                                    msg.msg = err.message;
+                                } else {
+                                    msg.status = 1;
+                                    sqlite3.get('SELECT * FROM CHATDATA', (err, rows) => {
+                                        console.log(rows);
+                                        msg.msg = rows;
+                                    });
+                                }
+                                http.response.end(JSON.stringify(msg))
+                            });
                     }
                 }
             });
         },
     'login':
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
-        http => {
+       async http => {
             http.request.on('data', /** @param {string} d */ d => {
                 if (d != undefined || d != '') {
                     sqlite3.serialize(() => {
@@ -85,7 +85,7 @@ const db = {
                         sqlite3.get('SELECT COUNT(*) WHERE USERNAME=? AND PASSWORD=? ',
                             [username, getQueryString('password', d.toString(), '&')], (err, row) => {
                                 if (err != undefined) {
-                                    let cookie = buildCookie(btoaEncrypt('token', 10), btoaEncrypt(username, 10), {
+                                    let cookie = buildCookie(await btoaEncrypt('token', encodingTimes), await btoaEncrypt(username, encodingTimes), {
                                         minutes: 30
                                     });
 
@@ -108,20 +108,29 @@ const db = {
     'loaddata':
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         http => {
-            if (logined) {
-                sqlite3.serialize(() => {
-                    sqlite3.all(
-                        `SELECT * FROM CHATDATA WHERE DATE>=${getTodayDawn().formatDate('yyyyMMdd.HHmmss')}`
-                    )
-                })
-            }
+            // if (isLogined()) {
+            sqlite3.serialize(() => {
+                sqlite3.all(
+                    `SELECT * FROM CHATDATA C,USERLOGIN L WHERE DATE>= ?`,
+                    getTodayDawn().formatDate('yyyyMMdd.HHmmss'), (err, rows) => {
+                        sqlite3.run('update chatdata set isread=1 where isread=0', err => {console.error('set read err!'); });
+                        //set rows by format of chatsigledata[]
+                    /**@type {{username:string,userpic:string,chatdata:{iscurrentuser:string,content:string,date:string}[],lastSpeak:string,isMeSpeakNow:boolean}[]} */
+                        let chatsigledata;
+                        let username =await getloginedUser(http);
+                    }
+                )
+            })
+            // }
         }
 }
 /**
  * 根据cookie查看是否登录,30分钟过期。
  * @param {{request:IncomingMessage}} http request.cookie
  */
-export async function getCookieObject(http) {
-    return await getQueryString(btoaEncrypt('token', 10), http.request.headers.cookie, ';');;
+async function getCookieObject(http) {
+    return await getQueryString(await btoaEncrypt('token', encodingTimes), http.request.headers.cookie, ';');
 }
-export default db;
+async function getloginedUser(http) {
+    return await atobDecrypt(getCookieObject(http),encodingTimes);
+}

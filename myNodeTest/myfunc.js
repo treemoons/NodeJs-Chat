@@ -21,28 +21,30 @@ export async function getAllQueryString(purposeString, splitMark) {
  * @param {boolean} httponly 
  */
 export function buildCookie(name, value,
-    
+    isexpiresdefault=true,
     { year = 0, month = 0, day = 0, hours = 0, minutes = 0, seconds = 0, milliseconds = 0 } = {},
     path = undefined, httponly = false) {
-    let date = new Date();
-    date.setFullYear(date.getFullYear() + year);
-    date.setMonth(date.getMonth() + month);
-    date.setDate(date.getDate() + day);
-    date.setHours(date.getHours() + hours);
-    date.setMinutes(date.getMinutes() + minutes);
-    date.setSeconds(date.getSeconds() + seconds);
-    date.setMilliseconds(date.getMilliseconds() + milliseconds);
-    let cookie = `${name}=${value};expires=${date};${(path == undefined ? '' : `path = ${path};`)}${(httponly ? 'httponly' : '')}`;
+    if (!isexpiresdefault) {
+        let date = new Date();
+        date.setFullYear(date.getFullYear() + year);
+        date.setMonth(date.getMonth() + month);
+        date.setDate(date.getDate() + day);
+        date.setHours(date.getHours() + hours);
+        date.setMinutes(date.getMinutes() + minutes);
+        date.setSeconds(date.getSeconds() + seconds);
+        date.setMilliseconds(date.getMilliseconds() + milliseconds);
+    }
+    let cookie = `${name}=${value};${isexpiresdefault ? '' :`expires=${ date };`}${(path == undefined ? '' : `path = ${path};`)}${(httponly ? 'httponly' : '')}`;
     console.log(encodeURI(cookie));
     return encodeURI(cookie);
 }
-export function btoaEncrypt(str, times = 1) {
+export async function btoaEncrypt(str, times = 1) {
     for (let i = 0; i < times; i++) {
         str = Buffer.from(str, 'base64').toString('ascii')
     }
     return str;
 }
-export function atobDecrypt(str, times = 1) {
+export async function atobDecrypt(str, times = 1) {
     for (let i = 0; i < times; i++) {
         str = Buffer.from(str, 'ascii').toString('base64')
     }

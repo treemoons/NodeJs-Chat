@@ -11,4 +11,13 @@ import {default as test} from './test/chat-frame.js';
 // Date.prototype.formatDate = formatdate
 // window.formatdate = formatdate
 window.test = test;
-window.a=a;
+window.a = a;
+async function a(){return true;};
+async function s(p) {
+    
+    return p;
+}
+async function t() {
+    console.log(await s(await a()))
+}
+t()
