@@ -268,18 +268,19 @@ class BuildBubblesFrame {
         for (let i = history.chatdata.length - 1; i >= 0; i--) {
             this.bubblesFrame[name].getHistoryChat(history.chatdata[i])
         }
-        
+
     }
 
     receiveMsg = (username) => {
         getAjaxData({
             url: '/api/loaddata',
             success: d => {
+                let data= JSON.parse(d)
                 // 获取并转化为chatsiglelist[];
-                let recChatDataLists = d;
+                let recChatDataLists = data;
                 this.updateFrame(recChatDataLists);
                 // 调整提示气泡
-                
+
 
             }
         })
@@ -308,15 +309,16 @@ class BuildBubblesFrame {
                 applyuser: 'username',
                 sendData: {
                     username: name, content: data, date: new Date().formatDate('yyyyMMdd.HHmmss')
-                }};
+                }
+            };
             //经过一系列处理存到服务器
             getAjaxData({
                 url: '/api/chat',
                 data: JSON.stringify(chatdata),
                 success: d => {
                     /**@type {{ status: number, msg: undefined }} */
-                    let msg=JSON.parse(d)
-                    if (msg.status==0) {
+                    let msg = JSON.parse(d)
+                    if (msg.status == 0) {
                         resend.innerHTML = '重发';
                         resend.className = 'resend';
                     } else {
@@ -350,17 +352,17 @@ class Interactive {
     static toolImgSelect;
 }
 
-let a={
+let a = {
     a: "ee",
-    bb:{sha:"sha"}
+    bb: { sha: "sha" }
 }
-class b{
+class b {
     constructor() {
-        
+
     }
-    a='ee'
+    a = 'ee'
 }
-!function (p,aa) {
+!function (p, aa) {
     console.log(p.a)
     console.log(aa.a)
 }(new b(), a);

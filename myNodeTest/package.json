@@ -1,3 +1,5 @@
 {
-  "type": "module"
+  "type": "module",
+  "dependencies": {},
+  "devDependencies": {}
 }

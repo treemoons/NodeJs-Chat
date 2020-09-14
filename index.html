@@ -39,19 +39,18 @@
         <button onclick="c()">测试</button>
         <script>
             function c() {
-                let p = document.getElementsByClassName('pp')[0];
-                p.id = 'p';
                 console.log('%c go to a', 'color:red;background-color:yellow')
-                const a = Window.test
                 // const a = ''.a
                 test();
-                try{ a();}catch{console.log('a -------------err')}
+                 try{ a();}catch{console.log('a -------------err')}
                 // aatest();
+                console.log(new Date().formatDate('yyyy.dd'))
             }
         </script>
-        <!-- <script type="module">
-            let p = document.getElementsByClassName('pp')[0];
-            p.id = 'p';
+        <!-- <script async type="module">
+            // let p = document.getElementsByClassName('pp')[0];
+            // p.id = 'p';
+            // p.innerHTML="sssss"
             import test from './test/chat-frame.js';
 
              function a() { //文件内只要使用window导出的有无export均可使用
@@ -60,7 +59,8 @@
             export function aatest() {
                 console.log('aatest')
             }
-            // window.test=test;
+
+            window.test=test;
             // window.a=a;
         </script> -->
         <!-- <object data="./myWebChat/chat.html" type="text/html"></object> -->

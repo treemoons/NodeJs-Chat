@@ -11,8 +11,6 @@
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "atob": "^2.1.2",
-    "btoa": "^1.2.1",
     "electron": "10.1.1",
     "node": "^14.8.0",
     "sqlite3": "^5.0.0",

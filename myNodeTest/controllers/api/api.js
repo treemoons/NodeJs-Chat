@@ -1,34 +1,57 @@
-﻿import { getQueryString, btoaEncrypt, buildCookie ,__dirname} from '../../myfunc.js'; //相对该文件的相对位置
-import { IncomingMessage, ServerResponse } from 'http';
-import sqlite3modlue from 'sqlite3'; 
-const { Database } = sqlite3modlue;
-let sqlite3 = new Database('.\\data'); //node运行时，启动的文件夹的相对位置
+﻿import {
+    getQueryString,
+    btoaEncrypt,
+    buildCookie,
+    __dirname,
+    getTodayDawn
+} from '../../myfunc.js'; //相对该文件的相对位置
+import {
+    IncomingMessage,
+    ServerResponse
+} from 'http';
+import sqlite3modlue from 'sqlite3';
+const {
+    Database
+} = sqlite3modlue;
+let sqlite3 = new Database('.\\data.db'); //node运行时，启动的文件夹的相对位置
+sqlite3.all(
+    `SELECT * FROM CHATDATA `, (err, rows) => {
+        console.log(rows)
+    }
+)
 const db = {
-
     default: http => {
         try {
             console.log(a.p)
-        } catch (e) { console.log("-------------------" + e) }
+        } catch (e) {
+            console.log("-------------------" + e)
+        }
     },
     'chatto':
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         http => {
             http.request.on('data', async d => {
                 console.log(__dirname)
-                if (d == undefined||d===null) {
+                if (d == undefined || d === null) {
                     console.log("d is" + d)
                 } else {
                     /**@type {{ applyuser: string, sendData: { username: string, content: string, date: string|number,isread:number } }} */
                     let data = JSON.parse(d);
-                    let msg = { status: 0, msg: undefined };
+                    let msg = {
+                        status: 0,
+                        msg: undefined
+                    };
                     let cookies = await getCookieObject(http);
                     if (cookies != undefined) {
                         insertSql();
                     } else {
-                        http.response.writeHead(200, { "Content-Type": "text/plain" });
+                        http.response.writeHead(200, {
+                            "Content-Type": "text/plain"
+                        });
                         http.response.write(JSON.stringify(msg))
                         http.response.end()
                     }
+
                     function insertSql() {
                         sqlite3.serialize(() => {
                             sqlite3.run(`INSERT INTO CHATDATA(USERNAME,PEERNAME,CONTENT,DATE,ISREAD) VALUES(?,?,?,?,?);`,
@@ -41,7 +64,7 @@ const db = {
                                         msg.status = 1;
                                         sqlite3.get('SELECT * FROM CHATDATA', (err, rows) => {
                                             console.log(rows);
-                                            msg.msg = rows
+                                            msg.msg = rows;
                                         })
                                     }
                                     http.response.end(JSON.stringify(msg))
@@ -54,7 +77,7 @@ const db = {
     'login':
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         http => {
-            http.request.on('data',/** @param {string} d */ d => {
+            http.request.on('data', /** @param {string} d */ d => {
                 if (d != undefined || d != '') {
                     sqlite3.serialize(() => {
                         let username = getQueryString('username', d.toString(), '&');
@@ -62,9 +85,13 @@ const db = {
                         sqlite3.get('SELECT COUNT(*) WHERE USERNAME=? AND PASSWORD=? ',
                             [username, getQueryString('password', d.toString(), '&')], (err, row) => {
                                 if (err != undefined) {
-                                    let cookie = buildCookie(btoaEncrypt('token', 10), btoaEncrypt(username, 10), { minutes: 30 });
+                                    let cookie = buildCookie(btoaEncrypt('token', 10), btoaEncrypt(username, 10), {
+                                        minutes: 30
+                                    });
 
-                                    http.response.writeHead(200, { 'Set-Cookie': `${cookie}` });
+                                    http.response.writeHead(200, {
+                                        'Set-Cookie': `${cookie}`
+                                    });
                                     http.response.write(d.toString());
                                 } else {
                                     http.response.write('no account available');
@@ -81,7 +108,13 @@ const db = {
     'loaddata':
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         http => {
-
+            if (logined) {
+                sqlite3.serialize(() => {
+                    sqlite3.all(
+                        `SELECT * FROM CHATDATA WHERE DATE>=${getTodayDawn().formatDate('yyyyMMdd.HHmmss')}`
+                    )
+                })
+            }
         }
 }
 /**
