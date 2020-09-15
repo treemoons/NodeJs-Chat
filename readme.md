@@ -3,7 +3,7 @@
 ## this is client window for chat with others.
 -  adds below:
  ```html
- <script src="./NodeJs-Chat/myWebChat/chat.html"></script>
+ <object data="./NodeJs-Chat/myWebChat/chat.html" type="text/html"></object>
  ```
 - than you can just use the function 
 ```js
