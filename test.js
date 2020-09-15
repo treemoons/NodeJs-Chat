@@ -5,6 +5,7 @@ import {default as test} from './test/chat-frame.js';
             p.innerHTML="sssss"
 }
 
+console.log('test123')
 /**
  * @param {string} fmt 
  */
@@ -12,7 +13,7 @@ import {default as test} from './test/chat-frame.js';
 // window.formatdate = formatdate
 window.test = test;
 window.a = a;
-async function a(){return true;};
+// async function a(){return true;};
 async function s(p) {
     
     return p;

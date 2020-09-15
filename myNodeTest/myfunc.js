@@ -1,4 +1,11 @@
 ﻿import { resolve } from 'path';
+/**
+ * 
+ * @param {string} name 
+ * @param {string} purposeString 
+ * @param {string} splitMark
+ * @returns {Promise<string|undefined>}
+ */
 export async function getQueryString(name, purposeString, splitMark) {
     let reg = RegExp(`${name}=([^${splitMark}]+)`);
     let arr = purposeString.match(reg);
@@ -21,7 +28,7 @@ export async function getAllQueryString(purposeString, splitMark) {
  * @param {boolean} httponly 
  */
 export function buildCookie(name, value,
-    isexpiresdefault=true,
+    isexpiresdefault = true,
     { year = 0, month = 0, day = 0, hours = 0, minutes = 0, seconds = 0, milliseconds = 0 } = {},
     path = undefined, httponly = false) {
     if (!isexpiresdefault) {
@@ -34,16 +41,29 @@ export function buildCookie(name, value,
         date.setSeconds(date.getSeconds() + seconds);
         date.setMilliseconds(date.getMilliseconds() + milliseconds);
     }
-    let cookie = `${name}=${value};${isexpiresdefault ? '' :`expires=${ date };`}${(path == undefined ? '' : `path = ${path};`)}${(httponly ? 'httponly' : '')}`;
+    let cookie = `${name}=${value};${isexpiresdefault ? '' : `expires=${date};`}${(path == undefined ? '' : `path = ${path};`)}${(httponly ? 'httponly' : '')}`;
     console.log(encodeURI(cookie));
     return encodeURI(cookie);
 }
+/**
+ * 
+ * @param {string} str 
+ * @param {number} times
+ * @returns {Promise<string>}
+ */
 export async function btoaEncrypt(str, times = 1) {
     for (let i = 0; i < times; i++) {
         str = Buffer.from(str, 'base64').toString('ascii')
     }
     return str;
 }
+
+/**
+ *
+ * @param {string} str
+ * @param {number} times
+ * @returns {Promise<string>}
+ */
 export async function atobDecrypt(str, times = 1) {
     for (let i = 0; i < times; i++) {
         str = Buffer.from(str, 'ascii').toString('base64')
@@ -111,4 +131,10 @@ Date.prototype.formatDate = function (fmt) {
         }
     }
     return fmt;
+}
+Error.prototype.isNullOrUndefined = function () {
+    if (this == undefined || this == null) {
+        return true;
+    } else
+        return false;
 }
