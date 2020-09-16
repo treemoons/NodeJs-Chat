@@ -11,14 +11,14 @@ import {
     ServerResponse
 } from 'http';
 import sqlite3modlue from 'sqlite3';
-import { type } from 'os';
 const {
     Database
 } = sqlite3modlue;
 let sqlite3 = new Database('.\\data.db'); //node运行时，启动的文件夹的相对位置
-sqlite3.get(`SELECT DATE FROM CHATDATA order BY DATE asc limit 1,1;`, (err, row) => {
-    console.log(row.date)
-})
+sqlite3.all(`SELECT content,date,isread FROM CHATDATA WHERE DATE>= (SELECT DATE FROM CHATDATA WHERE ? AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1) AND USERNAME=? AND PEERNAME=?  ORDER BY DATE ASC`,
+    [`USERNAME ='treemoons' AND PEERNAME='name'`, 'treemoons', 'name'], (err, row) => {
+        console.log(row)
+    })
 /**@type {number} */
 export let encodingTimes = 10;
 export default {
@@ -78,20 +78,21 @@ export default {
         async http => {
             http.request.on('data', /** @param {string} d */ d => {
                 if (d != undefined || d != '') {
-                    sqlite3.serialize(() => {
-                        let username = getQueryString('username', d.toString(), '&');
+                    sqlite3.serialize(async () => {
+                        let username = await getQueryString('username', d.toString(), '&');
                         /** @type {{username:string,password:string,isremember:boolean,expire:Date}} */
-                        sqlite3.get('SELECT COUNT(*) WHERE USERNAME=? AND PASSWORD=? ',
+                        sqlite3.get('SELECT COUNT(*) AS Y WHERE USERNAME=? AND PASSWORD=? ',
                             [username, getQueryString('password', d.toString(), '&')],
-                            (err, row) => {
-                                if (err != undefined) {
-                                    let cookie = buildCookie(await btoaEncrypt('token', encodingTimes),
-                                        await btoaEncrypt(username, encodingTimes), { minutes: 30 });
-
+                            async (err, row) => {
+                                if (err != undefined || row.Y != 0) {
+                                    let key = await btoaEncrypt('token', encodingTimes);
+                                    let value = await btoaEncrypt(username, encodingTimes);
+                                    let cookie = buildCookie(key, value, { minutes: 30 });
                                     http.response.writeHead(200, {
-                                        'Set-Cookie': `${cookie}`
+                                        'Set-Cookie': `${cookie}`,
+                                        'Content-Type': 'text/plian;charset=utf-8'
                                     });
-                                    http.response.write(d.toString());
+                                    http.response.write("成功：" + d.toString(),);
                                 } else {
                                     http.response.write('no account available');
                                 }
@@ -104,39 +105,54 @@ export default {
                 }
             })
         },
+    /**加载所有的聊天记录，截止到未读或今天凌晨 */
     'loaddata':
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         http => {
             // if (isLogined()) {
             sqlite3.serialize(() => {
-                let username = await getloginedUser(http);
-                sqlite3.get(`SELECT C.DATE,L.USERPIC FROM CHATDATA C inner join USERLOGIN L ON C.USERNAME=L.USERNAME WHERE C.USERNAME=? AND C.ISREAD=0 order BY DATE asc limit 1,1;`,
+                let username = 'treemoons' //await getloginedUser(http);
+                sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
                     username, (err,/**@type {{date:string|Number,userpic:string}} */ row) => {
-                        if (err != undefined || err != null)
-                            sqlite3.all(`SELECT username,peername,content,date,isread FROM CHATDATA WHERE (DATE>= ? AND USERNAME=?)`,
-                                [row.date, username],
-                                (err,/** @type {{username:string,peername:string,content:string,date:string,isread:Number}[]}*/
-                                    rows) => {
-                                    //set rows by format of chatsigledata[]
-                                    /**@type {{peername:string,userpic:string,chatdata:{iscurrentuser:string,content:string,date:string}[],lastSpeak:string,isMeSpeakNow:boolean}} */
-                                    let chatsigledata = {};
+                        if (err == undefined || err == null) {
+                            sqlite3.all(`SELECT distinct peername FROM(select peername as peername from CHATDATA where USERNAME=? union select username from chatdata  where peername=?) `,
+                                [username, username],
+                                (err,/** @type {{peername:string}[]}*/
+                                    peers) => {
                                     /**@type {{peername:string,userpic:string,chatdata:{iscurrentuser:string,content:string,date:string}[],lastSpeak:string,isMeSpeakNow:boolean}[]} */
                                     let chatdatarray = [];
-                                    rows.forEach((chatrow, i, chatrows) => {
-                                        chatsigledata.peername = chatrow.peername;
-                                        chatsigledata.userpic = row.userpic;
-                                     });
-                                    let test = []
-                                    test.forEach((row)=> {
-                                        console.log(row)
-                                    })
-
-                                    sqlite3.run('update chatdata set isread=1 where isread=0 AND USERNAME=?',
-                                        username,
-                                        err => {
-                                        console.error('set read err!');
+                                    peers.forEach((peer, i, peersArray) => {
+                                        sqlite3.all(`SELECT username,peername,content,date,isread FROM CHATDATA WHERE DATE>= 
+                                        (SELECT DATE FROM CHATDATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1)
+                                         AND ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))  ORDER BY DATE ASC`,
+                                            [username, peer.peername, peer.peername, username, username, peer.peername, peer.peername, username],
+                                            (err,/** @type {{username:string,peername:string,content:string,date:string,isread:Number}[]}*/
+                                                rows) => {
+                                                //set rows by format of chatsigledata[]
+                                                /**@type {{peername:string,userpic:string,chatdata:{iscurrentuser:string,content:string,date:string}[],lastSpeak:string,isMeSpeakNow:boolean}} */
+                                                let chatsigledata = {};
+                                                chatsigledata.peername = peer.peername;
+                                                chatsigledata.userpic = row.userpic;
+                                                chatsigledata.chatdata = [];
+                                                rows.forEach(sigle => {
+                                                    /**@type {{iscurrentuser:string,content:string,date:string}} */
+                                                    let chatsigle = { iscurrentuser: sigle.username == username, content: sigle.content, date: sigle.date }
+                                                    chatsigledata.chatdata.push(chatsigle);
+                                                });
+                                                // chatsigledata.lastSpeak = chatsigledata.chatdata[chatsigledata.chatdata.length - 1];
+                                                chatdatarray.push(chatsigledata);
+                                                if (i == peersArray.length - 1) {
+                                                    http.response.writeHead(200, {
+                                                        'Content-Type': 'text/plian;charset=utf-8',
+                                                        'Access-Control-Allow-Origin': '*'
+                                                    });
+                                                    http.response.end(JSON.stringify(chatdatarray, (k, v) => { return v; },'    '))
+                                                }
+                                            });
                                     });
+
                                 });
+                        }
                     });
             });
             // }
