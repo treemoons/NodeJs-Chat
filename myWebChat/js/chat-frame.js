@@ -138,7 +138,8 @@ class ChatDataSigleList {
      */
     chatdata = [];
 
-    /**我们之间上一次的最后一句 ♥*/
+    /**我们之间上一次的最后一句 
+     * @type {ChatData} ♥*/
     lastSpeak;
 
     /**当前是我在说话嘛 

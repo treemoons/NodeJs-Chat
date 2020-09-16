@@ -4,11 +4,12 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <!-- <meta http-equiv="Access-Control-Allow-Origin" content="*"> -->
         <title>Document</title>
     </head>
 
     <body>
-        <form action="/api/login/thisistestparam" method="POST">
+        <form action="http://localhost:8888/api/login/thisistestparam" method="POST">
             <input type="text" name="username" value="treemoons" id=""> <br>
             <input type="text" name="password" value="1234" id=""><br>
             <input type="submit">
@@ -24,20 +25,27 @@
                     }
                 });
 
-            let test = () => getAjaxData({
-                url: '/api/chatto/ii?ttt=00089d&yy====',
-                success: e => {
-                    if (JSON.parse(e).status == 1)
-                        alert("成功,查看cookie")
-                    else
-                        alert("失败,查看cookie")
-                },
-                data: json
-            })
+            let test = () =>getAjaxData({url:'http://localhost:8888/api/loaddata',
+                success:d=>{
+                    document.getElementById('loaddata').innerText=d;
+                    console.log(JSON.parse(d))
+                    // document.write(d);
+                }
+            });
+            //  getAjaxData({
+            //     url: '/api/chatto/ii?ttt=00089d&yy====',
+            //     success: e => {
+            //         if (JSON.parse(e).status == 1)
+            //             alert("成功,查看cookie")
+            //         else
+            //             alert("失败,查看cookie")
+            //     },
+            //     data: json
+            // })
             /**
              * 获取并操作Ajax数据
              *@param { { url: string, success: (text:string)=>void), failed ?: 
-                    (text:string)=>void, data ?: string, method ?: string, reqestHeader ?:{headername: string,headervalue:string} } object  options
+                    (text:string)=>void, data ?: string, method ?: string, reqestHeader ?:[{headername: string,headervalue:string}] } object  options
              */
             function getAjaxData({
                 url,
@@ -47,17 +55,19 @@
                 },
                 data = '',
                 method = 'POST',
-                reqestHeader = {
+                reqestHeader = [{
                     headername: 'Content-Type',
                     headervalue: 'application/x-www-form-urlencoded'
-                }
+                }]
             }) {
                 debugger;
                 // open(url,'_blank')
                 var ajax = new XMLHttpRequest();
                 ajax.open(method, url);
-                ajax.setRequestHeader(reqestHeader.headername, reqestHeader.headervalue);
-                ajax.setRequestHeader('Set-Cookie', 'name=username');
+                reqestHeader.forEach(header=>{
+                    ajax.setRequestHeader(header.headername, header.headervalue);
+                })
+                // ajax.setRequestHeader('Set-Cookie', 'name=username');
                 ajax.send(data);
                 ajax.onreadystatechange = function () {
                     if (ajax.readyState == 4) {
@@ -88,4 +98,5 @@
     <strong>cookie 默认不支持存储中文，如果存储中文需先使用 encodeURIComponent 方法进行转译，将转译后的结果存入
         cookie，在浏览器获取 cookie 需使用 decodeURIComponent 方法转回中文。</strong>
 
+        <p id="loaddata" style="white-space: pre-wrap;"></p>
 </html>

@@ -51,25 +51,25 @@ export function buildCookie(name, value,
  * @param {number} times
  * @returns {Promise<string>}
  */
-export async function btoaEncrypt(str, times = 1) {
+export async function atobDecrypt(str, times = 1) {
     for (let i = 0; i < times; i++) {
-        str = Buffer.from(str, 'base64').toString('ascii')
+        str = Buffer.from(str, 'base64').toString('utf-8')
     }
     return str;
 }
-
 /**
  *
  * @param {string} str
  * @param {number} times
  * @returns {Promise<string>}
  */
-export async function atobDecrypt(str, times = 1) {
+export async function btoaEncrypt(str, times = 1) {
     for (let i = 0; i < times; i++) {
-        str = Buffer.from(str, 'ascii').toString('base64')
+        str = Buffer.from(str, 'utf-8').toString('base64')
     }
     return str;
 }
+
 export var __dirname = resolve();
 /**
  * date default now (all values is '0')
