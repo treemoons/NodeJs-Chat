@@ -21,7 +21,7 @@ readdir('F:/100套笔刷/100', (e, filelist) => {
 
 /**
  * 获取并操作Ajax数据
- *@param { { url: string, success: (text:string)=>void), failed ?: 
+ *@param { { url: string, success: (text:string)=>Promise<void>), failed ?: 
         (text:string)=>void, data ?: string, method ?: string, httptype ?:string } object  options
  */
 function getAjaxData({
@@ -40,7 +40,7 @@ function getAjaxData({
     ajax.open(method, url);
     ajax.setRequestHeader('Content-Type', httptype);
     ajax.send(data);
-    ajax.onreadystatechange = function () {
+    ajax.onreadystatechange = async function () {
         if (ajax.readyState == 4) {
             if (ajax.status == 200) {
                 try {
@@ -101,9 +101,10 @@ class ChatDataSigleList {
      * @param {string} name 对方姓名
      * @param {string} pic 对方头像
      */
-    constructor(name, pic) {
+    constructor(name, pic, data) {
         this.username = name;
         this.userpic = pic;
+        this.chatdata = data;
     }
     /**
      * 添加一条记录
@@ -115,7 +116,6 @@ class ChatDataSigleList {
         this.lastSpeak = data[data.length - 1];
     }
     /**
-     * 
      * @param {ChatData} peer 对话记录
      */
     getHistoryChat = (peer) => {
@@ -124,14 +124,14 @@ class ChatDataSigleList {
         this.lastSpeak = data[data.length - 1];
     }
 
-    /** 用户名 (默认为自己)
+    /** 好友用户名 
      * @type {string}*/
-    username;
+    peername;
 
-    /**用户头像 (默认为自己)
+    /** 好友头像 
      * @type {string}
      */
-    userpic;
+    peerpic;
 
     /**我们在一起的话❤
      * @type {ChatData[]}
@@ -146,7 +146,8 @@ class ChatDataSigleList {
      * @type {boolean}
      */
     isMeSpeakNow;
-
+    /**@type {number} */
+    unreadCount;
 }
 /*@deprecated */
 let objectTest = {
@@ -186,17 +187,37 @@ class ChatData {
     /**是否是当前登录的账户
      *  @type {boolean}*/
     iscurrentuser;
+    /**@type {boolean} */
+    isread;
 }
 /** 创建聊天数据基础与显示client端 */
 class BuildBubblesFrame {
+
     /**
-     * @param {ChatDataSigleList[]} chatDataLists 
+     * 前提是已经登陆用户名
      * @param {HTMLElement} parentEle 
      */
-    constructor(chatDataLists, parentEle) {
-        this.updateFrame(chatDataLists);
+
+    constructor(user, pic, parentEle) {
+        user = this.username;
+        pic = this.userpic;
         this.sigleChat = parentEle;
+        this.loadMessage();
     }
+    /**登录用户名 */
+    username = '';
+    /**登录头像 */
+    userpic = '';
+
+    sigleBubbleFrame;
+    /**所有聊天记录,chatDataSigleList[]转换
+     * @type {{name:ChatDataSigleList}} bubblesFrame s*/
+    bubblesFrame;
+    /**@type {ChatDataSigleList[]} */
+    chatDataLists;
+    /**一个好友信息的所有标签元素的父元素
+     * @type {HTMLElement}*/
+    sigleChat;
     /**
      * @param {string} peername 聊天对象名
      */
@@ -206,15 +227,17 @@ class BuildBubblesFrame {
         } catch (e) {
             console.log(e);
         } finally {
+            //清空
             this.sigleChat.innerHTML = '';
             /**
              * @type {ChatDataSigleList}
              */
             let frame = this.bubblesFrame[peername];
             let data = frame.chatdata;
-            let name = frame.username;
-            let pic = frame.userpic;
             for (let i = 0; i < data.length - 1; i++) {
+
+                let name = data[i].iscurrentuser ? this.username : frame.peername;
+                let pic = data[i].iscurrentuser ? this.userpic : frame.peerpic;
                 if (new Date().formatDate('yyyyMMdd.HHmmss') > data[i].date + 1) {
                     //昨天
                 } else if (new Date().formatDate('yyyyMMdd.HHmmss') > data[i].date) {
@@ -245,14 +268,13 @@ class BuildBubblesFrame {
      *  更新指定条目数加载到对象数据(主要是更新新消息)
      * @param {ChatDataSigleList[]} chatDataLists load chat data with dealed counts
      */
-    updateFrame = (chatDataLists) => {
+    updateFrame = async () => {
         let bubbles = {};
-        for (let i = 0; i < chatDataLists.length - 1; i++) {
-            let name = chatDataLists[i].username;
-            bubbles[name] = chatDataLists[i];
+        for (let i = 0; i < this.chatDataLists.length - 1; i++) {
+            let name = this.chatDataLists[i].peername;
+            bubbles[name] = this.chatDataLists[i];
         }
         this.bubblesFrame = bubbles;
-        this.chatDataLists = chatDataLists;
     }
     /**
      * 主要查看历史消息
@@ -272,14 +294,28 @@ class BuildBubblesFrame {
 
     }
 
-    receiveMsg = (username) => {
+    loadMessage = async () => {
         getAjaxData({
             url: '/api/loaddata',
-            success: d => {
-                let data= JSON.parse(d)
+            success: async d => {
+                /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[]}[]} */
+                let data = JSON.parse(d)
                 // 获取并转化为chatsiglelist[];
                 let recChatDataLists = data;
-                this.updateFrame(recChatDataLists);
+
+                recChatDataLists.forEach(async (value, i, Lists) => {
+                    this.chatDataLists[i] = new ChatDataSigleList(value.peername, value.peerpic, value.chatdata)
+                    let lastSpeak = value.chatdata[value.chatdata.length - 1];
+                    this.chatDataLists[i].lastSpeak = lastSpeak;
+                    this.chatDataLists[i].isMeSpeakNow = lastSpeak.iscurrentuser;
+                    let unreadcount = 0;
+                    value.chatdata.forEach(v => {
+                        if (v.isread = 0)
+                            unreadcount++;
+                    });
+                    this.chatDataLists[i].unreadCount = unreadcount;
+                });
+                await this.updateFrame(this.chatDataLists);
                 // 调整提示气泡
 
 
@@ -309,7 +345,7 @@ class BuildBubblesFrame {
             let chatdata = {
                 applyuser: 'username',
                 sentdata: {
-                    username: name, content: data, date: new Date().formatDate('yyyyMMdd.HHmmss')
+                    peername: name, content: data, date: new Date().formatDate('yyyyMMdd.HHmmss')
                 }
             };
             //经过一系列处理存到服务器
@@ -334,15 +370,6 @@ class BuildBubblesFrame {
             })
         } catch { }
     }
-    sigleBubbleFrame;
-    /**所有聊天记录,chatDataSigleList[]转换
-     * @type {{name:ChatDataSigleList}} bubblesFrame s*/
-    bubblesFrame;
-    /**@type {ChatDataSigleList[]} */
-    chatDataLists;
-    /**一条信息的所有标签元素
-     * @type {HTMLElement}*/
-    sigleChat;
 
 }
 
