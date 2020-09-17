@@ -129,7 +129,7 @@ export default {
                             /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}} */
                             let chatsigledata = {};
                             sqlite3.all(`SELECT username,peername,content,date,isread FROM CHATDATA WHERE DATE>= 
-                                        (SELECT DATE FROM CHATDATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1)
+                                        (SELECT DATE FROM CHATDATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1) OR DATE>=${getTodayDawn().formatDate('yyyyMMdd.HHmmss')}
                                          AND ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))  ORDER BY DATE ASC`,
                                 [username, peer.peername, peer.peername, username, username, peer.peername, peer.peername, username],
                                 (err, /** @type {{username:string,peername:string,content:string,date:string,isread:Number}[]}*/
@@ -141,7 +141,7 @@ export default {
                                                 if (row != undefined) {
                                                     chatsigledata.peerpic = row.userpic;
                                                 } else
-                                                    chatsigledata.peerpic = ''
+                                                    chatsigledata.peerpic = '';
                                             //set rows by format of chatsigledata[]
 
                                             chatsigledata.peername = peer.peername;

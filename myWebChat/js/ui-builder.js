@@ -1,3 +1,5 @@
+
+import BuildFrame from './chat-frame.js';
 /**要操作的目标元素@type {HTMLElement}*/
 var aimOfContextMenu;
 /**
@@ -109,12 +111,13 @@ function contextMenu({
     }
 };
 
+let frame = new BuildFrame('username', '', document.getElementsByClassName('chat-data')[0])
 /**@type {HTMLElement}*/
 var friendFocus;
 
 function initialFrameTheme({
     chat = document.getElementsByClassName('chat')[0],
-    lists = document.getElementsByClassName('friends-list'),
+    listsClassName = 'friends-list',
     chatDataWindow = document.getElementsByClassName('chat-data-frame')[0],
     focusfriend = {
         focusBackground: 'plum',
@@ -132,10 +135,20 @@ function initialFrameTheme({
         friendlistBackgroundColor: 'white',
         friendlistColor: 'black'
     },
+    friendlisthover = {
+        friendlisthoverColor: 'white',
+        friendlisthoverBackgroundColor: 'gray'
+    },
     isopentransition = false,
     loadFriendsList = () => { },
     showChatWindow = (username, bubbleFrameEle) => {
-    }, waitDivshow = { isShow: true, begin: () => { document.getElementsByClassName('move')[0].style.display = 'block' }, end: () => { document.getElementsByClassName('move')[0].style.display = 'none' } }
+
+    },
+    waitDivshow = {
+        isShow: true,
+        begin: () => { document.getElementsByClassName('move')[0].style.display = 'block' },
+        end: () => { document.getElementsByClassName('move')[0].style.display = 'none' }
+    }
 } = {}) {
     let styleEle = document.createElement("style");
     styleEle.id = 'style';
@@ -172,7 +185,14 @@ function initialFrameTheme({
                 color:${friendlist.friendlistColor};
                 background-color: ${friendlist.friendlistBackgroundColor};
             }`;
+    if (friendlisthover != undefined)
+        style.innerHTML += `
+            .friends-list:hover {
+                color:${friendlisthover.friendlisthoverColor};
+                background-color: ${friendlisthover.friendlisthoverBackgroundColor};
+            }`;
     loadFriendsList();
+    let lists = document.getElementsByClassName(listsClassName);
     if (lists.length > 0) {
         for (let i = 0; i < lists.length; i++) {
             lists[i].onclick = function () {
@@ -191,18 +211,18 @@ function initialFrameTheme({
                     if (chatDataWindow.style.right == '0px') {
                         chatDataWindow.setAttribute('style', 'right:150%;');
                         setTimeout(() => {
-                            showChatWindow(this.innerText, chatDataWindow);
+                            showChatWindow(this.innerText, chatDataWindow.children[0]);
                             chatDataWindow.setAttribute('style', 'right:0px');
                         }, 300)
                     } else {
-                        showChatWindow(this.innerText, chatDataWindow);
+                        showChatWindow(this.innerText, chatDataWindow.children[0]);
                         chatDataWindow.setAttribute('style', 'right:0px');
                     }
                 } else {
                     if (chatDataWindow.style.right != '0px') {
                         chatDataWindow.setAttribute('style', 'right:0px');
                     }
-                    showChatWindow(this.innerText, chatDataWindow);
+                    showChatWindow(this.innerText, chatDataWindow.children[0]);
                 }
                 if (waitDivshow.isShow) {
                     waitDivshow.end();
@@ -240,21 +260,21 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = e => { }, tipText 
         @param {WheelEvent} e*/
         function (e) {
             if (this.scrollTop === 0) {
-                    if (this.children[0].getAttribute('role')) {
-                        let tip = this.children[0];
-                        if (tip.innerText != tipDealingText) {
-                            tip.innerText = tipDealingText;
-                            tip.className = tipDealingClass;
-                            action(e);
-                            tip.remove();
-                        }
-                    } else {
-                        let tip = document.createElement('p');
-                        tip.setAttribute('role', 'tip')
-                        tip.innerText = tipText;
-                        tip.className = tipClass;
-                        this.prepend(tip);
+                if (this.children[0].getAttribute('role')) {
+                    let tip = this.children[0];
+                    if (tip.innerText != tipDealingText) {
+                        tip.innerText = tipDealingText;
+                        tip.className = tipDealingClass;
+                        action(e);
+                        tip.remove();
                     }
+                } else {
+                    let tip = document.createElement('p');
+                    tip.setAttribute('role', 'tip')
+                    tip.innerText = tipText;
+                    tip.className = tipClass;
+                    this.prepend(tip);
+                }
             }
         }
 }
