@@ -6,6 +6,7 @@
     getTodayDawn,
     atobDecrypt
 } from '../../myfunc.js'; //相对该文件的相对位置
+console.log(new Date().formatDate('yyyy.dd'))
 import {
     IncomingMessage,
     ServerResponse
@@ -37,7 +38,7 @@ export default {
                 if (d == undefined || d === null) {
                     console.log("d is" + d)
                 } else {
-                    /**@type {{ applyuser: string, sentdata: { username: string, content: string, date: string|number,isread:number } }} */
+                    /**@type {{ applyuser: string, sentdata: { peername: string, content: string, date: string|number,isread:number } }} */
                     let data = JSON.parse(d);
                     let msg = {
                         status: 0,
@@ -53,12 +54,13 @@ export default {
                         http.response.write(JSON.stringify(msg))
                         http.response.end()
                     }
+
                     function insertSql() {
                         sqlite3.run(`INSERT INTO CHATDATA(USERNAME,PEERNAME,CONTENT,DATE,ISREAD) VALUES(?,?,?,?,?);`,
-                            [data.applyuser, data.sentdata.username, data.sentdata.content, data.sentdata.date, data.sentdata.isread],
+                            [data.applyuser, data.sentdata.peername, data.sentdata.content, data.sentdata.date, data.sentdata.isread],
                             err => {
                                 console.log(err)
-                                if (err.isNullOrUndefined()) {
+                                if (err == undefined || err == null) {
                                     msg.msg = err.message;
                                 } else {
                                     msg.status = 1;
@@ -87,7 +89,9 @@ export default {
                                 if (err != undefined || row.Y != 0) {
                                     let key = await btoaEncrypt('token', encodingTimes);
                                     let value = await btoaEncrypt(username, encodingTimes);
-                                    let cookie = buildCookie(key, value, { minutes: 30 });
+                                    let cookie = buildCookie(key, value, {
+                                        minutes: 30
+                                    });
                                     http.response.writeHead(200, {
                                         'Set-Cookie': `${cookie}`,
                                         'Content-Type': 'text/plian;charset=utf-8'
@@ -111,53 +115,71 @@ export default {
         http => {
             // if (isLogined()) {
             sqlite3.serialize(() => {
-                let username = 'treemoons' //await getloginedUser(http);
-                sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
-                    username, (err,/**@type {{date:string|Number,userpic:string}} */ row) => {
-                        if (err == undefined || err == null) {
-                            sqlite3.all(`SELECT distinct peername FROM(select peername as peername from CHATDATA where USERNAME=? union select username from chatdata  where peername=?) `,
-                                [username, username],
-                                (err,/** @type {{peername:string}[]}*/
-                                    peers) => {
-                                    /**@type {{peername:string,userpic:string,chatdata:{iscurrentuser:string,content:string,date:string}[],lastSpeak:string,isMeSpeakNow:boolean}[]} */
-                                    let chatdatarray = [];
-                                    peers.forEach((peer, i, peersArray) => {
-                                        sqlite3.all(`SELECT username,peername,content,date,isread FROM CHATDATA WHERE DATE>= 
+                let username = 'treemoons' //await getloginedUser(http); // 获取登录过后的用户名，使用base64加密，加密次数为encodingTimes；
+                /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}[]} */
+                let chatdatarray = [];
+                // sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
+                //     username, (err,/**@type {{date:string|Number,peerpic:string}} */ row) => {
+                //         if (err.isNullOrUndefined()) {
+                sqlite3.all(`SELECT distinct peername FROM(select peername as peername from CHATDATA where USERNAME=? union select username from chatdata  where peername=?) `,
+                    [username, username],
+                    (err, /** @type {{peername:string}[]}*/
+                        peers) => {
+                        peers.forEach((peer, i, peersArray) => {
+                            /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}} */
+                            let chatsigledata = {};
+                            sqlite3.all(`SELECT username,peername,content,date,isread FROM CHATDATA WHERE DATE>= 
                                         (SELECT DATE FROM CHATDATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1)
                                          AND ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))  ORDER BY DATE ASC`,
-                                            [username, peer.peername, peer.peername, username, username, peer.peername, peer.peername, username],
-                                            (err,/** @type {{username:string,peername:string,content:string,date:string,isread:Number}[]}*/
-                                                rows) => {
-                                                //set rows by format of chatsigledata[]
-                                                /**@type {{peername:string,userpic:string,chatdata:{iscurrentuser:string,content:string,date:string}[],lastSpeak:string,isMeSpeakNow:boolean}} */
-                                                let chatsigledata = {};
-                                                chatsigledata.peername = peer.peername;
-                                                chatsigledata.userpic = row.userpic;
-                                                chatsigledata.chatdata = [];
-                                                rows.forEach(sigle => {
-                                                    /**@type {{iscurrentuser:string,content:string,date:string}} */
-                                                    let chatsigle = { iscurrentuser: sigle.username == username, content: sigle.content, date: sigle.date }
-                                                    chatsigledata.chatdata.push(chatsigle);
-                                                });
-                                                // chatsigledata.lastSpeak = chatsigledata.chatdata[chatsigledata.chatdata.length - 1];
-                                                chatdatarray.push(chatsigledata);
-                                                if (i == peersArray.length - 1) {
-                                                    http.response.writeHead(200, {
-                                                        'Content-Type': 'text/plian;charset=utf-8',
-                                                        'Access-Control-Allow-Origin': '*'
-                                                    });
-                                                    http.response.end(JSON.stringify(chatdatarray, (k, v) => { return v; },'    '))
-                                                }
-                                            });
-                                    });
+                                [username, peer.peername, peer.peername, username, username, peer.peername, peer.peername, username],
+                                (err, /** @type {{username:string,peername:string,content:string,date:string,isread:Number}[]}*/
+                                    rows) => {
+                                    sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
+                                        peer.peername,
+                                        (err, /**@type {{userpic:string}} */ row) => {
+                                            if (err == undefined || err == null())
+                                                if (row != undefined) {
+                                                    chatsigledata.peerpic = row.userpic;
+                                                } else
+                                                    chatsigledata.peerpic = ''
+                                            //set rows by format of chatsigledata[]
 
-                                });
-                        }
-                    });
+                                            chatsigledata.peername = peer.peername;
+                                            chatsigledata.chatdata = [];
+                                            rows.forEach(sigle => {
+                                                /**@type {{iscurrentuser:string,content:string,date:string,isread:number}} */
+                                                let chatsigle = {
+                                                    iscurrentuser: sigle.username == username,
+                                                    content: sigle.content,
+                                                    date: sigle.date,
+                                                    isread:sigle.isread
+                                                }
+                                                chatsigledata.chatdata.push(chatsigle);
+                                            });
+                                            console.log(chatsigledata)
+                                            console.log("length" + peersArray.length)
+                                            // if (err == null) {
+                                            // chatsigledata.lastSpeak = chatsigledata.chatdata[chatsigledata.chatdata.length - 1];
+
+                                            chatdatarray.push(chatsigledata);
+                                            if (i == peersArray.length - 1) {
+                                                http.response.writeHead(200, {
+                                                    'Content-Type': 'text/plian;charset=utf-8',
+                                                    'Access-Control-Allow-Origin': '*'
+                                                });
+                                                http.response.end(JSON.stringify(chatdatarray, (k, v) => v, '    '))
+                                            }
+                                        }
+                                    );
+                                })
+
+                        });
+                    })
             });
-            // }
         }
+    // }
 }
+
 /**
  * 根据cookie查看是否登录,30分钟过期。
  * @param {{request:IncomingMessage}} http request.cookie

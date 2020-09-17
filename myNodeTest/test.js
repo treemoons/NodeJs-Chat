@@ -49,3 +49,54 @@ sqlite3.serialize(() => {
             }
         });
 });
+/**@type{[]} */
+let t = JSON.parse(`[
+    {
+        "peerpic": "",
+        "peername": "apply",
+        "chatdata": [
+            {
+                "iscurrentuser": false,
+                "content": "niha",
+                "date": "20200910.121822"
+            }
+        ]
+    },
+    {
+        "peerpic": "",
+        "peername": "d",
+        "chatdata": [
+            {
+                "iscurrentuser": false,
+                "content": "data",
+                "date": "11"
+            }
+        ]
+    },
+    {
+        "peerpic": "nnnnnnNNN",
+        "peername": "name",
+        "chatdata": [
+            {
+                "iscurrentuser": false,
+                "content": "data",
+                "date": "11"
+            },
+            {
+                "iscurrentuser": true,
+                "content": "conent','ss'",
+                "date": "2020090.121822"
+            },
+            {
+                "iscurrentuser": true,
+                "content": "conent",
+                "date": "2020910.121822"
+            }
+        ]
+    }
+]`);
+
+t.forEach(async v => {
+    console.log(v.chatdata)
+});
+console.log('end the log')

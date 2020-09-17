@@ -132,9 +132,3 @@ Date.prototype.formatDate = function (fmt) {
     }
     return fmt;
 }
-Error.prototype.isNullOrUndefined = function () {
-    if (this == undefined || this == null) {
-        return true;
-    } else
-        return false;
-}
