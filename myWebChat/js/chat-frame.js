@@ -40,7 +40,7 @@ function getAjaxData({
     ajax.open(method, url);
     ajax.setRequestHeader('Content-Type', httptype);
     ajax.send(data);
-    ajax.onreadystatechange = async function () {
+    ajax.onreadystatechange = function () {
         if (ajax.readyState == 4) {
             if (ajax.status == 200) {
                 try {
@@ -127,10 +127,11 @@ class ChatDataSigleList {
     /**
      * @param {string} name 对方姓名
      * @param {string} pic 对方头像
+     * @param {ChatData} data 对方头像
      */
     constructor(name, pic, data) {
-        this.username = name;
-        this.userpic = pic;
+        this.peername = name;
+        this.peerpic = pic;
         this.chatdata = data;
     }
     /**
@@ -253,7 +254,7 @@ export default class BuildBubblesFrame {
      */
     showFrame = (peername) => {
         try {
-
+            debugger
             //清空
             this.sigleChat.innerHTML = '';
             /**
@@ -262,39 +263,41 @@ export default class BuildBubblesFrame {
             let frame = this.bubblesFrame[peername];
             let data = frame.chatdata;
             let datespan = 30;
-            let dateTemp = 0;
-            let datetip = '';
+            let todaydawn = getTodayDawn().formatDate('yyyyMMdd.HHmmss');
+            let dateTemp = todaydawn - 1;
+            /**用于比较时间差来提示消息记录 */
+            let timetip = '';
 
-            function isShowDate(date) {
-                if (v.date - dateTemp > datespan) {
-                    datetip = date;
+            function isShowDate(nowdate, datetip) {
+                if (nowdate - dateTemp > datespan) {
+                    timetip = datetip;
                 }
             }
             data.forEach(v => {
-                let name = v.iscurrentuser ? this.username : frame.peername;
+                let name = v.iscurrentuser ? this.username : peername;
                 let pic = v.iscurrentuser ? this.userpic : frame.peerpic;
                 let date = formatBackDate(v.date)
-                if (getTodayDawn().formatDate('yyyyMMdd.HHmmss') > v.date && getTodayDawn().formatDate('yyyyMMdd.HHmmss') - 1 < v.date) {
+                if (todaydawn > v.date && todaydawn - 1 < v.date) {
                     //昨天
-                    isShowDate(date.formatDate('昨天 HH:mm:ss'))
-                } else if (getTodayDawn().formatDate('yyyyMMdd.HHmmss') < v.date) {
-                    isShowDate(date.formatDate('HH:mm:ss'))
+                    isShowDate(v.date, date.formatDate('昨天 HH:mm:ss'))
+                } else if (todaydawn < v.date) {
+                    isShowDate(v.date, date.formatDate('HH:mm:ss'))
                     //今天
                 } else {
                     //历史
-                    isShowDate(date.formatDate('yyyy年MM月dd日 HH:mm:ss'))
+                    isShowDate(v.date, date.formatDate('yyyy年MM月dd日 HH:mm:ss'))
                 }
                 dateTemp = v.date;
                 if (v.iscurrentuser) {
                     this.sigleChat.innerHTML += `<div class="user-speak">
                                 <div class="user-chat-bubble">${v.content}</div>
                                 <img src="${pic}"
-                                    width="30" alt="${name}">
+                                    width="30" height="30" alt="${name}">
                             </div>`;
                 } else {
                     this.sigleChat.innerHTML += `<div class="peer-speak">
                                 <img src="${pic}"
-                                    width="30" alt="${name}">
+                                    width="30" height="30" alt="${name}">
                                 <div class="user-chat-bubble">${v.content}</div>
                                 <div class="resend">重发</div>
                             </div>`;
@@ -311,7 +314,7 @@ export default class BuildBubblesFrame {
      *  更新指定条目数加载到对象数据(主要是更新新消息)
      * @param {ChatDataSigleList[]} chatDataLists load chat data with dealed counts
      */
-    updateFrame = async () => {
+    updateFrame = () => {
         let bubbles = {};
         this.chatDataLists.forEach(v => {
             let name = v.peername;
@@ -341,16 +344,17 @@ export default class BuildBubblesFrame {
     /**
      * loading initializated data
      */
-    initializaingData = async () => {
+    initializaingData = () => {
         getAjaxData({
-            url: '/api/loaddata',
-            success: async d => {
+            url: 'http://localhost:8888//api/loaddata',
+            // data: '...',
+            success: d => {
                 /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[]}[]} */
                 let data = JSON.parse(d)
                 // 获取并转化为chatsiglelist[];
                 let recChatDataLists = data;
-
-                recChatDataLists.forEach(async (value, i, Lists) => {
+                debugger
+                recChatDataLists.forEach((value, i, Lists) => {
                     this.chatDataLists[i] = new ChatDataSigleList(value.peername, value.peerpic, value.chatdata)
                     let lastSpeak = value.chatdata[value.chatdata.length - 1];
                     this.chatDataLists[i].lastSpeak = lastSpeak;
@@ -362,7 +366,10 @@ export default class BuildBubblesFrame {
                     });
                     this.chatDataLists[i].unreadCount = unreadcount;
                 });
-                await this.updateFrame(this.chatDataLists);
+                loadserial(this.chatDataLists);
+                this.updateFrame(this.chatDataLists);
+                this.initializaingfriendlist();
+                this.setonclickanimotion();
                 // 调整提示气泡
             },
             failed: err => {
@@ -370,10 +377,18 @@ export default class BuildBubblesFrame {
             }
         })
     }
-
+    setonclickanimotion;
+    /**初始化好友列表 */
     initializaingfriendlist = () => {
-
+        debugger
+        this.friendlistEle.innerHTML = '';
+        for (let name in this.bubblesFrame) {
+            this.friendlistEle.innerHTML += `<li class="friends-list"><img
+                                    src="${this.bubblesFrame[name].peerpic}"
+                                    width="30" height="30" alt="">${name}</li>`;
+        }
     }
+
     /**
      * 主动发送消息给对方
      * @param {string} name 聊天对象名称
@@ -422,7 +437,7 @@ export default class BuildBubblesFrame {
                     resend.className = 'resend';
                 }
             })
-        } catch {}
+        } catch { }
     }
 
 }
@@ -433,19 +448,37 @@ class Interactive {
     static toolEmojiShow;
     static toolImgSelect;
 }
+/**
+ * 
+ * @param {ChatDataSigleList[]} array 
+ */
+function loadserial(array) {
 
-let a = {
-    a: "ee",
-    bb: {
-        sha: "sha"
+    // debugger;
+    var arr = [];//定义一个数组对象
+    //遍历赋值
+    for (let i = 0; i < array.length; i++) {
+        arr.push({
+            key: array[i].chatdata[array[i].chatdata.length-1].date,
+            val: array[i]
+        })
+    }
+    //排序对象
+    serial(arr);
+    //冒泡排序方法排列数组对象
+    function serial(arrs) {
+        for (let j = 0; j < arr.length - 1; j++) {
+            for (let k = 0; k < arr.length - j - 1; k++) {
+                var temp = arrs[k];
+                if (arrs[k].key > arrs[k + 1].key) {//比较相邻的值，>为从小到大，<从大到小；
+                    arrs[k] = arrs[k + 1];
+                    arrs[k + 1] = temp;
+                }
+            }
+        }
+    }
+    for(let i=0 ;i < arr.length; i++){
+        array[i] = arr[i].val;
     }
 }
-class b {
-    constructor() {
 
-    }
-    a = 'ee'
-}! function (p, aa) {
-    console.log(p.a)
-    console.log(aa.a)
-}(new b(), a);

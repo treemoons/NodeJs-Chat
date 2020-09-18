@@ -12,11 +12,12 @@ function test() {
     // const a = Window.test
     p.id = 'p';
     let a = document.getElementById('p');
-    a.innerText = 'MODULE TEST'
+    a.innerHTML='<p id="n" style="color :red"></p>'
     // console.log(' export default TEST');
     // let p = document.getElementsByClassName('pp')[0];
     // p.id = 'p';
     // p.innerHTML = 'sssss'
+    a.children[0].innerHTML = 'sss';
    s .ss='dfghjkl;lkjhgfd';
 }
 top.test = test;

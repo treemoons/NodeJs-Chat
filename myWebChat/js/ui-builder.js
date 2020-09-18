@@ -4,7 +4,7 @@ import BuildFrame from './chat-frame.js';
  * @type {HTMLElement}*/
 var aimOfContextMenu;
 /**@type {BuildFrame} */
-let frame = new BuildFrame('username', 'pic', document.getElementsByClassName('chat-data')[0]);
+let frame = new BuildFrame('treemoons', '../../peerpic.jpg', document.getElementsByClassName('chat-data')[0]);
 /**@type {HTMLElement}*/
 var friendFocus;
 window.frame = frame;
@@ -120,8 +120,8 @@ function contextMenu({
 
 function initialFrameTheme({
     chat = document.getElementsByClassName('chat')[0],
-    listsClassName = 'friends-list',
-    chatDataWindow = document.getElementsByClassName('chat-data-frame')[0],
+    listsFrame = document.querySelector('.chat-list .friends-frame'),
+    chatDataWindow = document.querySelector('.chat-content-frame .chat-data-frame'),
     focusfriend = {
         focusBackground: 'plum',
         focusColor: 'white'
@@ -143,17 +143,13 @@ function initialFrameTheme({
         friendlisthoverBackgroundColor: 'gray'
     },
     isopentransition = false,
-    
-    loadFriendsList =/**@param {BuildFrame} chatframe*/ chatframe => { 
 
-    },
-    showChatWindow = (username, bubbleFrameEle) => {
-
-    },
+    // loadFriendsList =/**@param {BuildFrame} chatframe*/ chatframe => chatframe.initializaingfriendlist(),
+    showChatWindow = peername => frame.showFrame(peername),
     waitDivshow = {
         isShow: true,
-        begin: () => { document.getElementsByClassName('move')[0].style.display = 'block' },
-        end: () => { document.getElementsByClassName('move')[0].style.display = 'none' }
+        begin: () => { document.querySelector('.move').style.display = 'block' },
+        end: () => { document.querySelector('.move').style.display = 'none' }
     }
 } = {}) {
     let styleEle = document.createElement("style");
@@ -197,58 +193,63 @@ function initialFrameTheme({
                 color:${friendlisthover.friendlisthoverColor};
                 background-color: ${friendlisthover.friendlisthoverBackgroundColor};
             }`;
-    let lists = document.getElementsByClassName(listsClassName);
-    frame.friendlistEle = lists;
-    loadFriendsList(frame);
-    if (lists.length > 0) {
-        for (let i = 0; i < lists.length; i++) {
-            lists[i].onclick = function () {
-                if (friendFocus != undefined) {
-                    friendFocus.setAttribute('style', `background-color:none;`);
-                }
-                this.setAttribute('style',
-                    `background-color:${focusfriend.focusBackground};color:${focusfriend.focusColor}`
-                );
-                if (waitDivshow.isShow) {
-                    waitDivshow.begin();
-                }
-                debugger
-                if (isopentransition) {
+    frame.friendlistEle = listsFrame;
+    // loadFriendsList(frame);
+    let lists = listsFrame.children;
+    frame.setonclickanimotion = () => {
 
-                    if (chatDataWindow.style.right == '0px') {
-                        chatDataWindow.setAttribute('style', 'right:150%;');
-                        setTimeout(() => {
+        if (lists.length > 0) {
+            for (let i = 0; i < lists.length; i++) {
+                lists[i].onclick = function () {
+                    console.log('test')
+                    if (friendFocus != undefined) {
+                        friendFocus.setAttribute('style', `background-color:none;`);
+                    }
+                    this.setAttribute('style',
+                        `background-color:${focusfriend.focusBackground};color:${focusfriend.focusColor}`
+                    );
+                    if (waitDivshow.isShow) {
+                        waitDivshow.begin();
+                    }
+                    debugger
+                    if (isopentransition) {
+
+                        if (chatDataWindow.style.right == '0px') {
+                            chatDataWindow.setAttribute('style', 'right:150%;');
+                            setTimeout(() => {
+                                showChatWindow(this.innerText);
+                                chatDataWindow.setAttribute('style', 'right:0px');
+                            }, 300)
+                        } else {
                             showChatWindow(this.innerText);
                             chatDataWindow.setAttribute('style', 'right:0px');
-                        }, 300)
+                        }
                     } else {
+                        if (chatDataWindow.style.right != '0px') {
+                            chatDataWindow.setAttribute('style', 'right:0px');
+                        }
                         showChatWindow(this.innerText);
-                        chatDataWindow.setAttribute('style', 'right:0px');
                     }
-                } else {
-                    if (chatDataWindow.style.right != '0px') {
-                        chatDataWindow.setAttribute('style', 'right:0px');
+                    if (waitDivshow.isShow) {
+                        waitDivshow.end();
                     }
-                    showChatWindow(this.innerText);
+                    friendFocus = this;
                 }
-                if (waitDivshow.isShow) {
-                    waitDivshow.end();
-                }
-                friendFocus = this;
             }
+        } else {
+            // no friend to talk to
         }
-    } else {
-        // no friend to talk to
-    }
 
-    contextMenu();
+        contextMenu();
+
+    }
 };
 initialFrameTheme({
-    showChatWindow: (user, ele) => {
-        //  document.getElementsByClassName('chat-data')[0].scrolltoRelativePosition(document.getElementsByClassName('peer-speak')[1])
+    // showChatWindow: (user, ele) => {
+    //     //  document.getElementsByClassName('chat-data')[0].scrolltoRelativePosition(document.getElementsByClassName('peer-speak')[1])
 
-    }
-    ,
+    // }
+    // ,
 });
 
 HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {

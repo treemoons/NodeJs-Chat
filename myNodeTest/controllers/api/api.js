@@ -112,7 +112,8 @@ export default {
     /**加载所有的聊天记录，截止到未读或今天凌晨 */
     'loaddata':
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
-        http => {
+        async http => {
+            let count = 0;
             // if (isLogined()) {
             sqlite3.serialize(() => {
                 let username = 'treemoons' //await getloginedUser(http); // 获取登录过后的用户名，使用base64加密，加密次数为encodingTimes；
@@ -125,17 +126,18 @@ export default {
                     [username, username],
                     (err, /** @type {{peername:string}[]}*/
                         peers) => {
-                        peers.forEach((peer, i, peersArray) => {
+                        for(let i=0 ;i < peers.length; i++){
+                            
                             /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}} */
                             let chatsigledata = {};
                             sqlite3.all(`SELECT username,peername,content,date,isread FROM CHATDATA WHERE (DATE>= 
                                         (SELECT DATE FROM CHATDATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1) OR DATE>=${getTodayDawn().formatDate('yyyyMMdd.HHmmss')}) 
                                          AND ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))  ORDER BY DATE ASC`,
-                                [username, peer.peername, peer.peername, username, username, peer.peername, peer.peername, username],
+                                [username, peers[i].peername, peers[i].peername, username, username, peers[i].peername, peers[i].peername, username],
                                 (err, /** @type {{username:string,peername:string,content:string,date:string,isread:Number}[]}*/
                                     rows) => {
                                     sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
-                                        peer.peername,
+                                        peers[i].peername,
                                         (err, /**@type {{userpic:string}} */ row) => {
                                             if (err == undefined || err == null())
                                                 if (row != undefined) {
@@ -144,7 +146,7 @@ export default {
                                                     chatsigledata.peerpic = '';
                                             //set rows by format of chatsigledata[]
 
-                                            chatsigledata.peername = peer.peername;
+                                            chatsigledata.peername = peers[i].peername;
                                             chatsigledata.chatdata = [];
                                             rows.forEach(sigle => {
                                                 /**@type {{iscurrentuser:string,content:string,date:string,isread:number}} */
@@ -156,13 +158,15 @@ export default {
                                                 }
                                                 chatsigledata.chatdata.push(chatsigle);
                                             });
+                                            count++;
                                             console.log(chatsigledata)
                                             // if (err == null) {
                                             // chatsigledata.lastSpeak = chatsigledata.chatdata[chatsigledata.chatdata.length - 1];
 
                                             chatdatarray.push(chatsigledata);
-                                            if (i == peersArray.length - 1) {
-                                                console.log("最后的i的值："+ i)
+                                            if (count === peers.length) {
+                                                console.log("最后的i的值：" + count)
+                                                console.log('--------------------------------------------------------------------------------------')
                                                 http.response.writeHead(200, {
                                                     'Content-Type': 'text/plian;charset=utf-8',
                                                     'Access-Control-Allow-Origin': '*'
@@ -173,7 +177,7 @@ export default {
                                     );
                                 })
 
-                        });
+                        };
                     })
             });
         }
