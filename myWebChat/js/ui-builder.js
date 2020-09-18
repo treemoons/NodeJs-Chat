@@ -1,7 +1,14 @@
 
 import BuildFrame from './chat-frame.js';
-/**要操作的目标元素@type {HTMLElement}*/
+/**要操作的目标元素
+ * @type {HTMLElement}*/
 var aimOfContextMenu;
+/**@type {BuildFrame} */
+let frame = new BuildFrame('username', 'pic', document.getElementsByClassName('chat-data')[0]);
+/**@type {HTMLElement}*/
+var friendFocus;
+window.frame = frame;
+
 /**
  * 调用context-menu显示在指定元素上
  * @param {{contextMenuClassName:string, 
@@ -111,10 +118,6 @@ function contextMenu({
     }
 };
 
-let frame = new BuildFrame('username', '', document.getElementsByClassName('chat-data')[0])
-/**@type {HTMLElement}*/
-var friendFocus;
-
 function initialFrameTheme({
     chat = document.getElementsByClassName('chat')[0],
     listsClassName = 'friends-list',
@@ -140,7 +143,10 @@ function initialFrameTheme({
         friendlisthoverBackgroundColor: 'gray'
     },
     isopentransition = false,
-    loadFriendsList = () => { },
+    
+    loadFriendsList =/**@param {BuildFrame} chatframe*/ chatframe => { 
+
+    },
     showChatWindow = (username, bubbleFrameEle) => {
 
     },
@@ -191,8 +197,9 @@ function initialFrameTheme({
                 color:${friendlisthover.friendlisthoverColor};
                 background-color: ${friendlisthover.friendlisthoverBackgroundColor};
             }`;
-    loadFriendsList();
     let lists = document.getElementsByClassName(listsClassName);
+    frame.friendlistEle = lists;
+    loadFriendsList(frame);
     if (lists.length > 0) {
         for (let i = 0; i < lists.length; i++) {
             lists[i].onclick = function () {
@@ -211,18 +218,18 @@ function initialFrameTheme({
                     if (chatDataWindow.style.right == '0px') {
                         chatDataWindow.setAttribute('style', 'right:150%;');
                         setTimeout(() => {
-                            showChatWindow(this.innerText, chatDataWindow.children[0]);
+                            showChatWindow(this.innerText);
                             chatDataWindow.setAttribute('style', 'right:0px');
                         }, 300)
                     } else {
-                        showChatWindow(this.innerText, chatDataWindow.children[0]);
+                        showChatWindow(this.innerText);
                         chatDataWindow.setAttribute('style', 'right:0px');
                     }
                 } else {
                     if (chatDataWindow.style.right != '0px') {
                         chatDataWindow.setAttribute('style', 'right:0px');
                     }
-                    showChatWindow(this.innerText, chatDataWindow.children[0]);
+                    showChatWindow(this.innerText);
                 }
                 if (waitDivshow.isShow) {
                     waitDivshow.end();

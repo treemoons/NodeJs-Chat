@@ -222,20 +222,23 @@ export default class BuildBubblesFrame {
 
     /**
      * 前提是已经登陆用户名
+     * @param {string} user 
+     * @param {string} pic 
      * @param {HTMLElement} parentEle 
+     * @param {HTMLElement} listEle 
      */
-
-    constructor(user, pic, parentEle) {
-        user = this.username;
-        pic = this.userpic;
+    constructor(user, pic, parentEle, listEle = undefined) {
+        this.username = user;
+        this.userpic = pic;
         this.sigleChat = parentEle;
+        this.friendlistEle = listEle
         this.initializaingData();
     }
     /**登录用户名 */
     username = '';
     /**登录头像 */
     userpic = '';
-
+    friendlistEle;
     sigleBubbleFrame;
     /**所有聊天记录,chatDataSigleList[]转换
      * @type {{name:ChatDataSigleList}} bubblesFrame s*/
@@ -261,6 +264,7 @@ export default class BuildBubblesFrame {
             let datespan = 30;
             let dateTemp = 0;
             let datetip = '';
+
             function isShowDate(date) {
                 if (v.date - dateTemp > datespan) {
                     datetip = date;
@@ -368,7 +372,7 @@ export default class BuildBubblesFrame {
     }
 
     initializaingfriendlist = () => {
-        
+
     }
     /**
      * 主动发送消息给对方
@@ -393,7 +397,9 @@ export default class BuildBubblesFrame {
             let chatdata = {
                 applyuser: 'username',
                 sentdata: {
-                    peername: name, content: data, date: new Date().formatDate('yyyyMMdd.HHmmss')
+                    peername: name,
+                    content: data,
+                    date: new Date().formatDate('yyyyMMdd.HHmmss')
                 }
             };
             //经过一系列处理存到服务器
@@ -416,7 +422,7 @@ export default class BuildBubblesFrame {
                     resend.className = 'resend';
                 }
             })
-        } catch { }
+        } catch {}
     }
 
 }
@@ -430,15 +436,16 @@ class Interactive {
 
 let a = {
     a: "ee",
-    bb: { sha: "sha" }
+    bb: {
+        sha: "sha"
+    }
 }
 class b {
     constructor() {
 
     }
     a = 'ee'
-}
-!function (p, aa) {
+}! function (p, aa) {
     console.log(p.a)
     console.log(aa.a)
 }(new b(), a);
