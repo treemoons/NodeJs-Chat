@@ -177,7 +177,7 @@ class ChatDataSigleList {
     /**@type {number} */
     unreadCount;
 }
-/*@deprecated */
+/**@deprecated */
 let objectTest = {
 
     /** @deprecated  */
@@ -299,7 +299,6 @@ export default class BuildBubblesFrame {
                                 <img src="${pic}"
                                     width="30" height="30" alt="${name}">
                                 <div class="user-chat-bubble">${v.content}</div>
-                                <div class="resend">重发</div>
                             </div>`;
                 }
             })
@@ -405,8 +404,8 @@ export default class BuildBubblesFrame {
             this.sigleChat.innerHTML += `<div class="user-speak">
                                 <div class="sending"></div>
                                 <div class="user-chat-bubble">${data}</div>
-                                <img src="${loginUser.userpic}"
-                                    width="30" alt="${loginUser.userpic}">
+                                <img src="${this.userpic}"
+                                    width="30" alt="${this.username}">
                             </div>`;
             let resend = this.sigleChat.children[0].children[0];
             let chatdata = {
@@ -442,14 +441,8 @@ export default class BuildBubblesFrame {
 
 }
 
-var loginUser;
-class Interactive {
-    static submitChat;
-    static toolEmojiShow;
-    static toolImgSelect;
-}
 /**
- * 
+ *  serial the last chat to top one
  * @param {ChatDataSigleList[]} array 
  */
 function loadserial(array) {

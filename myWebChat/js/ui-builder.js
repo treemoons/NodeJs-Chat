@@ -201,7 +201,8 @@ function initialFrameTheme({
         if (lists.length > 0) {
             for (let i = 0; i < lists.length; i++) {
                 lists[i].onclick = function () {
-                    console.log('test')
+                    let title = document.getElementById('titlename');
+                    title.innerText=this.innerText
                     if (friendFocus != undefined) {
                         friendFocus.setAttribute('style', `background-color:none;`);
                     }
@@ -245,6 +246,7 @@ function initialFrameTheme({
     }
 };
 initialFrameTheme({
+    isopentransition:true
     // showChatWindow: (user, ele) => {
     //     //  document.getElementsByClassName('chat-data')[0].scrolltoRelativePosition(document.getElementsByClassName('peer-speak')[1])
 
