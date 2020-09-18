@@ -70,7 +70,7 @@ let sigleChat= {
 ---
 ># **Electron**
 
-- Build for chat ,in order to test easier. 
+- Build for chatting ,in order to test easier. 
 
 - Thus eletron 
  

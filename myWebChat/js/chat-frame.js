@@ -326,7 +326,7 @@ export default class BuildBubblesFrame {
      * 主要查看历史消息
      * @param {number} pieces 查询条目个数
      */
-    backChatHistory(pieces, name) {
+    backChatHistory(name, pieces) {
         //ajax to server get
         //suppose got it into variable history
 

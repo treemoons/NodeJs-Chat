@@ -264,7 +264,7 @@ HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
  * tipDealingClass:string
  * }} /action格式:e=>{}
  */
-HTMLElement.prototype.ScrollToTheTopUp = function ({ action = e => { }, tipText = '更多', tipDealingText = '', tipClass, tipDealingClass = tipClass }) {
+HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (tip,e) => { }, tipText = '更多', tipDealingText = '', tipClass, tipDealingClass = tipClass }) {
     this.onmousewheel =
         /**
         @param {WheelEvent} e*/
@@ -275,8 +275,7 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = e => { }, tipText 
                     if (tip.innerText != tipDealingText) {
                         tip.innerText = tipDealingText;
                         tip.className = tipDealingClass;
-                        action(e);
-                        tip.remove();
+                        action(tip,e);
                     }
                 } else {
                     let tip = document.createElement('p');
@@ -288,12 +287,13 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = e => { }, tipText 
             }
         }
 }
-document.getElementsByClassName('chat-data')[0].ScrollToTheTopUp({
+document.querySelector('.chat-data-frame>.chat-data').ScrollToTheTopUp({
     /**@param {WheelEvent} e */
-    action: e => {
-        debugger
-        test();
+    action: (e,tip) => {
+        frame.backChatHistory(document.getElementById('titlename').innerText,10)
         document.getElementById('text').innerText = e.offsetY;
+
+        tip.remove();
     }
 })
 
