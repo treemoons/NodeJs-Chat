@@ -324,19 +324,27 @@ export default class BuildBubblesFrame {
 
     /**
      * 主要查看历史消息
+     * @param {string} name
      * @param {number} pieces 查询条目个数
      */
     backChatHistory(name, pieces) {
         //ajax to server get
         //suppose got it into variable history
+        getAjaxData({
+            url: 'http://localhost:8888/api/gethistory',
+            data: { peername: name, count: pieces },
+            success: d => {
 
-        /**
-         * @type {ChatDataSigleList} 
-         */
-        let history;
-        for (let i = history.chatdata.length - 1; i >= 0; i--) {
-            this.bubblesFrame[name].getHistoryChat(history.chatv);
-        }
+                /**
+                 * @type {ChatDataSigleList} 
+                 */
+                let history;
+                for (let i = history.chatdata.length - 1; i >= 0; i--) {
+                    this.bubblesFrame[name].getHistoryChat(history.chatdata);
+                }
+
+            }
+        })
 
     }
 
@@ -345,26 +353,10 @@ export default class BuildBubblesFrame {
      */
     initializaingData = () => {
         getAjaxData({
-            url: 'http://localhost:8888//api/loaddata',
+            url: 'http://localhost:8888/api/loaddata',
             // data: '...',
             success: d => {
-                /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[]}[]} */
-                let data = JSON.parse(d)
-                // 获取并转化为chatsiglelist[];
-                let recChatDataLists = data;
-                debugger
-                recChatDataLists.forEach((value, i, Lists) => {
-                    this.chatDataLists[i] = new ChatDataSigleList(value.peername, value.peerpic, value.chatdata)
-                    let lastSpeak = value.chatdata[value.chatdata.length - 1];
-                    this.chatDataLists[i].lastSpeak = lastSpeak;
-                    this.chatDataLists[i].isMeSpeakNow = lastSpeak.iscurrentuser;
-                    let unreadcount = 0;
-                    value.chatdata.forEach(v => {
-                        if (v.isread = 0)
-                            unreadcount++;
-                    });
-                    this.chatDataLists[i].unreadCount = unreadcount;
-                });
+                this.translatedataFormat(d);
                 loadserial(this.chatDataLists);
                 this.updateFrame(this.chatDataLists);
                 this.initializaingfriendlist();
@@ -376,6 +368,29 @@ export default class BuildBubblesFrame {
             }
         })
     }
+    translatedataFormat = (d) => {
+        /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[]}[]} */
+        let data = JSON.parse(d)
+        // 获取并转化为chatsiglelist[];
+        let recChatDataLists = data;
+        debugger
+        recChatDataLists.forEach((value, i, Lists) => {
+            this.translatesigledataFormat(i);
+        });
+    }
+    translatesigledataFormat = i => {
+        this.chatDataLists[i] = new ChatDataSigleList(value.peername, value.peerpic, value.chatdata)
+        let lastSpeak = value.chatdata[value.chatdata.length - 1];
+        this.chatDataLists[i].lastSpeak = lastSpeak;
+        this.chatDataLists[i].isMeSpeakNow = lastSpeak.iscurrentuser;
+        let unreadcount = 0;
+        value.chatdata.forEach(v => {
+            if (v.isread = 0)
+                unreadcount++;
+        });
+        this.chatDataLists[i].unreadCount = unreadcount;
+    }
+
     setonclickanimotion;
     /**初始化好友列表 */
     initializaingfriendlist = () => {
@@ -452,7 +467,7 @@ function loadserial(array) {
     //遍历赋值
     for (let i = 0; i < array.length; i++) {
         arr.push({
-            key: array[i].chatdata[array[i].chatdata.length-1].date,
+            key: array[i].chatdata[array[i].chatdata.length - 1].date,
             val: array[i]
         })
     }
@@ -470,7 +485,7 @@ function loadserial(array) {
             }
         }
     }
-    for(let i=0 ;i < arr.length; i++){
+    for (let i = 0; i < arr.length; i++) {
         array[i] = arr[i].val;
     }
 }

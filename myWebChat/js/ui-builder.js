@@ -202,7 +202,7 @@ function initialFrameTheme({
             for (let i = 0; i < lists.length; i++) {
                 lists[i].onclick = function () {
                     let title = document.getElementById('titlename');
-                    title.innerText=this.innerText
+                    title.innerText = this.innerText
                     if (friendFocus != undefined) {
                         friendFocus.setAttribute('style', `background-color:none;`);
                     }
@@ -246,7 +246,7 @@ function initialFrameTheme({
     }
 };
 initialFrameTheme({
-    isopentransition:true
+    isopentransition: true
     // showChatWindow: (user, ele) => {
     //     //  document.getElementsByClassName('chat-data')[0].scrolltoRelativePosition(document.getElementsByClassName('peer-speak')[1])
 
@@ -264,7 +264,7 @@ HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
  * tipDealingClass:string
  * }} /action格式:e=>{}
  */
-HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (tip,e) => { }, tipText = '更多', tipDealingText = '', tipClass, tipDealingClass = tipClass }) {
+HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (tip, e) => { tip.remove(); }, tipText = '更多', tipDealingText = '', tipClass, tipDealingClass = tipClass }) {
     this.onmousewheel =
         /**
         @param {WheelEvent} e*/
@@ -275,8 +275,11 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (tip,e) => { }, ti
                     if (tip.innerText != tipDealingText) {
                         tip.innerText = tipDealingText;
                         tip.className = tipDealingClass;
-                        action(tip,e);
+                        tip.setAttribute('wait', 'wait')
+                        action(tip, e);
                     }
+                } else if (this.children[0].getAttribute('wait')) {
+                    return;
                 } else {
                     let tip = document.createElement('p');
                     tip.setAttribute('role', 'tip')
@@ -289,8 +292,8 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (tip,e) => { }, ti
 }
 document.querySelector('.chat-data-frame>.chat-data').ScrollToTheTopUp({
     /**@param {WheelEvent} e */
-    action: (e,tip) => {
-        frame.backChatHistory(document.getElementById('titlename').innerText,10)
+    action: (e, tip) => {
+        frame.backChatHistory(document.getElementById('titlename').innerText, 10)
         document.getElementById('text').innerText = e.offsetY;
 
         tip.remove();
