@@ -1,11 +1,11 @@
 ﻿# MY NODEJS TEST 
 > # **myWebChat** 
-## this is client window for chat with others.
+## This is client window for chatting with others.
 -  adds below:
  ```html
  <object data="./NodeJs-Chat/myWebChat/chat.html" type="text/html"></object>
  ```
-- than you can just use the function to change the color of theme or other UI settings
+- Than you can just use the function to change the color of theme or other UI settings
 ```js
 initialFrameTheme({
     chat : document.getElementsByClassName('chat')[0], //object element
@@ -48,9 +48,9 @@ initialFrameTheme({
 
 - just  `node ${workspaceFolder}/myNodeTest/start.js`. replace `${workspaceFolder}` with your absolute path
 
-- all route in the directory named controllers
+- All route in the directory named controllers
 
-- file `"./myNodeTest/data.db"` is sqlite3 for test
+- File `"./myNodeTest/data.db"` is sqlite3 for test
  
  `package.json` in order to use ES6,written
 `{"type":"module"}`
@@ -70,9 +70,9 @@ let sigleChat= {
 ---
 ># **Electron**
 
-- build for chat ,in order to test easier. 
+- Build for chat ,in order to test easier. 
 
-- thus eletron 
+- Thus eletron 
  
 ***dependencise*** in `"${wordspaceFolder}/package.json"`
 ```json
