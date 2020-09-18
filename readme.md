@@ -5,11 +5,11 @@
  ```html
  <object data="./NodeJs-Chat/myWebChat/chat.html" type="text/html"></object>
  ```
-- than you can just use the function 
+- than you can just use the function to change the color of theme or other UI settings
 ```js
 initialFrameTheme({
     chat : document.getElementsByClassName('chat')[0], //object element
-    lists : document.getElementsByClassName('friends-list'),// friends list element
+    listsClassName : 'friends-list',// friends list element
     chatDataWindow : document.getElementsByClassName('chat-data-frame')[0], //window of chat 
     focusfriend : { //setting forcolor or backgroudcolor chat to one ,who is the friend in friends list
         focusBackground: 'plum',
@@ -27,6 +27,10 @@ initialFrameTheme({
         friendlistBackgroundColor: 'white',
         friendlistColor: 'black'
     },
+    friendlisthover = {
+        friendlisthoverColor: 'white',
+        friendlisthoverBackgroundColor: 'gray'
+    },
     isopentransition : false,// animotion of transistion 
     loadFriendsList : () => { }, //load all data of your friends
     showChatWindow : (username, bubbleFrameEle) => { // prepare to load your friend-data to the window
@@ -42,11 +46,11 @@ initialFrameTheme({
 > # **NodeJs** 
 -  Use grammar ES6 at latest,node version -v14.8
 
-- just  `node ${workspaceFolder}/myNodeTest/start.js`
+- just  `node ${workspaceFolder}/myNodeTest/start.js`. replace `${workspaceFolder}` with your absolute path
 
 - all route in the directory named controllers
 
-- file `"./myNodeTest/data"` is sqlite3 for test
+- file `"./myNodeTest/data.db"` is sqlite3 for test
  
  `package.json` in order to use ES6,written
 `{"type":"module"}`
@@ -73,11 +77,8 @@ let sigleChat= {
 ***dependencise*** in `"${wordspaceFolder}/package.json"`
 ```json
 "dependencies": {
-    "atob": "^2.1.2",
-    "btoa": "^1.2.1",
     "electron": "^10.1.1",
     "node": "^14.8.0",
-    "sqlite3": "^5.0.0",
-    "typescript": "^4.0.2"
+    "sqlite3": "^5.0.0"
   }
 ```
