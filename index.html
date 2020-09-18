@@ -34,20 +34,22 @@
 
     <body>
         <p>
-            <script defer type="module" src="./test.js"></script>
+            <script defer type="module" src="./test/chat-frame.js"></script>
         <p class="pp"></p>
         <button onclick="c()">测试</button>
         <script>
             function c() {
                 console.log('%c go to a', 'color:red;background-color:yellow')
                 // const a = ''.a
-                test();
+                test(s);
                  try{ a();}catch{console.log('a -------------err')}
                 // aatest();
                 console.log(new Date().formatDate('yyyy.dd'))
+                console.log(s.ss)
             }
+        window
         </script>
-        <script async type="module">
+        <!-- <script async type="module">
             // let p = document.getElementsByClassName('pp')[0];
             // p.id = 'p';
             // p.innerHTML="sssss"
@@ -63,7 +65,7 @@
 
             window.test=test;
             // window.a=a;
-        </script>
+        </script> -->
         <!-- <object data="./myWebChat/chat.html" type="text/html"></object> -->
         <h1>Hello World!</h1>
         We are using node

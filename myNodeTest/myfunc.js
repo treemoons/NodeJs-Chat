@@ -15,6 +15,7 @@ export async function getQueryString(name, purposeString, splitMark) {
         return undefined;
     }
 }
+
 export async function getAllQueryString(purposeString, splitMark) {
     let reg = RegExp(`${name}=([^${splitMark}]+)`);
     return purposeString.match(reg);

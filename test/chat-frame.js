@@ -1,4 +1,13 @@
-export default function test() {
+
+class tttest{
+    constructor(s) {
+        this.ss=s
+    }
+    ss ;
+}
+const s = new tttest('sssss');
+top.s = s;
+function test() {
     let p = document.getElementsByClassName('pp')[0];
     // const a = Window.test
     p.id = 'p';
@@ -8,8 +17,9 @@ export default function test() {
     // let p = document.getElementsByClassName('pp')[0];
     // p.id = 'p';
     // p.innerHTML = 'sssss'
+   s .ss='dfghjkl;lkjhgfd';
 }
-
+top.test = test;
 /**
  * @param {string} fmt 
  */
