@@ -42,6 +42,7 @@
                 console.log('%c go to a', 'color:red;background-color:yellow')
                 // const a = ''.a
                 test(s);
+                
                  try{ a();}catch{console.log('a -------------err')}
                 // aatest();
                 console.log(new Date().formatDate('yyyy.dd'))
@@ -82,6 +83,83 @@
         // console.log(screen.height)
         </script>
         <!-- <a href="./test.html"> ss</a> -->
+
+
+
+
+        根据数值大小排列div
+        
+        <title>Document</title>
+        <style>
+            div {
+                height: 200px;
+                width: 200px;
+            }
+        
+            .d1 {
+                background-color: red;
+            }
+        
+            .d2 {
+                background-color: green;
+            }
+        
+            .d3 {
+                background-color: pink;
+        
+            }
+        
+            .d4 {
+                background-color: blue;
+            }
+        </style>
+            <section>
+                <div class="d1"><input type="text"></div>
+                <div class="d2"><input type="text"></div>
+                <div class="d3"><input type="text"></div>
+                <div class="d4"><input type="text"></div>
+            </section>
+            <form action="" name="f">
+                <input type="text" name="serial" id="">
+                <input type="button" name="b" value="排序">
+            </form>
+            <script>
+                var divs = document.getElementsByTagName("section")[0].children;//获取所有元素
+                //为按钮添加点击事件
+                f.b.onclick = () => {
+                    // debugger;
+                    var arr = [];//定义一个数组对象
+                    //遍历赋值
+                    for (let i = 0; i < divs.length; i++) {
+                        var keys = parseInt(divs[i].firstChild.value);
+                        arr.push({
+                            key: keys,
+                            val: document.getElementsByTagName("section")[0].children[i]
+                        })
+                    }
+                    //排序对象
+                    serial(arr);
+                    //重新显示
+                    for (let i = 0; i < divs.length; i++) {
+                        document.getElementsByTagName("section")[0].children[0].
+                            before(arr[i].val)//将元素移至第一位
+                    }
+                    //冒泡排序方法排列数组对象
+                    function serial(arrs) {
+                        for (let j = 0; j < arr.length - 1; j++) {
+                            debugger;
+                            for (let k = 0; k < arr.length - j - 1; k++) {
+                                var temp = arrs[k];
+                                if (arrs[k].key > arrs[k + 1].key) {//比较相邻的值，>为从小到大，<从大到小；
+                                    arrs[k] = arrs[k + 1];
+                                    arrs[k + 1] = temp;
+                                }
+                            }
+                        }
+                    }
+                }
+            </script>
+        </body>
     </body>
 
 </html>
