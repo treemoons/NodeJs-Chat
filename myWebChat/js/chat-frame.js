@@ -149,7 +149,6 @@ class ChatDataSigleList {
     getHistoryChat = (peer) => {
         let data = this.chatdata;
         data.unshift(peer);
-        this.lastSpeak = data[data.length - 1];
     }
 
     /** 好友用户名 
@@ -261,53 +260,63 @@ export default class BuildBubblesFrame {
              * @type {ChatDataSigleList}
              */
             let frame = this.bubblesFrame[peername];
-            let data = frame.chatdata;
-            let datespan = 30;
-            let todaydawn = getTodayDawn().formatDate('yyyyMMdd.HHmmss');
-            let dateTemp = todaydawn - 1;
-            /**用于比较时间差来提示消息记录 */
-            let timetip = '';
+            if (frame) {
+                let data = frame.chatdata;
+                let datespan = 30;
+                let todaydawn = getTodayDawn().formatDate('yyyyMMdd.HHmmss');
+                let dateTemp = todaydawn - 1;
+                /**用于比较时间差来提示消息记录 */
+                let timetip = '';
 
-            function isShowDate(nowdate, datetip) {
-                if (nowdate - dateTemp > datespan) {
-                    timetip = datetip;
+                function isShowDate(nowdate, datetip) {
+                    if (nowdate - dateTemp > datespan) {
+                        timetip = datetip;
+                    }
                 }
+                data.forEach(v => {
+                    let name = v.iscurrentuser ? this.username : peername;
+                    let pic = v.iscurrentuser ? this.userpic : frame.peerpic;
+                    let date = formatBackDate(v.date)
+                    if (todaydawn > v.date && todaydawn - 1 < v.date) {
+                        //昨天
+                        isShowDate(v.date, date.formatDate('昨天 HH:mm:ss'))
+                    } else if (todaydawn < v.date) {
+                        isShowDate(v.date, date.formatDate('HH:mm:ss'))
+                        //今天
+                    } else {
+                        //历史
+                        isShowDate(v.date, date.formatDate('yyyy年MM月dd日 HH:mm:ss'))
+                    }
+                    dateTemp = v.date;
+                    this.addpieceschat(v,name,pic)
+                });
+
             }
-            data.forEach(v => {
-                let name = v.iscurrentuser ? this.username : peername;
-                let pic = v.iscurrentuser ? this.userpic : frame.peerpic;
-                let date = formatBackDate(v.date)
-                if (todaydawn > v.date && todaydawn - 1 < v.date) {
-                    //昨天
-                    isShowDate(v.date, date.formatDate('昨天 HH:mm:ss'))
-                } else if (todaydawn < v.date) {
-                    isShowDate(v.date, date.formatDate('HH:mm:ss'))
-                    //今天
-                } else {
-                    //历史
-                    isShowDate(v.date, date.formatDate('yyyy年MM月dd日 HH:mm:ss'))
-                }
-                dateTemp = v.date;
-                if (v.iscurrentuser) {
-                    this.sigleChat.innerHTML += `<div class="user-speak">
-                                <div class="user-chat-bubble">${v.content}</div>
-                                <img src="${pic}"
-                                    width="30" height="30" alt="${name}">
-                            </div>`;
-                } else {
-                    this.sigleChat.innerHTML += `<div class="peer-speak">
-                                <img src="${pic}"
-                                    width="30" height="30" alt="${name}">
-                                <div class="user-chat-bubble">${v.content}</div>
-                            </div>`;
-                }
-            })
-
         } catch (e) {
             console.log(e);
         }
     }
 
+    addpieceschat = (piecesdata, name,pic,asc = true) => {
+        let piecesChat = document.createElement('div');
+        if (piecesdata.iscurrentuser) {
+            piecesChat.className = 'user-speak';
+            piecesChat.innerHTML += `
+                                <div class="user-chat-bubble">${piecesdata.content}</div>
+                                <img src="${pic}"
+                                    width="30" height="30" alt="${name}">`;
+        } else {
+            piecesChat.className = 'peer-speak'
+            piecesChat.innerHTML += `
+                                <img src="${pic}"
+                                    width="30" height="30" alt="${name}">
+                                <div class="user-chat-bubble">${piecesdata.content}</div>`;
+        }
+        if (asc)
+            this.sigleChat?.appendChild(piecesChat);
+        else
+            this.sigleChat?.prepend(piecesChat);
+    }
 
     /**
      *  更新指定条目数加载到对象数据(主要是更新新消息)
@@ -332,15 +341,19 @@ export default class BuildBubblesFrame {
         //suppose got it into variable history
         getAjaxData({
             url: 'http://localhost:8888/api/gethistory',
-            data: { peername: name, count: pieces },
+            data: JSON.stringify({ peername: name, requestcount: pieces, ignorecount: this.bubblesFrame[name].chatdata.length }),
             success: d => {
-
-                /**
-                 * @type {ChatDataSigleList} 
-                 */
-                let history;
-                for (let i = history.chatdata.length - 1; i >= 0; i--) {
-                    this.bubblesFrame[name].getHistoryChat(history.chatdata);
+                if (d) {
+                    /**
+                     * @type {{iscurrentuser:string,content:string,date:string,isread:number}[]}}
+                     */
+                    let history = JSON.parse(d).data;
+                    /**@type {ChatDataSigleList} */
+                    let peerdata = this.bubblesFrame[name];
+                    for (let i = history.chatdata.length - 1; i >= 0; i--) {
+                        peerdata.getHistoryChat(history[i]);
+                        this.addpieceschat(history[i],name,peerdata.peerpic, false);
+                    }
                 }
 
             }
@@ -356,39 +369,40 @@ export default class BuildBubblesFrame {
             url: 'http://localhost:8888/api/loaddata',
             // data: '...',
             success: d => {
-                this.translatedataFormat(d);
-                loadserial(this.chatDataLists);
-                this.updateFrame(this.chatDataLists);
-                this.initializaingfriendlist();
-                this.setonclickanimotion();
-                // 调整提示气泡
+                if (d) {
+                    this.translatedataFormat(d);
+                    loadserial(this.chatDataLists);
+                    this.updateFrame(this.chatDataLists);
+                    this.initializaingfriendlist();
+                    this.setonclickanimotion();
+                    // 调整提示气泡
+                }
+                else {
+                    //没有任何消息记录和好友
+                }
             },
             failed: err => {
                 console.log(err)
             }
         })
     }
-    translatedataFormat = (d) => {
+    translatedataFormat = d => {
         /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[]}[]} */
         let data = JSON.parse(d)
-        // 获取并转化为chatsiglelist[];
+        // 获取并转化为chatsiglelist[]|chatsiglelist;
         let recChatDataLists = data;
-        debugger
         recChatDataLists.forEach((value, i, Lists) => {
-            this.translatesigledataFormat(i);
+            this.chatDataLists[i] = new ChatDataSigleList(value.peername, value.peerpic, value.chatdata)
+            let lastSpeak = value.chatdata[value.chatdata.length - 1];
+            this.chatDataLists[i].lastSpeak = lastSpeak;
+            this.chatDataLists[i].isMeSpeakNow = lastSpeak.iscurrentuser;
+            let unreadcount = 0;
+            value.chatdata.forEach(v => {
+                if (v.isread = 0)
+                    unreadcount++;
+            });
+            this.chatDataLists[i].unreadCount = unreadcount;
         });
-    }
-    translatesigledataFormat = i => {
-        this.chatDataLists[i] = new ChatDataSigleList(value.peername, value.peerpic, value.chatdata)
-        let lastSpeak = value.chatdata[value.chatdata.length - 1];
-        this.chatDataLists[i].lastSpeak = lastSpeak;
-        this.chatDataLists[i].isMeSpeakNow = lastSpeak.iscurrentuser;
-        let unreadcount = 0;
-        value.chatdata.forEach(v => {
-            if (v.isread = 0)
-                unreadcount++;
-        });
-        this.chatDataLists[i].unreadCount = unreadcount;
     }
 
     setonclickanimotion;
@@ -422,7 +436,7 @@ export default class BuildBubblesFrame {
                                 <img src="${this.userpic}"
                                     width="30" alt="${this.username}">
                             </div>`;
-            let resend = this.sigleChat.children[0].children[0];
+            let resend = this.sigleChat?.children[0].children[0];
             let chatdata = {
                 applyuser: 'username',
                 sentdata: {
@@ -442,7 +456,7 @@ export default class BuildBubblesFrame {
                         resend.innerHTML = '重发';
                         resend.className = 'resend';
                     } else {
-                        this.sigleChat.children[0].children[0].remove();
+                        this.sigleChat?.children[0]?.children[0]?.remove();
                     }
                 },
                 failed: err => {
@@ -453,7 +467,6 @@ export default class BuildBubblesFrame {
             })
         } catch { }
     }
-
 }
 
 /**
@@ -489,4 +502,3 @@ function loadserial(array) {
         array[i] = arr[i].val;
     }
 }
-

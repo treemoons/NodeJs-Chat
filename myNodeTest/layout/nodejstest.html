@@ -25,8 +25,15 @@
                     }
                 });
 
-            let test = () =>getAjaxData({url:'http://localhost:8888/api/loaddata',
+            let test = () =>getAjaxData({
+                url: 'http://localhost:8888/api/gethistory',
+                data: JSON.stringify({ peername: "name", requestcount: 0, ignorecount: 1 }),
+                
                 success:d=>{
+                    if(!d){
+                        console.log('null')
+                    }
+                    console.log(d)
                     document.getElementById('loaddata').innerText=d;
                     console.log(JSON.parse(d))
                     // document.write(d);

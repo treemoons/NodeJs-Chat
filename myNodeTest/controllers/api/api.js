@@ -16,9 +16,11 @@ const {
     Database
 } = sqlite3modlue;
 let sqlite3 = new Database('.\\data.db'); //node运行时，启动的文件夹的相对位置
-sqlite3.all(`SELECT content,date,isread FROM CHATDATA WHERE DATE>= (SELECT DATE FROM CHATDATA WHERE ? AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1) AND USERNAME=? AND PEERNAME=?  ORDER BY DATE ASC`,
-    [`USERNAME ='treemoons' AND PEERNAME='name'`, 'treemoons', 'name'], (err, row) => {
+sqlite3.all(`select username,peername,content,date,isread from chatdata 
+                where ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) ORDER BY DATE ASC LIMIT ?,?`,
+    ['treemoons', 'name', 'name', 'treemoons', 0, 1], (err, row) => {
         console.log(row)
+        console.log(err)
     })
 /**@type {number} */
 export let encodingTimes = 10;
@@ -30,7 +32,7 @@ export default {
             console.log("-------------------" + e)
         }
     },
-    'chatto':
+    chatto:
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         http => {
             http.request.on('data', async d => {
@@ -75,7 +77,7 @@ export default {
                 }
             });
         },
-    'login':
+    login:
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         async http => {
             http.request.on('data', /** @param {string} d */ d => {
@@ -114,72 +116,125 @@ export default {
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         async http => {
             let count = 0;
-            // if (isLogined()) {
-            sqlite3.serialize(() => {
-                let username = 'treemoons' //await getloginedUser(http); // 获取登录过后的用户名，使用base64加密，加密次数为encodingTimes；
-                /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}[]} */
-                let chatdatarray = [];
-                // sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
-                //     username, (err,/**@type {{date:string|Number,peerpic:string}} */ row) => {
-                //         if (err.isNullOrUndefined()) {
-                sqlite3.all(`SELECT distinct peername FROM(select peername as peername from CHATDATA where USERNAME=? union select username from chatdata  where peername=?) `,
-                    [username, username],
-                    (err, /** @type {{peername:string}[]}*/
-                        peers) => {
-                        for(let i=0 ;i < peers.length; i++){
-                            
-                            /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}} */
-                            let chatsigledata = {};
-                            sqlite3.all(`SELECT username,peername,content,date,isread FROM CHATDATA WHERE (DATE>= 
+
+            let username = 'treemoons' //await getloginedUser(http); // 获取登录过后的用户名，使用base64加密，加密次数为encodingTimes；
+            if (username) //{
+                sqlite3.serialize(() => {
+                    /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}[]} */
+                    let chatdatarray = [];
+                    // sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
+                    //     username, (err,/**@type {{date:string|Number,peerpic:string}} */ row) => {
+                    //         if (err.isNullOrUndefined()) {
+                    sqlite3.all(`SELECT distinct peername FROM(select peername as peername from CHATDATA where USERNAME=? union select username from chatdata  where peername=?) `,
+                        [username, username],
+                        (err, /** @type {{peername:string}[]}*/
+                            peers) => {
+                            if (peers.length > 0&&!err)
+                                peers.forEach(peer => {
+                                    /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}} */
+                                    let chatsigledata = {};
+                                    sqlite3.all(`SELECT username,peername,content,date,isread FROM CHATDATA WHERE (DATE>= 
                                         (SELECT DATE FROM CHATDATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1) OR DATE>=${getTodayDawn().formatDate('yyyyMMdd.HHmmss')}) 
                                          AND ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))  ORDER BY DATE ASC`,
-                                [username, peers[i].peername, peers[i].peername, username, username, peers[i].peername, peers[i].peername, username],
-                                (err, /** @type {{username:string,peername:string,content:string,date:string,isread:Number}[]}*/
-                                    rows) => {
-                                    sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
-                                        peers[i].peername,
-                                        (err, /**@type {{userpic:string}} */ row) => {
-                                            if (err == undefined || err == null())
-                                                if (row != undefined) {
-                                                    chatsigledata.peerpic = row.userpic;
-                                                } else
-                                                    chatsigledata.peerpic = '';
-                                            //set rows by format of chatsigledata[]
+                                        [username, peer.peername, peer.peername, username, username, peer.peername, peer.peername, username],
+                                        (err, /** @type {{username:string,peername:string,content:string,date:string,isread:Number}[]}*/
+                                            rows) => {
+                                            sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
+                                                peer.peername,
+                                                (err, /**@type {{userpic:string}} */ row) => {
+                                                    if (err == undefined || err == null())
+                                                        if (row != undefined) {
+                                                            chatsigledata.peerpic = row.userpic;
+                                                        } else
+                                                            chatsigledata.peerpic = '';
+                                                    //set rows by format of chatsigledata[]
 
-                                            chatsigledata.peername = peers[i].peername;
-                                            chatsigledata.chatdata = [];
-                                            rows.forEach(sigle => {
-                                                /**@type {{iscurrentuser:string,content:string,date:string,isread:number}} */
-                                                let chatsigle = {
-                                                    iscurrentuser: sigle.username == username,
-                                                    content: sigle.content,
-                                                    date: sigle.date,
-                                                    isread: sigle.isread
+                                                    chatsigledata.peername = peer.peername;
+                                                    chatsigledata.chatdata = [];
+                                                    rows.forEach(sigle => {
+                                                        /**@type {{iscurrentuser:string,content:string,date:string,isread:number}} */
+                                                        let chatsigle = {
+                                                            iscurrentuser: sigle.username == username,
+                                                            content: sigle.content,
+                                                            date: sigle.date,
+                                                            isread: sigle.isread
+                                                        }
+                                                        chatsigledata.chatdata.push(chatsigle);
+                                                    });
+                                                    count++;
+                                                    console.log(chatsigledata)
+                                                    // if (err == null) {
+                                                    // chatsigledata.lastSpeak = chatsigledata.chatdata[chatsigledata.chatdata.length - 1];
+
+                                                    chatdatarray.push(chatsigledata);
+                                                    if (count === peers.length) {
+                                                        console.log("最后的i的值：" + count)
+                                                        console.log('--------------------------------------------------------------------------------------')
+                                                        http.response.writeHead(200, {
+                                                            'Content-Type': 'text/plian;charset=utf-8',
+                                                            'Access-Control-Allow-Origin': '*'
+                                                        });
+                                                        http.response.end(JSON.stringify(chatdatarray, (k, v) => v, '    '))
+                                                    }
                                                 }
-                                                chatsigledata.chatdata.push(chatsigle);
-                                            });
-                                            count++;
-                                            console.log(chatsigledata)
-                                            // if (err == null) {
-                                            // chatsigledata.lastSpeak = chatsigledata.chatdata[chatsigledata.chatdata.length - 1];
+                                            );
+                                        })
 
-                                            chatdatarray.push(chatsigledata);
-                                            if (count === peers.length) {
-                                                console.log("最后的i的值：" + count)
-                                                console.log('--------------------------------------------------------------------------------------')
-                                                http.response.writeHead(200, {
-                                                    'Content-Type': 'text/plian;charset=utf-8',
-                                                    'Access-Control-Allow-Origin': '*'
-                                                });
-                                                http.response.end(JSON.stringify(chatdatarray, (k, v) => v, '    '))
-                                            }
+                                });
+                            else {
+                                http.response.writeHead(200, {
+                                    'Content-Type': 'text/plian;charset=utf-8',
+                                    'Access-Control-Allow-Origin': '*'
+                                });
+                                http.response.end()
+                            }
+                        })
+                });
+        },
+    gethistory:
+        /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
+        async http => {
+            http.request.on('data', d => {
+                /**@type {{ peername: string, ignorecount: number , requestcount: number}} */
+                let data = JSON.parse(d.toString());
+                console.log(data);
+                let username = 'treemoons' //await getloginedUser(http); // 获取登录过后的用户名，使用base64加密，加密次数为encodingTimes；
+                if (username)
+                    sqlite3.all(`select username,peername,content,date,isread from chatdata 
+                        where ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) ORDER BY DATE ASC LIMIT ?,?`,
+                        [username, data.peername, data.peername, username, data.ignorecount, data.requestcount],
+                        (err, rows) => {
+                                if (rows.length > 0 && !err) {
+                                    /**@type {{iscurrentuser:string,content:string,date:string,isread:number}[]} */
+                                    let datarows = [];
+                                    rows.forEach(sigle => {
+                                        /**@type {{iscurrentuser:string,content:string,date:string,isread:number}} */
+                                        let chatsigle = {
+                                            iscurrentuser: sigle.username == username,
+                                            content: sigle.content,
+                                            date: sigle.date,
+                                            isread: sigle.isread
                                         }
-                                    );
-                                })
+                                        datarows.push(chatsigle);
+                                    });
+                                    console.log('--------------------------------------------------------------------------------------')
+                                    console.log(err)
+                                    http.response.writeHead(200, {
+                                        'Content-Type': 'text/plian;charset=utf-8',
+                                        'Access-Control-Allow-Origin': '*'
+                                    });
+                                    http.response.end(JSON.stringify({ data: datarows }, (k, v) => v, '    '))
+                                } else {
+                                    http.response.writeHead(200, {
+                                        'Content-Type': 'text/plian;charset=utf-8',
+                                        'Access-Control-Allow-Origin': '*'
+                                    });
+                                    http.response.end()
+                                }
+                            
+                        });
 
-                        };
-                    })
-            });
+            })
         }
     // }
 }
@@ -188,9 +243,10 @@ export default {
  * 根据cookie查看是否登录,30分钟过期。
  * @param {{request:IncomingMessage}} http request.cookie
  */
-async function getCookieObject(http) {
-    return await getQueryString(await btoaEncrypt('token', encodingTimes), http.request.headers.cookie, ';');
-}
 async function getloginedUser(http) {
-    return await atobDecrypt(await getCookieObject(http), encodingTimes);
+    let loginCookie = await getQueryString(await btoaEncrypt('token', encodingTimes), http.request.headers.cookie, ';');
+    if (loginCookie)
+        return await atobDecrypt(loginCookie, encodingTimes);
+    else
+        return undefined;
 }

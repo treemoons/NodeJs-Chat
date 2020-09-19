@@ -270,15 +270,15 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (tip, e) => { tip.
         @param {WheelEvent} e*/
         function (e) {
             if (this.scrollTop === 0) {
-                if (this.children[0].getAttribute('role')) {
-                    let tip = this.children[0];
-                    if (tip.innerText != tipDealingText) {
+                if (this?.children[0]?.getAttribute('role')) {
+                    let tip = this?.children[0];
+                    if (tip.innerText != tipDealingText && tip) {
                         tip.innerText = tipDealingText;
                         tip.className = tipDealingClass;
                         tip.setAttribute('wait', 'wait')
                         action(tip, e);
                     }
-                } else if (this.children[0].getAttribute('wait')) {
+                } else if (this?.children[0]?.getAttribute('wait')) {
                     return;
                 } else {
                     let tip = document.createElement('p');
