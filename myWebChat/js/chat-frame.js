@@ -266,7 +266,7 @@ export default class BuildBubblesFrame {
             if (frame) {
                 let data = frame.chatdata;
                 let datespan = 30;
-                let todaydawn =parseInt( getTodayDawn().formatDate('yyyyMMdd.HHmmss'));
+                let todaydawn = parseInt(getTodayDawn().formatDate('yyyyMMdd.HHmmss'));
                 let dateTemp = todaydawn - 1;
                 /**用于比较时间差来提示消息记录 */
                 let timetip = '';
@@ -291,16 +291,17 @@ export default class BuildBubblesFrame {
                         isShowDate(v.date, date.formatDate('yyyy年MM月dd日 HH:mm:ss'))
                     }
                     dateTemp = v.date;
-                    this.addpieceschat(v,name,pic)
+                    this.addpieceschat(v, name, pic)
                 });
-
+                let chatwindow = document.querySelector('.chat-data-frame .chat-data');
+                chatwindow.scrolltoRelativePosition(chatwindow.children[chatwindow.children.length - 1]);
             }
         } catch (e) {
             console.log(e);
         }
     }
 
-    addpieceschat = (piecesdata, name,pic,asc = true) => {
+    addpieceschat = (piecesdata, name, pic, asc = true) => {
         let piecesChat = document.createElement('div');
         if (piecesdata.iscurrentuser) {
             piecesChat.className = 'user-speak';
@@ -340,7 +341,7 @@ export default class BuildBubblesFrame {
      * @param {number} pieces 查询条目个数
      * @param {HTMLElement} tip
      */
-    backChatHistory(name, pieces,tip) {
+    backChatHistory(name, pieces, tip) {
         //ajax to server get
         //suppose got it into variable history
         getAjaxData({
@@ -348,6 +349,7 @@ export default class BuildBubblesFrame {
             data: JSON.stringify({ peername: name, requestcount: pieces, ignorecount: this.bubblesFrame[name].chatdata.length }),
             success: d => {
                 if (d) {
+                let chatwindow = document.querySelector('.chat-data-frame .chat-data');
                     /**
                      * @type {{iscurrentuser:string,content:string,date:string,isread:number}[]}}
                      */
@@ -358,9 +360,9 @@ export default class BuildBubblesFrame {
                         peerdata.getHistoryChat(data);
                         this.addpieceschat(data, name, peerdata.peerpic, false);
                     });
+                chatwindow.scrolltoRelativePosition(tip);
                 }
                 tip.remove();
-
             }
         })
 
@@ -417,7 +419,7 @@ export default class BuildBubblesFrame {
         this.friendlistEle.innerHTML = '';
         for (let name in this.bubblesFrame) {
             this.friendlistEle.innerHTML += `<li class="friends-list"><img
-                                    src="${(this.bubblesFrame[name]?.peerpic ? this.bubblesFrame[name].peerpic:"")}"
+                                    src="${(this.bubblesFrame[name]?.peerpic ? this.bubblesFrame[name].peerpic : "")}"
                                     width="30" height="30" alt="">${name}</li>`;
         }
     }

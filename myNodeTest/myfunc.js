@@ -1,4 +1,4 @@
-﻿import { resolve } from 'path';
+﻿
 /**
  * 
  * @param {string} name 
@@ -70,7 +70,6 @@ export async function btoaEncrypt(str, times = 1) {
     }
     return str;
 }
-export var __dirname = resolve();
 /**
  * date default now (all values is '0')
  * @param {{ year:number, month:number, day:number,hours:number , minutes:number,seconds:number, milliseconds:number }}  

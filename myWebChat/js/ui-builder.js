@@ -269,7 +269,7 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (e, tip) => {
         /**
         @param {WheelEvent} e*/
         function (e) {
-            if (this.scrollTop === 0 && (e.wheelDelta>0||e.detail>0)) {
+            if (this.scrollTop === 0 && (e.wheelDelta > 0 || e.detail > 0)) {
                 let tip = this?.children[0];
                 if (tip?.getAttribute('class') == tipClass) {
                     tip.innerText = tipDealingText;
@@ -282,6 +282,10 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (e, tip) => {
                     tip.innerText = tipText;
                     tip.className = tipClass;
                     this.prepend(tip);
+                    setTimeout(() => {
+                        if (tip?.getAttribute('class') == tipClass)
+                            tip.remove()
+                    }, 500);
                 }
             }
         }
