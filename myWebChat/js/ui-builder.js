@@ -254,9 +254,6 @@ initialFrameTheme({
     // ,
 });
 
-HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
-    this.scrollTo(aimPositionElement.offsetLeft, aimPositionElement.offsetTop)
-}
 /**
  * 当scrolltop==0继续向上滑动的事件处理;
  * @param {{action:(e:Event)=>void,tipText:string,
@@ -264,25 +261,24 @@ HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
  * tipDealingClass:string
  * }} /action格式:e=>{}
  */
-HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (tip, e) => { tip.remove(); }, tipText = '更多', tipDealingText = '', tipClass, tipDealingClass = tipClass }) {
+HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (e, tip) => {
+    tip.remove();
+},
+    tipText = '更多', tipDealingText = '正在加载 ', tipClass = 'historytip', tipDealingClass = 'historyloading' }) {
     this.onmousewheel =
         /**
         @param {WheelEvent} e*/
         function (e) {
-            if (this.scrollTop === 0) {
-                if (this?.children[0]?.getAttribute('role')) {
-                    let tip = this?.children[0];
-                    if (tip.innerText != tipDealingText && tip) {
-                        tip.innerText = tipDealingText;
-                        tip.className = tipDealingClass;
-                        tip.setAttribute('wait', 'wait')
-                        action(tip, e);
-                    }
-                } else if (this?.children[0]?.getAttribute('wait')) {
+            if (this.scrollTop === 0 && (e.wheelDelta>0||e.detail>0)) {
+                let tip = this?.children[0];
+                if (tip?.getAttribute('class') == tipClass) {
+                    tip.innerText = tipDealingText;
+                    tip.className = tipDealingClass;
+                    action(e, tip);
+                } else if (this?.children[0]?.getAttribute('class') == tipDealingClass) {
                     return;
                 } else {
                     let tip = document.createElement('p');
-                    tip.setAttribute('role', 'tip')
                     tip.innerText = tipText;
                     tip.className = tipClass;
                     this.prepend(tip);
@@ -293,10 +289,8 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (tip, e) => { tip.
 document.querySelector('.chat-data-frame>.chat-data').ScrollToTheTopUp({
     /**@param {WheelEvent} e */
     action: (e, tip) => {
-        frame.backChatHistory(document.getElementById('titlename').innerText, 10)
+        frame.backChatHistory(document.getElementById('titlename').innerText, 10, tip)
         document.getElementById('text').innerText = e.offsetY;
-
-        tip.remove();
     }
 })
 
@@ -306,7 +300,6 @@ var search = document.getElementById('search');
  * @param {KeyboardEvent} e 
  */
 onkeypress = function (e) {
-
     if (e.key) {
         characterCode = e.key;
         if (characterCode == 'Enter')

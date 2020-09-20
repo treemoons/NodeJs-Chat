@@ -201,7 +201,7 @@ export default {
                 let username = 'treemoons' //await getloginedUser(http); // 获取登录过后的用户名，使用base64加密，加密次数为encodingTimes；
                 if (username)
                     sqlite3.all(`select username,peername,content,date,isread from chatdata 
-                        where ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) ORDER BY DATE ASC LIMIT ?,?`,
+                        where ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) ORDER BY DATE desc LIMIT ?,?`,
                         [username, data.peername, data.peername, username, data.ignorecount, data.requestcount],
                         (err, rows) => {
                                 if (rows.length > 0 && !err) {

@@ -6,9 +6,89 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <!-- <meta http-equiv="Access-Control-Allow-Origin" content="*"> -->
         <title>Document</title>
+        <style>
+            @keyframes rotate {
+                form {
+
+                    transform: rotate(0);
+                }
+
+                to {
+
+                    transform: rotate(360deg);
+                }
+            }
+
+
+button {
+  border: 0;
+  background: none;
+  text-transform: uppercase;
+  color: #4361ee;
+  font-weight: bold;
+  position: relative;
+  outline: none;
+  padding: 10px 20px;
+  box-sizing: border-box;
+}
+
+button::before, button::after {
+  box-sizing: inherit;
+  position: absolute;
+  content: '';
+  border: 2px solid transparent;
+  width: 0;
+  height: 0;
+}
+
+button::after {
+  bottom: 0;
+  right: 0;
+}
+
+button::before {
+  top: 0;
+  left: 0;
+}
+
+button:hover::before, button:hover::after {
+  width: 100%;
+  height: 100%;
+}
+
+button:hover::before {
+  border-top-color: #4361ee;
+  border-right-color: #4361ee;
+  transition: width 3s ease-out, height 3s ease-out 3s;
+}
+
+button:hover::after {
+  border-bottom-color: #4361ee;
+  border-left-color: #4361ee;
+  transition: border-color 0s ease-out 6s, width 3s ease-out 6s, height 3s ease-out 9s;
+}
+
+            .historyloading::after {
+                content: ' ';
+                width: 13px;
+                height: 13px;
+                position: absolute;
+                border: gray solid 1px;
+                border-right-color: gainsboro;
+                border-radius: 13px;
+                -webkit-border-radius: 13px;
+                -moz-border-radius: 13px;
+                -ms-border-radius: 13px;
+                -o-border-radius: 13px;
+                transition: all 3s 0s  linear;
+                animation: rotate 1s linear 0ms infinite  ;
+                -webkit-animation: rotate 1s  0 infinite;
+            }
+        </style>
     </head>
 
     <body>
+        <span class="historyloading">..</span>
         <form action="http://localhost:8888/api/login/thisistestparam" method="POST">
             <input type="text" name="username" value="treemoons" id=""> <br>
             <input type="text" name="password" value="1234" id=""><br>
@@ -19,22 +99,22 @@
         </button>
         <script>
             let json = JSON.stringify({
-                    applyuser: 'username',
-                    sendData: {
-                        username: 'name', content: 'data', date: new Date().getDate().toString(),isread:0
-                    }
-                });
+                applyuser: 'username',
+                sendData: {
+                    username: 'name', content: 'data', date: new Date().getDate().toString(), isread: 0
+                }
+            });
 
-            let test = () =>getAjaxData({
+            let test = () => getAjaxData({
                 url: 'http://localhost:8888/api/gethistory',
                 data: JSON.stringify({ peername: "name", requestcount: 0, ignorecount: 1 }),
-                
-                success:d=>{
-                    if(!d){
+
+                success: d => {
+                    if (!d) {
                         console.log('null')
                     }
                     console.log(d)
-                    document.getElementById('loaddata').innerText=d;
+                    document.getElementById('loaddata').innerText = d;
                     console.log(JSON.parse(d))
                     // document.write(d);
                 }
@@ -71,7 +151,7 @@
                 // open(url,'_blank')
                 var ajax = new XMLHttpRequest();
                 ajax.open(method, url);
-                reqestHeader.forEach(header=>{
+                reqestHeader.forEach(header => {
                     ajax.setRequestHeader(header.headername, header.headervalue);
                 })
                 // ajax.setRequestHeader('Set-Cookie', 'name=username');
@@ -105,5 +185,6 @@
     <strong>cookie 默认不支持存储中文，如果存储中文需先使用 encodeURIComponent 方法进行转译，将转译后的结果存入
         cookie，在浏览器获取 cookie 需使用 decodeURIComponent 方法转回中文。</strong>
 
-        <p id="loaddata" style="white-space: pre-wrap;"></p>
+    <p id="loaddata" style="white-space: pre-wrap;"></p>
+
 </html>

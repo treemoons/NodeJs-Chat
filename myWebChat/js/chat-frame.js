@@ -17,6 +17,9 @@
 //     }
 // })
 
+HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
+    this.scrollTo(aimPositionElement.offsetLeft, aimPositionElement.offsetTop)
+}
 
 
 /**
@@ -263,7 +266,7 @@ export default class BuildBubblesFrame {
             if (frame) {
                 let data = frame.chatdata;
                 let datespan = 30;
-                let todaydawn = getTodayDawn().formatDate('yyyyMMdd.HHmmss');
+                let todaydawn =parseInt( getTodayDawn().formatDate('yyyyMMdd.HHmmss'));
                 let dateTemp = todaydawn - 1;
                 /**用于比较时间差来提示消息记录 */
                 let timetip = '';
@@ -276,7 +279,7 @@ export default class BuildBubblesFrame {
                 data.forEach(v => {
                     let name = v.iscurrentuser ? this.username : peername;
                     let pic = v.iscurrentuser ? this.userpic : frame.peerpic;
-                    let date = formatBackDate(v.date)
+                    let date = formatBackDate(v.date.toString())
                     if (todaydawn > v.date && todaydawn - 1 < v.date) {
                         //昨天
                         isShowDate(v.date, date.formatDate('昨天 HH:mm:ss'))
@@ -335,8 +338,9 @@ export default class BuildBubblesFrame {
      * 主要查看历史消息
      * @param {string} name
      * @param {number} pieces 查询条目个数
+     * @param {HTMLElement} tip
      */
-    backChatHistory(name, pieces) {
+    backChatHistory(name, pieces,tip) {
         //ajax to server get
         //suppose got it into variable history
         getAjaxData({
@@ -350,11 +354,12 @@ export default class BuildBubblesFrame {
                     let history = JSON.parse(d).data;
                     /**@type {ChatDataSigleList} */
                     let peerdata = this.bubblesFrame[name];
-                    for (let i = history.chatdata.length - 1; i >= 0; i--) {
-                        peerdata.getHistoryChat(history[i]);
-                        this.addpieceschat(history[i],name,peerdata.peerpic, false);
-                    }
+                    history.forEach(data => {
+                        peerdata.getHistoryChat(data);
+                        this.addpieceschat(data, name, peerdata.peerpic, false);
+                    });
                 }
+                tip.remove();
 
             }
         })
@@ -412,7 +417,7 @@ export default class BuildBubblesFrame {
         this.friendlistEle.innerHTML = '';
         for (let name in this.bubblesFrame) {
             this.friendlistEle.innerHTML += `<li class="friends-list"><img
-                                    src="${this.bubblesFrame[name].peerpic}"
+                                    src="${(this.bubblesFrame[name]?.peerpic ? this.bubblesFrame[name].peerpic:"")}"
                                     width="30" height="30" alt="">${name}</li>`;
         }
     }
