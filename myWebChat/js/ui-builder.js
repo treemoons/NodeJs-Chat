@@ -1,13 +1,30 @@
-
-import BuildFrame from './chat-frame.js';
+import {chatwindow, default as BuildFrame} from './chat-frame.js';
 /**要操作的目标元素
  * @type {HTMLElement}*/
-var aimOfContextMenu;
+ var aimOfContextMenu;
 /**@type {BuildFrame} */
-let frame = new BuildFrame('treemoons', '../../peerpic.jpg', document.getElementsByClassName('chat-data')[0]);
+export let frame = new BuildFrame('treemoons', '../../peerpic.jpg');
 /**@type {HTMLElement}*/
-var friendFocus;
+export var friendFocus;
+/**@type {HTMLElement}*/
+export let textArea = document.getElementById('text');
 window.frame = frame;
+
+
+/**
+ * 
+ * @param {Event} e 
+ * @param {(e:Event)=>void} callback 
+ */
+export function keypressEnter(e, callback) {
+    if (e.key) {
+        let characterCode = e.key;
+        if (characterCode == 'Enter') {
+            e.preventDefault()
+            callback(e);
+        }
+    }
+}
 
 /**
  * 调用context-menu显示在指定元素上
@@ -16,7 +33,7 @@ window.frame = frame;
  * aimAreaElements:HTMLElement|HTMLCollectionOf<HTMLElement>, 
  * style:{items:string,itemsHover:string,contextMenu:string,customize:string}}} param0 
  */
-function contextMenu({
+export function contextMenu({
     contextMenuClassName = 'context-menu',
     contextMenuItems = {
         copy: ['复制', function (e) {
@@ -26,8 +43,7 @@ function contextMenu({
             document.execCommand('copy');
             console.log(this.children[0].value)
             this.innerHTML = contextMenuItems.copy[0];
-        }],
-        del: ['删除', function (e) { }]
+        }]
     },
     aimAreaElements = document.getElementsByClassName('user-chat-bubble'),
     style = {
@@ -92,14 +108,11 @@ function contextMenu({
         } else
             contentMenu.style.top = e.clientY + s + 'px';
     }
-    if (aimAreaElements.length > 1) {
-
-        for (let i = 0; i < aimAreaElements.length; i++) {
-            aimAreaElements[i].oncontextmenu = setContextMenuosition;
-        }
-    } else {
-        aimAreaElements.oncontextmenu = setContextMenuosition;
+    for (let i = 0; i < aimAreaElements.length; i++) {
+        aimAreaElements[i].removeEventListener('contextmenu', e => { });
+        aimAreaElements[i].oncontextmenu = setContextMenuosition;
     }
+
     for (let item in contextMenuItems) {
         contentMenu.innerHTML += `<div id='${item}'>${contextMenuItems[item][0]}</div>`;
     }
@@ -118,10 +131,11 @@ function contextMenu({
     }
 };
 
-function initialFrameTheme({
-    chat = document.getElementsByClassName('chat')[0],
+/** 初始化加载数据 */
+export function initialFrameTheme({
+    chat = document.querySelector('.chat'),
     listsFrame = document.querySelector('.chat-list .friends-frame'),
-    chatDataWindow = document.querySelector('.chat-content-frame .chat-data-frame'),
+    chatDataWindow = chatwindow.parentElement,
     focusfriend = {
         focusBackground: 'plum',
         focusColor: 'white'
@@ -145,7 +159,10 @@ function initialFrameTheme({
     isopentransition = false,
 
     // loadFriendsList =/**@param {BuildFrame} chatframe*/ chatframe => chatframe.initializaingfriendlist(),
-    showChatWindow = peername => frame.showFrame(peername),
+    showChatWindow = (peername) => {
+        frame.showFrame(peername,isopentransition);
+        contextMenu();
+    },
     waitDivshow = {
         isShow: true,
         begin: () => { document.querySelector('.move').style.display = 'block' },
@@ -194,27 +211,31 @@ function initialFrameTheme({
                 background-color: ${friendlisthover.friendlisthoverBackgroundColor};
             }`;
     frame.friendlistEle = listsFrame;
+    /**@type {HTMLElement} */
+    let a;
     // loadFriendsList(frame);
-    let lists = listsFrame.children;
     frame.setonclickanimotion = () => {
-
+        let lists = listsFrame.children;
         if (lists.length > 0) {
             for (let i = 0; i < lists.length; i++) {
                 lists[i].onclick = function () {
-                    let title = document.getElementById('titlename');
-                    title.innerText = this.innerText
-                    if (friendFocus != undefined) {
+                    document.getElementById('titlename').innerText = this.innerText
+                    if (friendFocus) {
                         friendFocus.setAttribute('style', `background-color:none;`);
                     }
+                    friendFocus = this;
                     this.setAttribute('style',
                         `background-color:${focusfriend.focusBackground};color:${focusfriend.focusColor}`
                     );
                     if (waitDivshow.isShow) {
                         waitDivshow.begin();
                     }
-                    debugger
                     if (isopentransition) {
-
+                        style.innerHTML += `
+                        .user-speak,
+                        .peer-speak {
+                             opacity: 0;
+                            }`;
                         if (chatDataWindow.style.right == '0px') {
                             chatDataWindow.setAttribute('style', 'right:150%;');
                             setTimeout(() => {
@@ -231,28 +252,35 @@ function initialFrameTheme({
                         }
                         showChatWindow(this.innerText);
                     }
+
                     if (waitDivshow.isShow) {
                         waitDivshow.end();
                     }
-                    friendFocus = this;
                 }
             }
         } else {
             // no friend to talk to
         }
 
-        contextMenu();
+        textArea.onkeydown =
+            /** @param {KeyboardEvent} e */
+            function (e) {
+                if (e.shiftKey && e.key == 'Enter') return;
+                keypressEnter(e, event => {
+                    if (this.value) {
+                        console.log(this.value)
+                        try {
+                            frame.sendChatMessage(friendFocus, this.value,isopentransition);
+                            this.value = null;
+                        } catch (e) {
+                            console.log(e)
+                        }
+                    }
+                });
+            }
 
     }
 };
-initialFrameTheme({
-    isopentransition: true
-    // showChatWindow: (user, ele) => {
-    //     //  document.getElementsByClassName('chat-data')[0].scrolltoRelativePosition(document.getElementsByClassName('peer-speak')[1])
-
-    // }
-    // ,
-});
 
 /**
  * 当scrolltop==0继续向上滑动的事件处理;
@@ -290,51 +318,33 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (e, tip) => {
             }
         }
 }
-document.querySelector('.chat-data-frame>.chat-data').ScrollToTheTopUp({
-    /**@param {WheelEvent} e */
-    action: (e, tip) => {
-        frame.backChatHistory(document.getElementById('titlename').innerText, 10, tip)
-        document.getElementById('text').innerText = e.offsetY;
-    }
-})
 
 var search = document.getElementById('search');
-/**
- * 
- * @param {KeyboardEvent} e 
- */
-onkeypress = function (e) {
-    if (e.key) {
-        characterCode = e.key;
-        if (characterCode == 'Enter')
-            search.value = characterCode
-    }
-}
 // window.addEventListener("keydown", function (e) {
 //     // if (e.code = "ArrowDown")
 //         search.value = e.key;
 // })
 
-function test() {
-    let chat = document.getElementsByClassName('chat-data')[0];
-    let div = document.createElement('div');
-    div.className = 'user-speak';
-    div.innerHTML = `     <div class="user-chat-bubble">不是的，就是你手上还有还有推文没做完然后呢，你
-                                    是周一你是上周五提的，你把他以为周一就可以走了，
-                                    然后周一呢，他又给你安排新的东西，你上周累计的东
-                                    西没有干完，然后又来了新的东西就这样就无限循环，
-                                    就只要你在这儿永远都走不掉知道吧。不是的，就是你手上还有还有推文没做完然后呢，你
-                                    是周一你是上周五提的，你把他以为周一就可以走了，
-                                    然后周一呢，他又给你安排新的东西，你上周累计的东
-                                    西没有干完，然后又来了新的东西就这样就无限循环，
-                                    就只要你在这儿永远都走不掉知道吧。不是的，就是你手上还有还有推文没做完然后呢，你
-                                    是周一你是上周五提的，你把他以为周一就可以走了，
-                                    然后周一呢，他又给你安排新的东西，你上周累计的东
-                                    西没有干完，然后又来了新的东西就这样就无限循环，
-                                    就只要你在这儿永远都走不掉知道吧。
-                                </div>
-                                <img src="http://r.photo.store.qq.com/psc?/V11J2BXr3TLcNh/WUyRLVwskOVTItG8F0x768kqwQGsBKB6K*vun3EpaRrxraAToqleVUi8rha8n48QpW8DFgjG*mhu04tM*0rYOTbOc2wthnVNuula.NHIJR0!/r"
-                                    width="30" alt="">
-                            `
-    chat.prepend(div, div)
-}
+// function test() {
+//     let chat = document.getElementsByClassName('chat-data')[0];
+//     let div = document.createElement('div');
+//     div.className = 'user-speak';
+//     div.innerHTML = `     <div class="user-chat-bubble">不是的，就是你手上还有还有推文没做完然后呢，你
+//                                     是周一你是上周五提的，你把他以为周一就可以走了，
+//                                     然后周一呢，他又给你安排新的东西，你上周累计的东
+//                                     西没有干完，然后又来了新的东西就这样就无限循环，
+//                                     就只要你在这儿永远都走不掉知道吧。不是的，就是你手上还有还有推文没做完然后呢，你
+//                                     是周一你是上周五提的，你把他以为周一就可以走了，
+//                                     然后周一呢，他又给你安排新的东西，你上周累计的东
+//                                     西没有干完，然后又来了新的东西就这样就无限循环，
+//                                     就只要你在这儿永远都走不掉知道吧。不是的，就是你手上还有还有推文没做完然后呢，你
+//                                     是周一你是上周五提的，你把他以为周一就可以走了，
+//                                     然后周一呢，他又给你安排新的东西，你上周累计的东
+//                                     西没有干完，然后又来了新的东西就这样就无限循环，
+//                                     就只要你在这儿永远都走不掉知道吧。
+//                                 </div>
+//                                 <img src="http://r.photo.store.qq.com/psc?/V11J2BXr3TLcNh/WUyRLVwskOVTItG8F0x768kqwQGsBKB6K*vun3EpaRrxraAToqleVUi8rha8n48QpW8DFgjG*mhu04tM*0rYOTbOc2wthnVNuula.NHIJR0!/r"
+//                                     width="30" alt="">
+//                             `
+//     chat.prepend(div, div)
+// }

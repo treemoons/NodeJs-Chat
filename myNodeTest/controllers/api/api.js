@@ -2,7 +2,6 @@
     getQueryString,
     btoaEncrypt,
     buildCookie,
-    __dirname,
     getTodayDawn,
     atobDecrypt
 } from '../../myfunc.js'; //相对该文件的相对位置
@@ -25,21 +24,25 @@ sqlite3.all(`select username,peername,content,date,isread from chatdata
 /**@type {number} */
 export let encodingTimes = 10;
 export default {
-    default: http => {
-        try {
-            console.log(a.p)
-        } catch (e) {
-            console.log("-------------------" + e)
-        }
-    },
+    default:
+        /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
+        http => {
+            try {
+                http.request.on('data', d => {
+                    console.log(d.toString())
+                })
+            } catch (e) {
+                console.log("-------------------" + e)
+            }
+            finally {
+                http.response.end();
+            }
+        },
     chatto:
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         http => {
             http.request.on('data', async d => {
-                console.log(__dirname)
-                if (d == undefined || d === null) {
-                    console.log("d is" + d)
-                } else {
+                if (d) {
                     /**@type {{ applyuser: string, sentdata: { peername: string, content: string, date: string|number,isread:number } }} */
                     let data = JSON.parse(d);
                     let msg = {
@@ -59,7 +62,7 @@ export default {
 
                     function insertSql() {
                         sqlite3.run(`INSERT INTO CHATDATA(USERNAME,PEERNAME,CONTENT,DATE,ISREAD) VALUES(?,?,?,?,?);`,
-                            [data.applyuser, data.sentdata.peername, data.sentdata.content, data.sentdata.date, data.sentdata.isread],
+                            [data.applyuser, data.sentdata.peername, data.sentdata.content, parseFloat(data.sentdata.date), data.sentdata.isread],
                             err => {
                                 console.log(err)
                                 if (err == undefined || err == null) {
@@ -112,7 +115,7 @@ export default {
             })
         },
     /**加载所有的聊天记录，截止到未读或今天凌晨 */
-    'loaddata':
+    loaddata:
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         async http => {
             let count = 0;
@@ -129,12 +132,13 @@ export default {
                         [username, username],
                         (err, /** @type {{peername:string}[]}*/
                             peers) => {
-                            if (peers.length > 0&&!err)
+                            if (peers.length > 0 && !err)
                                 peers.forEach(peer => {
                                     /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}} */
                                     let chatsigledata = {};
                                     sqlite3.all(`SELECT username,peername,content,date,isread FROM CHATDATA WHERE (DATE>= 
-                                        (SELECT DATE FROM CHATDATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1) OR DATE>=${getTodayDawn().formatDate('yyyyMMdd.HHmmss')}) 
+                                        (SELECT DATE FROM CHATDATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))
+                                         AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1) OR DATE>=${parseFloat(getTodayDawn().formatDate('yyyyMMdd.HHmmss'))}) 
                                          AND ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))  ORDER BY DATE ASC`,
                                         [username, peer.peername, peer.peername, username, username, peer.peername, peer.peername, username],
                                         (err, /** @type {{username:string,peername:string,content:string,date:string,isread:Number}[]}*/
@@ -204,39 +208,42 @@ export default {
                         where ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) ORDER BY DATE desc LIMIT ?,?`,
                         [username, data.peername, data.peername, username, data.ignorecount, data.requestcount],
                         (err, rows) => {
-                                if (rows.length > 0 && !err) {
-                                    /**@type {{iscurrentuser:string,content:string,date:string,isread:number}[]} */
-                                    let datarows = [];
-                                    rows.forEach(sigle => {
-                                        /**@type {{iscurrentuser:string,content:string,date:string,isread:number}} */
-                                        let chatsigle = {
-                                            iscurrentuser: sigle.username == username,
-                                            content: sigle.content,
-                                            date: sigle.date,
-                                            isread: sigle.isread
-                                        }
-                                        datarows.push(chatsigle);
-                                    });
-                                    console.log('--------------------------------------------------------------------------------------')
-                                    console.log(err)
-                                    http.response.writeHead(200, {
-                                        'Content-Type': 'text/plian;charset=utf-8',
-                                        'Access-Control-Allow-Origin': '*'
-                                    });
-                                    http.response.end(JSON.stringify({ data: datarows }, (k, v) => v, '    '))
-                                } else {
-                                    http.response.writeHead(200, {
-                                        'Content-Type': 'text/plian;charset=utf-8',
-                                        'Access-Control-Allow-Origin': '*'
-                                    });
-                                    http.response.end()
-                                }
-                            
+                            if (rows.length > 0 && !err) {
+                                /**@type {{iscurrentuser:string,content:string,date:string,isread:number}[]} */
+                                let datarows = [];
+                                rows.forEach(sigle => {
+                                    /**@type {{iscurrentuser:string,content:string,date:string,isread:number}} */
+                                    let chatsigle = {
+                                        iscurrentuser: sigle.username == username,
+                                        content: sigle.content,
+                                        date: sigle.date,
+                                        isread: sigle.isread
+                                    }
+                                    datarows.push(chatsigle);
+                                });
+                                console.log('--------------------------------------------------------------------------------------')
+                                console.log(err)
+                                http.response.writeHead(200, {
+                                    'Content-Type': 'text/plian;charset=utf-8',
+                                    'Access-Control-Allow-Origin': '*'
+                                });
+                                http.response.end(JSON.stringify({ data: datarows }, (k, v) => v, '    '))
+                            } else {
+                                http.response.writeHead(200, {
+                                    'Content-Type': 'text/plian;charset=utf-8',
+                                    'Access-Control-Allow-Origin': '*'
+                                });
+                                http.response.end()
+                            }
+
                         });
 
             })
-        }
+        },
     // }
+    sentmessage: /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
+        async http => { }
+
 }
 
 /**
