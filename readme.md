@@ -5,25 +5,25 @@
  ```html
  <object data="./NodeJs-Chat/myWebChat/chat.html" type="text/html"></object>
  ```
-- Than you can just use the function to change the color of theme or other UI settings
+- Then you can use the function to change the default color of theme or other UI settings
 ```js
 initialFrameTheme({
-    chat : document.getElementsByClassName('chat')[0], //object element
-    listsClassName : 'friends-list',// friends list element
-    chatDataWindow : document.getElementsByClassName('chat-data-frame')[0], //window of chat 
-    focusfriend : { //setting forcolor or backgroudcolor chat to one ,who is the friend in friends list
+    chat= document.getElementsByClassName('chat')[0], //object element
+    listsFrame = document.querySelector('.chat-list .friends-frame'),// friends list element
+    chatDataWindow = chatwindow.parentElement,, //window of chat 
+    focusfriend= { //setting forcolor or backgroudcolor chat to one ,who is the friend in friends list
         focusBackground: 'plum',
         focusColor: 'white'
     },
-    userbubble : {  // bubble all color of current user
+    userbubble= {  // bubble all color of current user
         userbubbleColor: undefined,
         userbubbleBackgroundColor: undefined
     },
-    peerbubble : {  // bubble all color of current friend,who you chat with
+    peerbubble= {  // bubble all color of current friend,who you chat with
         peerbubbleBackgroundColor: undefined,
         peerbubbleColor: undefined
     },
-    friendlist : { // default all color of friends list ,execpt hover
+    friendlist= { // default all color of friends list ,execpt hover
         friendlistBackgroundColor: 'white',
         friendlistColor: 'black'
     },
@@ -31,14 +31,17 @@ initialFrameTheme({
         friendlisthoverColor: 'white',
         friendlisthoverBackgroundColor: 'gray'
     },
-    isopentransition : false,// animotion of transistion 
-    loadFriendsList : () => { }, //load all data of your friends
-    showChatWindow : (username, bubbleFrameEle) => { // prepare to load your friend-data to the window
-    }, 
-    waitDivshow : { //dot of waiting
-    isShow: true,  //whether enable to use
-    begin: () => { document.getElementsByClassName('move')[0].style.display : 'block' },//shown
-    end: () => { document.getElementsByClassName('move')[0].style.display : 'none' } }// hidden
+    isopentransition= false,// animotion of transistion 
+    showChatWindow = (peername) => {//load all data of your friends
+     // prepare to load your friend-data to the window
+        frame.showFrame(peername,isopentransition);
+        contextMenu();
+    },
+    waitDivshow= { //dot of waiting
+        isShow: true,  //whether enable to use
+        begin: () => { document.querySelector('.move').style.display = 'block' },
+        end: () => { document.querySelector('.move').style.display = 'none' }
+        }
 })
 ```
 ---
@@ -59,7 +62,7 @@ initialFrameTheme({
 ```ts
 let sigleChat= { 
     applyuser: string,
-    sendData: { 
+    senddata: { 
         username: string,
         content: string,
         date: string|number,
