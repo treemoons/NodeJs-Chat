@@ -1,5 +1,6 @@
 ﻿import { readFile } from 'fs';
 import http from 'http';
+import {setCORS} from './myfunc.js';
 import { parse } from 'url';
 import * as routes from './controllers.js';
 function start() {
@@ -44,10 +45,12 @@ function start() {
                 if (controller == controllerName) {
                     for (let actionName in routes[controllerName]) {
                         if (action == actionName) {
+                            setCORS(response)
                             routes[controllerName][actionName]({ request, response, params });
                             return true;
                         }
                     }
+                    setCORS(response)
                     routes[controllerName]['default']({ request, response, params });
                     return true;
                 }
@@ -59,13 +62,13 @@ function start() {
         // let query = pathname.query.match(/[^&=]+=[^&]*/g)
         // console.log(query)
 
-        if (controller != undefined) {
+        if (controller) {
             // request with controller ,to do below
             if (!matchRoute({ controller: controller, action: action })) {
                 // cound't find route,than to do below 
                 response.writeHead(200, { 'Content-Type':'text/html; charset=utf-8' });
                 readFile('.\\layout/nodejstest.html', (e, d) => {
-                    if (e != undefined) {
+                    if (e) {
                         console.log(e)
                     } else {
                         response.write(d.toString());
@@ -78,7 +81,7 @@ function start() {
             response.writeHead(200, { "Content-Type": "text/html" });
             readFile('.\\layout/nodejstest.html', (e, d) => {
                 // console.log("write html: " + d.slice(0, 10))
-                if (e != undefined) {
+                if (e) {
                     console.log(e)
                 } else {
                     response.write(d.toString());

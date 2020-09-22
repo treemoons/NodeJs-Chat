@@ -2,7 +2,8 @@
     initialFrameTheme,
     frame,
     friendFocus,
-    textArea
+    textArea,
+    getfriendid
 } from "./js/ui-builder.js";
 
 /** 初始化加载数据 */
@@ -18,8 +19,7 @@ initialFrameTheme({
 document.querySelector('.chat-data-frame>.chat-data').ScrollToTheTopUp({
     /**@param {WheelEvent} e */
     action: (e, tip) => {
-        frame.backChatHistory(friendFocus.innerText, 10, tip)
+        frame.backChatHistory(getfriendid(friendFocus), 10, tip)
         textArea.innerText = e.offsetY;
     }
 });
-

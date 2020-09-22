@@ -1,4 +1,5 @@
-﻿
+﻿import { ServerResponse } from "http";
+
 /**
  * 
  * @param {string} name 
@@ -16,6 +17,14 @@ export async function getQueryString(name, purposeString, splitMark) {
     }
 }
 
+/**
+ * 
+ * @param {ServerResponse} response 
+ * @param {string} corsUrl 
+ */
+export function setCORS(response, corsUrl = '*') {
+    response.setHeader('Access-Control-Allow-Origin', corsUrl);
+}
 export async function getAllQueryString(purposeString, splitMark) {
     let reg = RegExp(`${name}=([^${splitMark}]+)`);
     return purposeString.match(reg);
@@ -70,6 +79,22 @@ export async function btoaEncrypt(str, times = 1) {
     }
     return str;
 }
+
+
+
+/**
+ * 根据cookie查看是否登录,30分钟过期。
+ * @param {{request:IncomingMessage}} http request.cookie
+ */
+export async function getloginedUser(http) {
+    let loginCookie = await getQueryString(await btoaEncrypt('token', encodingTimes), http.request.headers.cookie, ';');
+    if (loginCookie)
+        return await atobDecrypt(loginCookie, encodingTimes);
+    else
+        return undefined;
+}
+
+
 /**
  * date default now (all values is '0')
  * @param {{ year:number, month:number, day:number,hours:number , minutes:number,seconds:number, milliseconds:number }}  
@@ -130,4 +155,42 @@ Date.prototype.formatDate = function (fmt) {
         }
     }
     return fmt;
+}
+
+/**
+ * 删除除img标签以外的所有HTML标签，
+ * @param {string} str 
+ */
+export function removeHTML(str) {
+
+    let symbol = `_img_`;
+    //删除脚本  
+    str = str.replace("<script[^>]*?>.*?</script>", "");
+    let match = str.match(/<img[^>]*>/gi);
+    str = str.replace(/<img[^>]*>/gi, symbol);
+    //删除HTML  
+    str = str.replace(/<(.[^>]*)>/gi, "");
+    str = str.replace(/([\r\n])[\s]+/gi, "");
+    str = str.replace(/-->/gi, "");
+    str = str.replace(/<!--.*/gi, "");
+    str = str.replace(/&(quot|#34);/gi, "\"");
+    str = str.replace(/&(amp|#38);/gi, "&");
+    str = str.replace(/&(lt|#60);/gi, "<");
+    str = str.replace(/&(gt|#62);/gi, ">");
+    str = str.replace(/&(nbsp|#160);/gi, "   ");
+    str = str.replace(/&(iexcl|#161);/gi, "\xa1");
+    str = str.replace(/&(cent|#162);/gi, "\xa2");
+    str = str.replace(/&(pound|#163);/gi, "\xa3");
+    str = str.replace(/&(copy|#169);/gi, "\xa9");
+    str = str.replace(/&#(\d+);/gi, "");
+
+    str.replace("<", "");
+    str.replace(">", "");
+    str.replace("\r\n", "");
+    match.forEach(v => {
+        let font = str.substr(0, str.indexOf(symbol))
+        let behind = str.substr(str.indexOf(symbol) + symbol.length)
+        str = font + v + behind;
+    })
+    return str;
 }
