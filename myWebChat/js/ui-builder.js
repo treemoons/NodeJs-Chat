@@ -1,7 +1,7 @@
-import {chatwindow, default as BuildFrame, getfriendid as getfriendId } from './chat-frame.js';
+import { chatwindow, default as BuildFrame, getfriendid as getfriendId } from './chat-frame.js';
 /**要操作的目标元素
  * @type {HTMLElement}*/
- var aimOfContextMenu;
+var aimOfContextMenu;
 /**@type {BuildFrame} */
 export let frame = new BuildFrame('treemoons', '../../peerpic.jpg');
 /**@type {HTMLElement}*/
@@ -92,39 +92,39 @@ export function contextMenu({
     if (document.getElementById(contextMenuClassNameOrId)) {
         document.body.removeChild(document.getElementById(contextMenuClassNameOrId));
     }
-    let contentMenu = document.createElement('div');
-    contentMenu.className = contextMenuClassNameOrId;
-    contentMenu.id = contextMenuClassNameOrId;
-    contentMenu.innerHTML = '';
-    document.body.appendChild(contentMenu);
+    let contextMenu = document.createElement('div');
+    contextMenu.className = contextMenuClassNameOrId;
+    contextMenu.id = contextMenuClassNameOrId;
+    contextMenu.innerHTML = '';
+    document.body.appendChild(contextMenu);
 
     function setContextMenuosition(e) {
         aimOfContextMenu = this;
         e.preventDefault();
-        contentMenu.style.display = 'block';
+        contextMenu.style.display = 'block';
         setTimeout(() => {
-            contentMenu.style.opacity = 1;
+            contextMenu.style.opacity = 1;
         }, 20);
-        if (document.body.clientWidth - e.clientX < getComputedStyle(contentMenu).width.replace('px', '')
+        if (document.body.clientWidth - e.clientX < getComputedStyle(contextMenu).width.replace('px', '')
             .trim()) {
-            contentMenu.style.left = e.clientX - getComputedStyle(contentMenu).width.replace('px', '')
+            contextMenu.style.left = e.clientX - getComputedStyle(contextMenu).width.replace('px', '')
                 .trim() + 'px';
         } else {
-            contentMenu.style.left = e.clientX + 'px';
+            contextMenu.style.left = e.clientX + 'px';
         }
         let s = document.documentElement.scrollTop || document.body.scrollTop
-        if (innerHeight - e.clientY < getComputedStyle(contentMenu).height.replace('px', '').trim()) {
-            contentMenu.style.top = e.clientY + s - getComputedStyle(contentMenu).height.replace('px', '')
+        if (innerHeight - e.clientY < getComputedStyle(contextMenu).height.replace('px', '').trim()) {
+            contextMenu.style.top = e.clientY + s - getComputedStyle(contextMenu).height.replace('px', '')
                 .trim() + 'px';
         } else
-            contentMenu.style.top = e.clientY + s + 'px';
+            contextMenu.style.top = e.clientY + s + 'px';
     }
     for (let i = 0; i < aimAreaElements.length; i++) {
         aimAreaElements[i].oncontextmenu = setContextMenuosition;
     }
 
     for (let item in contextMenuItems) {
-        contentMenu.innerHTML += `<div id='${item}'>${contextMenuItems[item][0]}</div>`;
+        contextMenu.innerHTML += `<div id='${item}'>${contextMenuItems[item][0]}</div>`;
     }
 
     for (let item in contextMenuItems) {
@@ -133,10 +133,10 @@ export function contextMenu({
     }
 
     onclick = function () {
-        if (contentMenu.style.display == 'block') {
-            contentMenu.style.opacity = 0;
+        if (contextMenu.style.display == 'block') {
+            contextMenu.style.opacity = 0;
             setTimeout(function () {
-                contentMenu.style.display = 'none';
+                contextMenu.style.display = 'none';
             }, 500);
         }
     }
@@ -171,7 +171,7 @@ export function initialFrameTheme({
 
     // loadFriendsList =/**@param {BuildFrame} chatframe*/ chatframe => chatframe.initializaingfriendlist(),
     showChatWindow = (peername) => {
-        frame.showFrame(peername,isopentransition);
+        frame.showFrame(peername, isopentransition);
         contextMenu();
     },
     waitDivshow = {
@@ -264,7 +264,7 @@ export function initialFrameTheme({
                         }
                         showChatWindow(idname);
                     }
-                    this.children[0].style.opacity='0';
+                    this.children[0].style.opacity = '0';
                     if (waitDivshow.isShow) {
                         waitDivshow.end();
                     }
@@ -281,7 +281,7 @@ export function initialFrameTheme({
                 keypressEnter(e, event => {
                     if (this.innerHTML) {
                         try {
-                            frame.sendChatMessage(friendFocus, this.innerHTML,isopentransition);
+                            frame.sendChatMessage( this.innerHTML, isopentransition);
                             this.innerHTML = null;
                             contextMenu();
                         } catch (e) {
@@ -332,6 +332,22 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (e, tip) => {
 }
 
 var search = document.getElementById('search');
+export function resendmessage() {
+    let resendeles = document.querySelectorAll('.chat-data .resend');
+    if (resendeles) {
+        resendeles.forEach(ele => {
+            ele.onclick = function (e) {
+                this.className = 'sending';
+                this.innerText = '';
+                let content=this.parentElement.children[1].innerHTML;
+                frame.resent(this,friendFocus,content)
+            }
+        })
+    }
+}
+
+
+
 // window.addEventListener("keydown", function (e) {
 //     // if (e.code = "ArrowDown")
 //         search.value = e.key;

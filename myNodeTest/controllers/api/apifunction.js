@@ -26,6 +26,7 @@ let sqlite3 = new Database('.\\data.db'); //node运行时，启动的文件夹�
 export let listeningHttp = {}
 /**@type {number} */
 export let encodingTimes = 10;
+
 /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
 export async function login(http) {
     http.request.on('data', /** @param {string} d */ d => {

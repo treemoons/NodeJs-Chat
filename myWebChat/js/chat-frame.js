@@ -16,12 +16,14 @@
 //         // console.log(ma[i]+"\n")
 //     }
 // })
+import { friendFocus, resendmessage,frame } from './ui-builder.js';
 
 export function getfriendid(friendEle) {
     return friendEle.getAttribute('data-name');
 }
 
 export let chatwindow = document.querySelector('.chat-data-frame .chat-data');
+
 HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
     this.scrollTo(aimPositionElement.offsetLeft, aimPositionElement.offsetTop)
 }
@@ -194,11 +196,13 @@ let objectTest = {
 objectTest.thisIsATypescriptTestFrunction()
 /**
  * 基础聊天数据
+ * 主要用于数据注释的interface
+ * 
  */
 class ChatData {
     /**
      * 
-     * @param {{iscurrentuser:boolean,content:string,date:string,isread:number}}  
+     * @param {{iscurrentuser:boolean,content:string,date:number,isread:number}}  
      */
     constructor({
         iscurrentuser,
@@ -217,7 +221,7 @@ class ChatData {
      */
     content;
     /**聊天时间 格式yyyyMMdd.HHmmss
-     * @type {string}
+     * @type {number}
      */
     date;
     /**是否是当前登录的账户
@@ -260,6 +264,64 @@ export default class BuildBubblesFrame {
     /**一个好友信息的所有标签元素的父元素
      * @type {HTMLElement}*/
     sigleChat;
+
+    /**
+     * loading initializated data
+     */
+    initializaingData = () => {
+        getAjaxData({
+            url: 'http://localhost:8888/api/loaddata',
+            // data: '...',
+            success: d => {
+                if (d) {
+                    this.translatedataFormat(d);
+                    this.serialload(this.chatDataLists);
+                    this.updateFrame(this.chatDataLists);
+                    this.initializaingfriendlist();
+                    this.setonclickanimotion();
+                    // 调整提示气泡
+                }
+                else {
+                    //没有任何消息记录和好友
+                }
+            },
+            failed: err => {
+                console.log(err)
+            }
+        })
+    }
+    translatedataFormat = d => {
+        /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:boolean,content:string,date:number,isread:number}[]}[]} */
+        let data = JSON.parse(d);
+        // 获取并转化为chatsiglelist[]|chatsiglelist;
+        data.forEach((value, i, Lists) => {
+            this.chatDataLists[i] = new ChatDataSigleList(value.peername, value.peerpic, value.chatdata)
+            let lastSpeak = value.chatdata[value.chatdata.length - 1];
+            this.chatDataLists[i].lastSpeak = lastSpeak;
+            this.chatDataLists[i].isMeSpeakNow = lastSpeak.iscurrentuser;
+            let unreadcount = 0;
+            value.chatdata.forEach(v => {
+                if (v.isread == 0)
+                    unreadcount++;
+            });
+            this.chatDataLists[i].unreadCount = unreadcount;
+        });
+    }
+
+    /** 由于ajax异步加载，所以在调用处申明，方便引用 */
+    setonclickanimotion;
+    /**初始化好友列表 */
+    initializaingfriendlist = () => {
+        this.friendlistEle.innerHTML = '';
+        for (let name in this.bubblesFrame) {
+            this.friendlistEle.innerHTML += `<li class="friends-list" data-name="${name}">
+             ${(this.bubblesFrame[name].unreadCount == 0 ? '' : `<span class="unread-tip">${this.bubblesFrame[name].unreadCount}</span>`)}
+            <img src="${(this.bubblesFrame[name]?.peerpic ? this.bubblesFrame[name].peerpic : "")}"  width="30" height="30" alt="">${name}</li>`;
+        }
+    }
+
+
+
     /**
      * @param {string} peername 聊天对象名
      * @param {Boolean} isopentransition 启用动画
@@ -305,6 +367,8 @@ export default class BuildBubblesFrame {
                     v.isread = 1;
                     this.addpieceschat(v, name, pic, true, isopentransition)
                 });
+                frame.unreadCount = 0
+                resendmessage();
                 chatwindow.scrolltoRelativePosition(chatwindow.children[chatwindow.children.length - 1]);
             }
         } catch (e) {
@@ -373,7 +437,7 @@ export default class BuildBubblesFrame {
             success: d => {
                 if (d) {
                     /**
-                     * @type {{iscurrentuser:string,content:string,date:string,isread:number}[]}}
+                     * @type {{iscurrentuser:string,content:string,date:number,isread:number}[]}}
                      */
                     let history = JSON.parse(d).data;
                     /**@type {ChatDataSigleList} */
@@ -396,62 +460,7 @@ export default class BuildBubblesFrame {
 
     }
 
-    /**
-     * loading initializated data
-     */
-    initializaingData = () => {
-        getAjaxData({
-            url: 'http://localhost:8888/api/loaddata',
-            // data: '...',
-            success: d => {
-                if (d) {
-                    this.translatedataFormat(d);
-                    serialload(this.chatDataLists);
-                    this.updateFrame(this.chatDataLists);
-                    this.initializaingfriendlist();
-                    this.setonclickanimotion();
-                    // 调整提示气泡
-                }
-                else {
-                    //没有任何消息记录和好友
-                }
-            },
-            failed: err => {
-                console.log(err)
-            }
-        })
-    }
-    translatedataFormat = d => {
-        /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:boolean,content:string,date:string,isread:number}[]}[]} */
-        let data = JSON.parse(d)
-        // 获取并转化为chatsiglelist[]|chatsiglelist;
-        let recChatDataLists = data;
-        recChatDataLists.forEach((value, i, Lists) => {
-            this.chatDataLists[i] = new ChatDataSigleList(value.peername, value.peerpic, value.chatdata)
-            let lastSpeak = value.chatdata[value.chatdata.length - 1];
-            this.chatDataLists[i].lastSpeak = lastSpeak;
-            this.chatDataLists[i].isMeSpeakNow = lastSpeak.iscurrentuser;
-            let unreadcount = 0;
-            value.chatdata.forEach(v => {
-                if (v.isread == 0)
-                    unreadcount++;
-            });
-            this.chatDataLists[i].unreadCount = unreadcount;
-        });
-    }
-
-    /** 由于ajax异步加载，所以在调用处申明，方便引用 */
-    setonclickanimotion;
-    /**初始化好友列表 */
-    initializaingfriendlist = () => {
-        this.friendlistEle.innerHTML = '';
-        for (let name in this.bubblesFrame) {
-            this.friendlistEle.innerHTML += `<li class="friends-list" data-name="${name}">
-             ${(this.bubblesFrame[name].unreadCount == 0 ? '' : `<span class="unread-tip">${this.bubblesFrame[name].unreadCount}</span>`)}
-            <img src="${(this.bubblesFrame[name]?.peerpic ? this.bubblesFrame[name].peerpic : "")}"  width="30" height="30" alt="">${name}</li>`;
-        }
-    }
-    listening = getAjaxData({
+    listening = () => getAjaxData({
         url: 'http://localhost:8888/api/listening',
         success: d => {
             if (d) {
@@ -466,41 +475,43 @@ export default class BuildBubblesFrame {
             }
             this.listening();
         }
-    })
+    });
     /**
      * 主动发送消息给对方
      * @param {string} name 聊天对象名称
-     * @param {string} data 内容
+     * @param {string} content 内容
      * @param {boolean} isopentransition 开启动画
      */
-    sendChatMessage = async (friendfocus, data, isopentransition) => {
+    sendChatMessage = async (content, isopentransition) => {
         try {
-            let name = getfriendid(friendfocus);
+            let name = getfriendid(friendFocus);
             let date = parseFloat(new Date().formatDate('yyyyMMdd.HHmmss'))
-            this.bubblesFrame[name].pushChatData(new ChatData({
+            this.bubblesFrame[name].pushChatData({
                 iscurrentuser: true,
-                content: data,
-                date: date
-            }));
+                content: content,
+                date: date,
+                isread: 1
+            });
             let piecesChat = document.createElement('div');
             piecesChat.className = 'user-speak';
             piecesChat.innerHTML += `
-                                <div class="sending"></div>
-                                <div class="user-chat-bubble">${data.replace('\n', '<br>')}</div>
+                                <div class="sending" date="${date}"></div>
+                                <div class="user-chat-bubble">${content.replace('\n', '<br>')}</div>
                                 <img src="${this.userpic}"
                                     width="30" alt="${this.username}">`;
             this.sigleChat.append(piecesChat);
             chatwindow.scrolltoRelativePosition(piecesChat);
             let resend = this.sigleChat?.children[this.sigleChat.children.length - 1]?.children[0];
+            /**@type {{peername: string,content: string, date:number,isread: 0 }} */
             let chatdata = {
                 peername: name,
-                content: data,
-                date: date
-
+                content: content,
+                date: date,
+                isread: 0
             };
             if (isopentransition)
                 piecesChat.style.opacity = 1;
-            this.friendlistEle.prepend(friendfocus)
+            this.friendlistEle.prepend(friendFocus)
             //经过一系列处理存到服务器
             getAjaxData({
                 url: 'http://localhost:8888/api/chato',
@@ -511,21 +522,75 @@ export default class BuildBubblesFrame {
                     if (d)
                         msg = JSON.parse(d)
                     if ((msg?.status && msg?.status == 0) || !msg?.status) {
-                        resend.innerHTML = '重发';
-                        resend.className = 'resend';
-                        this.bubblesFrame.name.chatdata[this.bubblesFrame.name.chatdata.length - 1].sendfailed = true;
+                        this.sentfailed(resend)
+                        this.bubblesFrame[name].chatdata[this.bubblesFrame[name].chatdata.length - 1].sendfailed = true;
                     } else {
                         this.sigleChat?.children[this.sigleChat.children.length - 1]?.children[0]?.remove();
                     }
                 },
                 failed: err => {
-                    resend.innerHTML = '重发';
-                    resend.className = 'resend';
-                    this.bubblesFrame.name.chatdata[this.bubblesFrame.name.chatdata.length - 1].sendfailed = true;
+                    this.sentfailed(resend)
+                    this.bubblesFrame[name].chatdata[this.bubblesFrame[name].chatdata.length - 1].sendfailed = true;
                 }
             })
         } catch { }
     }
+    /**
+     * 
+     * @param {HTMLElement} resend 
+     */
+    sentfailed = resend => {
+        resend.innerHTML = '重发';
+        resend.className = 'resend';
+        resend.onclick = function (e) {
+            this.className = 'sending';
+            this.innerText = '';
+            let content = this.parentElement.children[1].innerHTML;
+            frame.resent(this, friendFocus, content)
+        }
+    }
+    /**
+     * 
+     * @param {HTMLElement} resentEle 
+     * @param {string} content 
+     */
+    resent = (resentEle, content) => {
+        let name = getfriendid(friendFocus);
+        let date = parseFloat(new Date().formatDate('yyyyMMdd.HHmmss'))
+        let chatdata = {
+            peername: name,
+            content: content,
+            date: date,
+            isread: 0
+        };
+        getAjaxData({
+            url: 'http://localhost:8888/api/chato',
+            data: JSON.stringify(chatdata),
+            success: d => {
+                /**@type {{ status: number, msg: undefined }} */
+                let msg;
+                if (d)
+                    msg = JSON.parse(d)
+                if ((msg?.status && msg?.status == 0) || !msg?.status) {
+                    this.sentfailed(resentEle)
+                } else {
+                    /**@type {ChatData[]} */
+                    let bubble = this.bubblesFrame[name].chatdata;
+                    for (let i = bubble.length - 1; i >= 0; i--) {
+                        if (bubble[i].date.toString() == resentEle.getAttribute('date')) {
+                            this.bubblesFrame[name].chatdata[i].sendfailed = false;
+                            resentEle.remove();
+                        }
+                    }
+                }
+            },
+            failed: err => {
+                this.sentfailed(resentEle, false)
+            }
+        })
+
+    }
+
     /**
      *  serial the last chat to top one
      * @param {ChatDataSigleList[]} array 

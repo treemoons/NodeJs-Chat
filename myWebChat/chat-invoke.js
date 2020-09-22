@@ -16,6 +16,7 @@ initialFrameTheme({
     // ,
 });
 
+/** 向上滚动查看历史记录 */
 document.querySelector('.chat-data-frame>.chat-data').ScrollToTheTopUp({
     /**@param {WheelEvent} e */
     action: (e, tip) => {

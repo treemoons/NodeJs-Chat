@@ -4,7 +4,9 @@
     margin: 0;
     padding: 0;
 }
-
+body{
+    min-width: 441px;
+}
 .chat {
     position: relative;
     overflow: hidden;
@@ -357,7 +359,9 @@ body {
     animation: rotate 1s linear 0ms infinite;
     -webkit-animation: rotate linear 1s 0ms infinite;
 }
-
+.resend{
+    cursor: pointer;
+}
 .sending::before {
     margin-right: 5px;
     width: 20px;
