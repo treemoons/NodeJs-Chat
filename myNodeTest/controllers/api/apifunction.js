@@ -207,7 +207,9 @@ export async function chatto(http) {
                             msg.msg = err.message;
                         } else {
                             msg.status = 1;
-                            if (listeningHttp[data.peername]) {
+                            //检查是否对方登录超时
+                            if (await getloginedUser(listeningHttp[data.peername])) {
+                                //对方在线中
                                 listeningHttp[data.peername].response.end(
                                     JSON.stringify(
                                         {
@@ -219,6 +221,8 @@ export async function chatto(http) {
                                 sqlite3.run(`UPDATE CHATDATA SET ISREAD =1 WHERE USERNAME=? AND PEERNAME=?; AND DATE=?`,
                                     [username, data.peername, data.date],
                                     err => { });
+                            } else {// 释放http终结资源
+                                logout(listeningHttp[data.peername])
                             }
                         }
                         http.response.end(JSON.stringify(msg))
@@ -237,7 +241,7 @@ export async function listening(http) {
 }
 
 /**
- * 退出登录需要调用
+ * 主动退出登录需要调用
  */
 export async function logout(http) {
     listeningHttp[await getloginedUser(http)] = undefined;
