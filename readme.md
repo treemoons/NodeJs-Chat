@@ -10,7 +10,7 @@
 initialFrameTheme({
     chat= document.getElementsByClassName('chat')[0], //object element
     listsFrame = document.querySelector('.chat-list .friends-frame'),// friends list element
-    chatDataWindow = chatwindow.parentElement,, //window of chat 
+    chatwindowFrame = chatwindow.parentElement,, //window of chat 
     focusfriend= { //setting forcolor or backgroudcolor chat to one ,who is the friend in friends list
         focusBackground: 'plum',
         focusColor: 'white'
@@ -61,14 +61,24 @@ initialFrameTheme({
 ***regular the format of data,which persons who talked each other via***
 ```ts
 let sigleChat= { 
-    applyuser: string,
-    senddata: { 
         username: string,
         content: string,
         date: string|number,
         isread:number 
-    }
 }
+```
+***the formate of loaded data ,whose class is from  '`BuildBubblesFrame`'***
+```ts
+let data={
+    peername:string,
+    peerpic:string,
+    chatdata:{
+        iscurrentuser:string,
+        content:string,
+        date:string,
+        isread:number
+        }[] 
+    }[]
 ```
 ---
 ># **Electron**
