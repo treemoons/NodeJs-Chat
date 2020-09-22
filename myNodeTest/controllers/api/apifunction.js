@@ -5,7 +5,7 @@
     getTodayDawn,
     getloginedUser
 } from '../../myfunc.js'; //相对该文件的相对位置
-console.log(new Date().formatDate('yyyy.dd'))
+
 import {
     IncomingMessage,
     ServerResponse
@@ -67,10 +67,10 @@ export async function loaddata(http) {
     let username = 'treemoons' //await getloginedUser(http); // 获取登录过后的用户名，使用base64加密，加密次数为encodingTimes；
     if (username) //{
         sqlite3.serialize(() => {
-            /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}[]} */
+            /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:number,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}[]} */
             let chatdatarray = [];
             // sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
-            //     username, (err,/**@type {{date:string|Number,peerpic:string}} */ row) => {
+            //     username, (err,/**@type {{date:number|Number,peerpic:string}} */ row) => {
             //         if (err.isNullOrUndefined()) {
             sqlite3.all(`SELECT distinct peername FROM(select peername as peername from CHATDATA where USERNAME=? union select username from chatdata  where peername=?) `,
                 [username, username],
@@ -78,14 +78,14 @@ export async function loaddata(http) {
                     peers) => {
                     if (peers.length > 0 && !err)
                         peers.forEach(peer => {
-                            /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}} */
+                            /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:number,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}} */
                             let chatsigledata = {};
                             sqlite3.all(`SELECT username,peername,content,date,isread FROM CHATDATA WHERE (DATE>= 
                                         (SELECT DATE FROM CHATDATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))
                                          AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1) OR DATE>=${parseFloat(getTodayDawn().formatDate('yyyyMMdd.HHmmss'))}) 
                                          AND ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))  ORDER BY DATE ASC`,
                                 [username, peer.peername, peer.peername, username, username, peer.peername, peer.peername, username],
-                                (err, /** @type {{username:string,peername:string,content:string,date:string,isread:Number}[]}*/
+                                (err, /** @type {{username:string,peername:string,content:string,date:Number,isread:Number}[]}*/
                                     rows) => {
                                     sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
                                         peer.peername,
@@ -100,7 +100,7 @@ export async function loaddata(http) {
                                             chatsigledata.peername = peer.peername;
                                             chatsigledata.chatdata = [];
                                             rows.forEach(sigle => {
-                                                /**@type {{iscurrentuser:string,content:string,date:string,isread:number}} */
+                                                /**@type {{iscurrentuser:boolean,content:string,date:number,isread:number}} */
                                                 let chatsigle = {
                                                     iscurrentuser: sigle.username == username,
                                                     content: sigle.content,
@@ -149,10 +149,10 @@ export async function gethistory(http) {
                 [username, data.peername, data.peername, username, data.ignorecount, data.requestcount],
                 (err, rows) => {
                     if (!err && rows?.length > 0) {
-                        /**@type {{iscurrentuser:string,content:string,date:string,isread:number}[]} */
+                        /**@type {{iscurrentuser:string,content:string,date:number,isread:number}[]} */
                         let datarows = [];
                         rows.forEach(sigle => {
-                            /**@type {{iscurrentuser:string,content:string,date:string,isread:number}} */
+                            /**@type {{iscurrentuser:string,content:string,date:number,isread:number}} */
                             let chatsigle = {
                                 iscurrentuser: sigle.username == username,
                                 content: sigle.content,
@@ -183,7 +183,7 @@ export async function gethistory(http) {
 export async function chatto(http) {
     http.request.on('data', async d => {
         if (d) {
-            /**@type {{  peername: string, content: string, date: string|number,isread:number  }} */
+            /**@type {{  peername: string, content: string, date: number,isread:number  }} */
             let data = JSON.parse(d);
             let msg = {
                 status: 0,
@@ -198,19 +198,27 @@ export async function chatto(http) {
                 });
                 http.response.end(JSON.stringify(msg))
             }
-            listeningHttp[data.peername]
             function insertSql() {
                 sqlite3.run(`INSERT INTO CHATDATA(USERNAME,PEERNAME,CONTENT,DATE,ISREAD) VALUES(?,?,?,?,0);`,
-                    [username, data.peername, data.content, parseFloat(data.date)],
+                    [username, data.peername, data.content,],
                     err => {
                         if (!err) {
                             msg.msg = err.message;
                         } else {
                             msg.status = 1;
-                            sqlite3.get('SELECT * FROM CHATDATA', (err, rows) => {
-                                console.log(rows);
-                                msg.msg = rows;
-                            });
+                            if (listeningHttp[data.peername]) {
+                                listeningHttp[data.peername].response.end(
+                                    JSON.stringify(
+                                        {
+                                            peername: name,
+                                            content: data.content,
+                                            date: data.date,
+                                            isread: 0
+                                        }));
+                                sqlite3.run(`UPDATE CHATDATA SET ISREAD =1 WHERE USERNAME=? AND PEERNAME=?; AND DATE=?`,
+                                    [username, data.peername, data.date],
+                                    err => { });
+                            }
                         }
                         http.response.end(JSON.stringify(msg))
                     });
@@ -221,6 +229,23 @@ export async function chatto(http) {
 
 
 /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
-export async function listeningdata(http) {
-    listeningHttp['name'] = http;
+export async function listening(http) {
+    // listeningHttp[await getloginedUser(http)] = http;
+    listeningHttp['treemoons'] = http;
+    // listeningHttp['treemoons'].response.setHeader('Content-Type', 'text/plain');
 }
+
+/**
+ * 退出登录需要调用
+ */
+export async function logout(http) {
+    listeningHttp[await getloginedUser(http)] = undefined;
+}
+
+export function test(t) {
+    {
+        listeningHttp['treemoons'].response.end("test----这是我listening的结果");
+        t.response.end(JSON.stringify({ name: '1234', numname: 1234444 }));
+    }
+}
+

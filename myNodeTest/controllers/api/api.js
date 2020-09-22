@@ -22,6 +22,8 @@ export default {
     /**加载所有的聊天记录，截止到未读或今天凌晨 */
     loaddata: api.loaddata,
     gethistory: api.gethistory,
+    listening: api.listening,
+    test: api.test ,
     // }
     sentmessage: /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         async http => { }

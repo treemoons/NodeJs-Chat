@@ -17,6 +17,10 @@
 //     }
 // })
 
+export function getfriendid(friendEle) {
+    return friendEle.getAttribute('data-name');
+}
+
 export let chatwindow = document.querySelector('.chat-data-frame .chat-data');
 HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
     this.scrollTo(aimPositionElement.offsetLeft, aimPositionElement.offsetTop)
@@ -104,7 +108,6 @@ export function getTodayDawn() {
     return date;
 }
 
-
 /**
  * 将指定的“yyyyMMdd.HHmmss”格式的时间转换成时间对象
  * @param {string} formated 
@@ -176,8 +179,10 @@ class ChatDataSigleList {
      */
     isMeSpeakNow;
     /**@type {number} */
-    unreadCount;
+    unreadCount = 0;
 }
+
+
 /**@deprecated */
 let objectTest = {
 
@@ -193,16 +198,18 @@ objectTest.thisIsATypescriptTestFrunction()
 class ChatData {
     /**
      * 
-     * @param {{iscurrentuser:boolean,content:string,date:string}}  
+     * @param {{iscurrentuser:boolean,content:string,date:string,isread:number}}  
      */
     constructor({
         iscurrentuser,
         content,
-        date
+        date,
+        isread = 0
     }) {
         this.iscurrentuser = iscurrentuser;
         this.content = content;
         this.date = date;
+        this.isread = isread
     }
 
     /**聊天内容 
@@ -218,6 +225,8 @@ class ChatData {
     iscurrentuser;
     /**@type {boolean} */
     isread;
+    /**@type {boolean} */
+    sendfailed;
 }
 /** 创建聊天数据基础与显示client端 */
 export default class BuildBubblesFrame {
@@ -262,6 +271,8 @@ export default class BuildBubblesFrame {
             /**
              * @type {ChatDataSigleList}
              */
+
+            debugger
             let frame = this.bubblesFrame[peername];
             if (frame) {
                 let data = frame.chatdata;
@@ -291,21 +302,29 @@ export default class BuildBubblesFrame {
                         isShowDate(v.date, date.formatDate('yyyy年MM月dd日 HH:mm:ss'))
                     }
                     dateTemp = v.date;
-                    this.addpieceschat(v, name, pic,isopentransition)
+                    v.isread = 1;
+                    this.addpieceschat(v, name, pic, true, isopentransition)
                 });
-                let chatwindow = document.querySelector('.chat-data-frame .chat-data');
                 chatwindow.scrolltoRelativePosition(chatwindow.children[chatwindow.children.length - 1]);
             }
         } catch (e) {
             console.log(e);
         }
     }
-
-    addpieceschat = (piecesdata, name, pic, isopentransition, asc = true) => {
+    /**
+     * 
+     * @param {ChatData} piecesdata 聊天信息
+     * @param {string} name 用户名
+     * @param {string} pic 用户头像
+     * @param {boolean} asc 升降添加
+     * @param {boolean} isopentransition 开启动画
+     */
+    addpieceschat = (piecesdata, name, pic, asc, isopentransition) => {
         let piecesChat = document.createElement('div');
         if (piecesdata.iscurrentuser) {
             piecesChat.className = 'user-speak';
             piecesChat.innerHTML += `
+                                ${(piecesdata.sendfailed ? '<div class="resend">重发</div>' : '')}
                                 <div class="user-chat-bubble">${piecesdata.content}</div>
                                 <img src="${pic}"
                                     width="30" height="30" alt="${name}">`;
@@ -350,7 +369,7 @@ export default class BuildBubblesFrame {
         //suppose got it into variable history
         getAjaxData({
             url: 'http://localhost:8888/api/gethistory',
-            data: JSON.stringify({ peername: name, requestcount: pieces, ignorecount: this.bubblesFrame[name].chatdata.length }),
+            data: JSON.stringify({ peername: name, requestcount: pieces, ignorecount: (this.bubblesFrame[name]?.chatdata?.length ? this.bubblesFrame[name].chatdata.length : 0) }),
             success: d => {
                 if (d) {
                     /**
@@ -387,7 +406,7 @@ export default class BuildBubblesFrame {
             success: d => {
                 if (d) {
                     this.translatedataFormat(d);
-                    loadserial(this.chatDataLists);
+                    serialload(this.chatDataLists);
                     this.updateFrame(this.chatDataLists);
                     this.initializaingfriendlist();
                     this.setonclickanimotion();
@@ -403,7 +422,7 @@ export default class BuildBubblesFrame {
         })
     }
     translatedataFormat = d => {
-        /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:string,isread:number}[]}[]} */
+        /**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:boolean,content:string,date:string,isread:number}[]}[]} */
         let data = JSON.parse(d)
         // 获取并转化为chatsiglelist[]|chatsiglelist;
         let recChatDataLists = data;
@@ -414,7 +433,7 @@ export default class BuildBubblesFrame {
             this.chatDataLists[i].isMeSpeakNow = lastSpeak.iscurrentuser;
             let unreadcount = 0;
             value.chatdata.forEach(v => {
-                if (v.isread = 0)
+                if (v.isread == 0)
                     unreadcount++;
             });
             this.chatDataLists[i].unreadCount = unreadcount;
@@ -427,102 +446,117 @@ export default class BuildBubblesFrame {
     initializaingfriendlist = () => {
         this.friendlistEle.innerHTML = '';
         for (let name in this.bubblesFrame) {
-            this.friendlistEle.innerHTML += `<li class="friends-list"><img
-                                    src="${(this.bubblesFrame[name]?.peerpic ? this.bubblesFrame[name].peerpic : "")}"
-                                    width="30" height="30" alt="">${name}</li>`;
+            this.friendlistEle.innerHTML += `<li class="friends-list" data-name="${name}">
+             ${(this.bubblesFrame[name].unreadCount == 0 ? '' : `<span class="unread-tip">${this.bubblesFrame[name].unreadCount}</span>`)}
+            <img src="${(this.bubblesFrame[name]?.peerpic ? this.bubblesFrame[name].peerpic : "")}"  width="30" height="30" alt="">${name}</li>`;
         }
     }
-
+    listening = getAjaxData({
+        url: 'http://localhost:8888/api/listening',
+        success: d => {
+            if (d) {
+                //deal with new pieces of data of chat
+                /**@type {{peername: string,content: string, date:number,isread: 0 }} */
+                let data = JSON.stringify(d);
+                this.bubblesFrame[name].chatdata.push({ iscurrentuser: false, content: data.content, date: data.date, isread: data.isread });
+                this.serialload(this.chatDataLists);
+                this.bubblesFrame[name].unreadCount++;
+                this.initializaingfriendlist();
+                //go on listening
+            }
+            this.listening();
+        }
+    })
     /**
      * 主动发送消息给对方
      * @param {string} name 聊天对象名称
      * @param {string} data 内容
+     * @param {boolean} isopentransition 开启动画
      */
-    sendChatMessage = async (friendfocus, data,isopentransition) => {
+    sendChatMessage = async (friendfocus, data, isopentransition) => {
         try {
-            let name = friendfocus.innerText;
+            let name = getfriendid(friendfocus);
+            let date = parseFloat(new Date().formatDate('yyyyMMdd.HHmmss'))
             this.bubblesFrame[name].pushChatData(new ChatData({
                 iscurrentuser: true,
                 content: data,
-                date: new Date().formatDate('yyyyMMdd.HHmmss')
+                date: date
             }));
             let piecesChat = document.createElement('div');
             piecesChat.className = 'user-speak';
             piecesChat.innerHTML += `
                                 <div class="sending"></div>
-                                <div class="user-chat-bubble">${data.replace('\n','<br>')}</div>
+                                <div class="user-chat-bubble">${data.replace('\n', '<br>')}</div>
                                 <img src="${this.userpic}"
                                     width="30" alt="${this.username}">`;
             this.sigleChat.append(piecesChat);
             chatwindow.scrolltoRelativePosition(piecesChat);
             let resend = this.sigleChat?.children[this.sigleChat.children.length - 1]?.children[0];
             let chatdata = {
-                applyuser: 'username',
-                sentdata: {
-                    peername: name,
-                    content: data,
-                    date: new Date().formatDate('yyyyMMdd.HHmmss')
-                }
+                peername: name,
+                content: data,
+                date: date
+
             };
             if (isopentransition)
                 piecesChat.style.opacity = 1;
             this.friendlistEle.prepend(friendfocus)
-            debugger
             //经过一系列处理存到服务器
             getAjaxData({
                 url: 'http://localhost:8888/api/chato',
                 data: JSON.stringify(chatdata),
                 success: d => {
                     /**@type {{ status: number, msg: undefined }} */
-                    let msg = JSON.parse(d)
-                    if (msg.status == 0) {
+                    let msg;
+                    if (d)
+                        msg = JSON.parse(d)
+                    if ((msg?.status && msg?.status == 0) || !msg?.status) {
                         resend.innerHTML = '重发';
                         resend.className = 'resend';
+                        this.bubblesFrame.name.chatdata[this.bubblesFrame.name.chatdata.length - 1].sendfailed = true;
                     } else {
-                        this.sigleChat?.children[0]?.children[0]?.remove();
+                        this.sigleChat?.children[this.sigleChat.children.length - 1]?.children[0]?.remove();
                     }
                 },
                 failed: err => {
-
                     resend.innerHTML = '重发';
                     resend.className = 'resend';
+                    this.bubblesFrame.name.chatdata[this.bubblesFrame.name.chatdata.length - 1].sendfailed = true;
                 }
             })
         } catch { }
     }
-}
+    /**
+     *  serial the last chat to top one
+     * @param {ChatDataSigleList[]} array 
+     */
+    serialload = array => {
 
-
-/**
- *  serial the last chat to top one
- * @param {ChatDataSigleList[]} array 
- */
-function loadserial(array) {
-
-    // debugger;
-    var arr = [];//定义一个数组对象
-    //遍历赋值
-    for (let i = 0; i < array.length; i++) {
-        arr.push({
-            key: array[i].chatdata[array[i].chatdata.length - 1].date,
-            val: array[i]
-        })
-    }
-    //排序对象
-    serial(arr);
-    //冒泡排序方法排列数组对象
-    function serial(arrs) {
-        for (let j = 0; j < arr.length - 1; j++) {
-            for (let k = 0; k < arr.length - j - 1; k++) {
-                var temp = arrs[k];
-                if (arrs[k].key > arrs[k + 1].key) {//比较相邻的值，>为从小到大，<从大到小；
-                    arrs[k] = arrs[k + 1];
-                    arrs[k + 1] = temp;
+        // debugger;
+        var arr = [];//定义一个数组对象
+        //遍历赋值
+        for (let i = 0; i < array.length; i++) {
+            arr.push({
+                key: array[i].chatdata[array[i].chatdata.length - 1].date,
+                val: array[i]
+            })
+        }
+        //排序对象
+        serial(arr);
+        //冒泡排序方法排列数组对象
+        function serial(arrs) {
+            for (let j = 0; j < arr.length - 1; j++) {
+                for (let k = 0; k < arr.length - j - 1; k++) {
+                    var temp = arrs[k];
+                    if (arrs[k].key > arrs[k + 1].key) {//比较相邻的值，>为从小到大，<从大到小；
+                        arrs[k] = arrs[k + 1];
+                        arrs[k + 1] = temp;
+                    }
                 }
             }
         }
-    }
-    for (let i = 0; i < arr.length; i++) {
-        array[i] = arr[i].val;
+        for (let i = 0; i < arr.length; i++) {
+            array[i] = arr[i].val;
+        }
     }
 }

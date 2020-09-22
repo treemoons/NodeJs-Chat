@@ -40,7 +40,7 @@ function start() {
          * @param {{controller:string,action:string}} route like 'controller','action'
          */
         function matchRoute({ controller, action }) {
-            if (routes == undefined || routes == null) return;
+            if (!routes) return;
             for (let controllerName in routes) {
                 if (controller == controllerName) {
                     for (let actionName in routes[controllerName]) {

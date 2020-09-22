@@ -106,9 +106,15 @@
                     username: 'name', content: 'data', date: new Date().getDate().toString(), isread: 0
                 }
             });
-
+getAjaxData({
+    url:'http://localhost:8888/api/listening',
+    success:d=>{
+        debugger
+        alert(d)
+    }
+})
             let test = () => getAjaxData({
-                url: 'http://localhost:8888/api/gethistory',
+                url: 'http://localhost:8888/api/test',
                 data: JSON.stringify({ peername: "name", requestcount: 0, ignorecount: 1 }),
 
                 success: d => {
@@ -116,8 +122,8 @@
                         console.log('null')
                     }
                     console.log(d)
-                    document.getElementById('loaddata').innerText = d;
-                    console.log(JSON.parse(d))
+                    // document.getElementById('loaddata').innerText = d;
+                    // console.log(JSON.parse(d))
                     // document.write(d);
                 }
             });
@@ -223,7 +229,7 @@
         <body>
 <div contenteditable="true">
     jj
-    <img src="../../userpic.png" alt="">
+    <!-- <img src="../../userpic.png" alt=""> -->
 </div>
 
             <div class="p" title="3">middle my friends</div>

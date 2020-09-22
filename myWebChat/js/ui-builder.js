@@ -1,4 +1,4 @@
-import {chatwindow, default as BuildFrame} from './chat-frame.js';
+import {chatwindow, default as BuildFrame, getfriendid as getfriendId } from './chat-frame.js';
 /**要操作的目标元素
  * @type {HTMLElement}*/
  var aimOfContextMenu;
@@ -8,9 +8,9 @@ export let frame = new BuildFrame('treemoons', '../../peerpic.jpg');
 export var friendFocus;
 /**@type {HTMLElement}*/
 export let textArea = document.getElementById('text');
+
+export let getfriendid = getfriendId;
 window.frame = frame;
-
-
 /**
  * 
  * @param {Event} e 
@@ -28,17 +28,18 @@ export function keypressEnter(e, callback) {
 
 /**
  * 调用context-menu显示在指定元素上
- * @param {{contextMenuClassName:string, 
+ * @param {{contextMenuClassNameOrId:string, 
  * contextMenuItems:{args:[string,Function]},
  * aimAreaElements:HTMLElement|HTMLCollectionOf<HTMLElement>, 
  * style:{items:string,itemsHover:string,contextMenu:string,customize:string}}} param0 
  */
 export function contextMenu({
-    contextMenuClassName = 'context-menu',
+    contextMenuClassNameOrId = 'context-menu',
     contextMenuItems = {
         copy: ['复制', function (e) {
+            debugger
             this.innerHTML = `<textarea readonly>${aimOfContextMenu.innerText}</textarea>`;
-            console.log(aimOfContextMenu.innerText);
+            // console.log(aimOfContextMenu.innerText);
             this.children[0].select();
             document.execCommand('copy');
             console.log(this.children[0].value)
@@ -54,19 +55,20 @@ export function contextMenu({
     }
 } = {}) {
     let styleEle = document.createElement('style');
+    styleEle.id = 'style';
     styleEle.innerHTML = `
-                .${contextMenuClassName}>div {
+                .${contextMenuClassNameOrId}>div {
                     margin: 2px auto;
                     padding: 10px 40px;
                     ${style.items}
                 }
 
-                .${contextMenuClassName}>div:hover {
+                .${contextMenuClassNameOrId}>div:hover {
                     background-color: rgb(233, 233, 233);
                     ${style.itemsHover}
                 }
 
-                .${contextMenuClassName} {
+                .${contextMenuClassNameOrId} {
                     z-index: 9;
                     box-shadow: 1px 5px 12px rgba(0, 0, 0, 0.198);
                     overflow: hidden;
@@ -81,15 +83,24 @@ export function contextMenu({
                     opacity: 0;
                     ${style.contextMenu}
                 }${style.customize}`;
+
+    if (document.getElementById(styleEle.id)) {
+        document.head.removeChild(document.getElementById(styleEle.id));
+    }
     document.head.appendChild(styleEle);
 
+    if (document.getElementById(contextMenuClassNameOrId)) {
+        document.body.removeChild(document.getElementById(contextMenuClassNameOrId));
+    }
     let contentMenu = document.createElement('div');
-    contentMenu.className = contextMenuClassName;
+    contentMenu.className = contextMenuClassNameOrId;
+    contentMenu.id = contextMenuClassNameOrId;
+    contentMenu.innerHTML = '';
     document.body.appendChild(contentMenu);
 
     function setContextMenuosition(e) {
-        e.preventDefault();
         aimOfContextMenu = this;
+        e.preventDefault();
         contentMenu.style.display = 'block';
         setTimeout(() => {
             contentMenu.style.opacity = 1;
@@ -109,7 +120,6 @@ export function contextMenu({
             contentMenu.style.top = e.clientY + s + 'px';
     }
     for (let i = 0; i < aimAreaElements.length; i++) {
-        aimAreaElements[i].removeEventListener('contextmenu', e => { });
         aimAreaElements[i].oncontextmenu = setContextMenuosition;
     }
 
@@ -119,6 +129,7 @@ export function contextMenu({
 
     for (let item in contextMenuItems) {
         document.getElementById(item).onclick = contextMenuItems[item][1];
+        document.getElementById(item)
     }
 
     onclick = function () {
@@ -135,7 +146,7 @@ export function contextMenu({
 export function initialFrameTheme({
     chat = document.querySelector('.chat'),
     listsFrame = document.querySelector('.chat-list .friends-frame'),
-    chatDataWindow = chatwindow.parentElement,
+    chatwindowFrame = chatwindow.parentElement,
     focusfriend = {
         focusBackground: 'plum',
         focusColor: 'white'
@@ -219,7 +230,8 @@ export function initialFrameTheme({
         if (lists.length > 0) {
             for (let i = 0; i < lists.length; i++) {
                 lists[i].onclick = function () {
-                    document.getElementById('titlename').innerText = this.innerText
+                    let idname = getfriendid(this);
+                    document.getElementById('titlename').innerText = idname
                     if (friendFocus) {
                         friendFocus.setAttribute('style', `background-color:none;`);
                     }
@@ -236,23 +248,23 @@ export function initialFrameTheme({
                         .peer-speak {
                              opacity: 0;
                             }`;
-                        if (chatDataWindow.style.right == '0px') {
-                            chatDataWindow.setAttribute('style', 'right:150%;');
+                        if (chatwindowFrame.style.right == '0px') {
+                            chatwindowFrame.setAttribute('style', 'right:150%;');
                             setTimeout(() => {
-                                showChatWindow(this.innerText);
-                                chatDataWindow.setAttribute('style', 'right:0px');
+                                showChatWindow(idname);
+                                chatwindowFrame.setAttribute('style', 'right:0px');
                             }, 300)
                         } else {
-                            showChatWindow(this.innerText);
-                            chatDataWindow.setAttribute('style', 'right:0px');
+                            showChatWindow(idname);
+                            chatwindowFrame.setAttribute('style', 'right:0px');
                         }
                     } else {
-                        if (chatDataWindow.style.right != '0px') {
-                            chatDataWindow.setAttribute('style', 'right:0px');
+                        if (chatwindowFrame.style.right != '0px') {
+                            chatwindowFrame.setAttribute('style', 'right:0px');
                         }
-                        showChatWindow(this.innerText);
+                        showChatWindow(idname);
                     }
-
+                    this.children[0].style.opacity='0';
                     if (waitDivshow.isShow) {
                         waitDivshow.end();
                     }
@@ -267,11 +279,11 @@ export function initialFrameTheme({
             function (e) {
                 if (e.shiftKey && e.key == 'Enter') return;
                 keypressEnter(e, event => {
-                    if (this.value) {
-                        console.log(this.value)
+                    if (this.innerHTML) {
                         try {
-                            frame.sendChatMessage(friendFocus, this.value,isopentransition);
-                            this.value = null;
+                            frame.sendChatMessage(friendFocus, this.innerHTML,isopentransition);
+                            this.innerHTML = null;
+                            contextMenu();
                         } catch (e) {
                             console.log(e)
                         }
