@@ -1,6 +1,58 @@
-﻿import { ServerResponse } from "http";
+﻿import {  appendFileSync } from "fs";
+import { ServerResponse } from "http";
 
 /**
+ * @param {string} fmt 毫秒不可设置位数
+ */
+Date.prototype.formatDate = function (fmt) {
+    let o = {
+        "M+": this.getMonth() + 1, //月份           
+        "d+": this.getDate(), //日           
+        "h+": this.getHours() % 12 == 0 ? 12 : this.getHours() % 12, //小时           
+        "H+": this.getHours(), //小时           
+        "m+": this.getMinutes(), //分           
+        "s+": this.getSeconds(), //秒           
+        "q+": Math.floor((this.getMonth() + 3) / 3), //季度           
+        "f": this.getMilliseconds() //毫秒           
+    };
+    let week = {
+        "0": "\u65e5",
+        "1": "\u4e00",
+        "2": "\u4e8c",
+        "3": "\u4e09",
+        "4": "\u56db",
+        "5": "\u4e94",
+        "6": "\u516d"
+    };
+    if (/(y+)/.test(fmt)) {
+        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+    }
+    if (/(E+)/.test(fmt)) {
+        fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? "\u661f\u671f" : "\u5468") : "") + week[this.getDay() + ""]);
+    }
+    for (let k in o) {
+        if (new RegExp("(" + k + ")").test(fmt)) {
+            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+        }
+    }
+    return fmt;
+}
+
+
+export function writeLogs(text,tip='') {
+    let date = new Date();
+    let filename = './logs/' + date.formatDate('yyyyMMdd');
+    let log =
+        `\n
+---------------------------------
+${date.formatDate('yyyy-MM-dd HH:mm:ss.f')}  ${(tip?'['+tip+']':'')}
+---------------------------------
+${text}\n`
+    appendFileSync(filename, log, { encoding: 'utf-8' }, () => {
+
+    });
+}
+    /**
  * 
  * @param {string} name 
  * @param {string} purposeString 
@@ -120,43 +172,6 @@ export function getTodayDawn() {
     date.setMilliseconds(0);
     return date;
 }
-/**
- * @param {string} fmt 毫秒不可设置位数
- */
-Date.prototype.formatDate = function (fmt) {
-    let o = {
-        "M+": this.getMonth() + 1, //月份           
-        "d+": this.getDate(), //日           
-        "h+": this.getHours() % 12 == 0 ? 12 : this.getHours() % 12, //小时           
-        "H+": this.getHours(), //小时           
-        "m+": this.getMinutes(), //分           
-        "s+": this.getSeconds(), //秒           
-        "q+": Math.floor((this.getMonth() + 3) / 3), //季度           
-        "f": this.getMilliseconds() //毫秒           
-    };
-    let week = {
-        "0": "\u65e5",
-        "1": "\u4e00",
-        "2": "\u4e8c",
-        "3": "\u4e09",
-        "4": "\u56db",
-        "5": "\u4e94",
-        "6": "\u516d"
-    };
-    if (/(y+)/.test(fmt)) {
-        fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
-    }
-    if (/(E+)/.test(fmt)) {
-        fmt = fmt.replace(RegExp.$1, ((RegExp.$1.length > 1) ? (RegExp.$1.length > 2 ? "\u661f\u671f" : "\u5468") : "") + week[this.getDay() + ""]);
-    }
-    for (let k in o) {
-        if (new RegExp("(" + k + ")").test(fmt)) {
-            fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
-        }
-    }
-    return fmt;
-}
-
 /**
  * 删除除img标签以外的所有HTML标签，
  * @param {string} str 

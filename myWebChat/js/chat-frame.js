@@ -463,6 +463,7 @@ export default class BuildBubblesFrame {
     listening = () => getAjaxData({
         url: 'http://localhost:8888/api/listening',
         success: d => {
+            this.listening();
             if (d) {
                 //deal with new pieces of data of chat
                 /**@type {{peername: string,content: string, date:number,isread: 0 }} */
@@ -473,6 +474,9 @@ export default class BuildBubblesFrame {
                 this.initializaingfriendlist();
                 //go on listening
             }
+        },
+        failed: err => {
+            console.log(err);
             this.listening();
         }
     });

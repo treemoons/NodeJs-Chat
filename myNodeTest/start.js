@@ -1,6 +1,6 @@
 ﻿import { readFile } from 'fs';
 import http from 'http';
-import {setCORS} from './myfunc.js';
+import { setCORS, writeLogs } from './myfunc.js';
 import { parse } from 'url';
 import * as routes from './controllers.js';
 function start() {
@@ -34,7 +34,7 @@ function start() {
                 }
             }
         }
-        
+
         /**
          * 
          * @param {{controller:string,action:string}} route like 'controller','action'
@@ -46,12 +46,18 @@ function start() {
                     for (let actionName in routes[controllerName]) {
                         if (action == actionName) {
                             setCORS(response)
-                            routes[controllerName][actionName]({ request, response, params });
+                            routes[controllerName][actionName]({ request, response, params }).catch(err => {
+                                writeLogs(err)
+                                console.error(err)
+                            });
                             return true;
                         }
                     }
                     setCORS(response)
-                    routes[controllerName]['default']({ request, response, params });
+                    routes[controllerName]['default']({ request, response, params }).catch(err => {
+                        writeLogs(err)
+                        console.error("Default Error:  \n" + err)
+                    });
                     return true;
                 }
             }
@@ -63,10 +69,15 @@ function start() {
         // console.log(query)
 
         if (controller) {
+            response.on('error', err => {
+                if (!err.message.concat('write after end')) {
+                    console.log(err.message);
+                }
+            })
             // request with controller ,to do below
             if (!matchRoute({ controller: controller, action: action })) {
                 // cound't find route,than to do below 
-                response.writeHead(200, { 'Content-Type':'text/html; charset=utf-8' });
+                response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
                 readFile('.\\layout/nodejstest.html', (e, d) => {
                     if (e) {
                         console.log(e)

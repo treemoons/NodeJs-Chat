@@ -14,6 +14,7 @@ import sqlite3modlue from 'sqlite3';
 const {
     Database
 } = sqlite3modlue;
+const utf8 = 'utf-8';
 let sqlite3 = new Database('.\\data.db'); //node运行时，启动的文件夹的相对位置
 
 // sqlite3.all(`select username,peername,content,date,isread from chatdata 
@@ -202,27 +203,24 @@ export async function chatto(http) {
             function insertSql() {
                 sqlite3.run(`INSERT INTO CHATDATA(USERNAME,PEERNAME,CONTENT,DATE,ISREAD) VALUES(?,?,?,?,0);`,
                     [username, data.peername, data.content,],
-                    err => {
+                    async err => {
                         if (!err) {
                             msg.msg = err.message;
                         } else {
                             msg.status = 1;
+                            //send to logined
+
                             //检查是否对方登录超时
-                            if (await getloginedUser(listeningHttp[data.peername])) {
-                                //对方在线中
-                                listeningHttp[data.peername].response.end(
-                                    JSON.stringify(
-                                        {
-                                            peername: name,
-                                            content: data.content,
-                                            date: data.date,
-                                            isread: 0
-                                        }));
-                                sqlite3.run(`UPDATE CHATDATA SET ISREAD =1 WHERE USERNAME=? AND PEERNAME=?; AND DATE=?`,
-                                    [username, data.peername, data.date],
-                                    err => { });
-                            } else {// 释放http终结资源
-                                logout(listeningHttp[data.peername])
+                            if (listeningHttp[data.peername] && await getloginedUser(listeningHttp[data.peername])) {
+                                let chatmessage = JSON.stringify({ peername: name, content: data.content, date: data.date, isread: 0 })
+                                listeningHttp[data.peername]?.response.end(chatmessage, utf8, () => {
+                                    sentSave(username, data);
+                                });
+                                listeningHttp[data.peername]?.response.on('error', err => {
+                                    listeningHttp[data.peername]?.response.end(chatmessage, utf8, () => {
+                                        sentSave(username, data);
+                                    });
+                                });
                             }
                         }
                         http.response.end(JSON.stringify(msg))
@@ -232,6 +230,13 @@ export async function chatto(http) {
     });
 }
 
+function sentSave(username,data) {
+    // listeningHttp[data.peername] = undefined;
+    //sent before being saved 
+    sqlite3.run(`UPDATE CHATDATA SET ISREAD =1 WHERE USERNAME=? AND PEERNAME=?; AND DATE=?`,
+        [username, data.peername, data.date],
+        err => { });
+}
 
 /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
 export async function listening(http) {
@@ -239,6 +244,7 @@ export async function listening(http) {
     listeningHttp['treemoons'] = http;
     // listeningHttp['treemoons'].response.setHeader('Content-Type', 'text/plain');
 }
+
 
 /**
  * 主动退出登录需要调用
@@ -254,3 +260,11 @@ export function test(t) {
     }
 }
 
+let a = { s: () => { console.log('s') } }
+let olds = a.s;
+function news() {
+    olds()
+    console.log('new s')
+}
+a.s = news;
+a.s();
