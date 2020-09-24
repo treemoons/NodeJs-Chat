@@ -3,9 +3,9 @@
     btoaEncrypt,
     buildCookie,
     getTodayDawn,
-    getloginedUser
+    getloginedUser,
+    getSpanDate
 } from '../../myfunc.js'; //相对该文件的相对位置
-
 import {
     IncomingMessage,
     ServerResponse
@@ -15,6 +15,7 @@ const {
     Database
 } = sqlite3modlue;
 const utf8 = 'utf-8';
+let listeningoutime = 30;
 let sqlite3 = new Database('.\\data.db'); //node运行时，启动的文件夹的相对位置
 
 // sqlite3.all(`select username,peername,content,date,isread from chatdata 
@@ -211,15 +212,16 @@ export async function chatto(http) {
                             //send to logined
 
                             //检查是否对方登录超时
-                            if (listeningHttp[data.peername] && await getloginedUser(listeningHttp[data.peername])) {
+                            if (listeningHttp[data.peername][0] && await getloginedUser(listeningHttp[data.peername][0])) {
                                 let chatmessage = JSON.stringify({ peername: name, content: data.content, date: data.date, isread: 0 })
-                                listeningHttp[data.peername]?.response.end(chatmessage, utf8, () => {
+                                listeningHttp[data.peername][0]?.response.end(chatmessage);
+                                listeningHttp[data.peername][0]?.response.once('finish', err => {
                                     sentSave(username, data);
                                 });
-                                listeningHttp[data.peername]?.response.on('error', err => {
-                                    listeningHttp[data.peername]?.response.end(chatmessage, utf8, () => {
-                                        sentSave(username, data);
-                                    });
+                                listeningHttp[data.peername][0]?.response.on('error', err => {
+                                    //超时不再请求
+                                    if (listeningHttp[data.peername][1]>new Date())
+                                    listeningHttp[data.peername][0]?.response.end(chatmessage);
                                 });
                             }
                         }
@@ -231,7 +233,7 @@ export async function chatto(http) {
 }
 
 function sentSave(username,data) {
-    // listeningHttp[data.peername] = undefined;
+    // listeningHttp[data.peername][0] = undefined;
     //sent before being saved 
     sqlite3.run(`UPDATE CHATDATA SET ISREAD =1 WHERE USERNAME=? AND PEERNAME=?; AND DATE=?`,
         [username, data.peername, data.date],
@@ -240,8 +242,8 @@ function sentSave(username,data) {
 
 /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
 export async function listening(http) {
-    // listeningHttp[await getloginedUser(http)] = http;
-    listeningHttp['treemoons'] = http;
+    // listeningHttp[await getloginedUser(http)] = [http, getSpanDate({ seconds: listeningoutime })];
+    listeningHttp['treemoons'] = [http, getSpanDate({ seconds: listeningoutime })];
     // listeningHttp['treemoons'].response.setHeader('Content-Type', 'text/plain');
 }
 
@@ -259,12 +261,3 @@ export function test(t) {
         t.response.end(JSON.stringify({ name: '1234', numname: 1234444 }));
     }
 }
-
-let a = { s: () => { console.log('s') } }
-let olds = a.s;
-function news() {
-    olds()
-    console.log('new s')
-}
-a.s = news;
-a.s();

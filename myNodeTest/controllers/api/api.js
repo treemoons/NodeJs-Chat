@@ -1,6 +1,6 @@
 ﻿import { IncomingMessage, ServerResponse } from 'http';
 import * as api from './apifunction.js';
-
+let listeningHttp = {}
 /** 默认是需要登录才能使用 */
 export default {
     default:
@@ -8,29 +8,32 @@ export default {
         async http => {
 
             try {
+                let t = 'treemoons';
+                listeningHttp[t] = [http, 30];
                 http.request.on('data', d => {
                     let re = http.response
                     console.log("default:  " + d.toString());
-
+                    listeningHttp[t][0]?.response.end('ddd', () => {
+                        console.log('dddddddd--------')
+                    });
                     console.log('test')
                     re?.end('1', () => {
                     });
                     let a = 1
                     re.on('error', err => {
+                        listeningHttp[t][0]?.response.end('ddd', () => {
+                             console.log('dddddddd--------')
+                         });
                         if (a > 10) {
-                            re = undefined
+                            re = undefined;
+                            listeningHttp[t][0]=undefined
                         }
                         a++;
-                        // try{re.setHeader('', '');}catch{console.log('sethear')}
-                        
-                        re?.end('2', () => {
-                            console.log(a+'\n jieshude ')
-                        })
                         console.log('err1,in default.')
                     })
-                    re?.end('12', () => {
-                        console.log('12 diyici')
-                    });
+                    re.once('finish', () => {
+                        console.log('finish')
+                    })
 
                 })
             } catch (e) {

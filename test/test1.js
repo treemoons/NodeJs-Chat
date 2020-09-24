@@ -18,3 +18,6 @@ sqlite3.serialize(() => {
         console.log(row)
     })
 });
+/**@type {HTMLCanvasElement} */
+let canvas;
+let context= canvas.getContext('2d');

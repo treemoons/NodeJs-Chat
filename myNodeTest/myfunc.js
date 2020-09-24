@@ -148,7 +148,7 @@ export async function getloginedUser(http) {
 
 
 /**
- * date default now (all values is '0')
+ * date default now (all values are '0')
  * @param {{ year:number, month:number, day:number,hours:number , minutes:number,seconds:number, milliseconds:number }}  
  */
 export function getSpanDate(
