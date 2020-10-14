@@ -158,24 +158,25 @@ export function initialFrameTheme({
     listsFrame = document.querySelector('.chat-list .friends-frame'),
     chatwindowFrame = chatwindow.parentElement,
     focusfriend = {
-        focusBackground: 'plum',
-        focusColor: 'white'
+        focusColor: '#000',
+        focusBackground: 'gainsboro'
     },
     userbubble = {
         userbubbleColor: undefined,
         userbubbleBackgroundColor: undefined
     },
     peerbubble = {
-        peerbubbleBackgroundColor: undefined,
-        peerbubbleColor: undefined
+        peerbubbleColor: undefined,
+        peerbubbleBackgroundColor: undefined
     },
     friendlist = {
-        friendlistBackgroundColor: 'white',
-        friendlistColor: 'black'
+        friendlistColor: undefined,
+        friendlistBackgroundColor: undefined
     },
     friendlisthover = {
-        friendlisthoverColor: '#000',
-        friendlisthoverBackgroundColor: 'gainsboro'
+        friendlisthoverColor: undefined,
+        friendlisthoverBackgroundColor: undefined,
+        friendlisthoverLeftBorderColor:undefined
     },
     // loadFriendsList =/**@param {BuildFrame} chatframe*/ chatframe => chatframe.initializaingfriendlist(),
     showChatWindow = (peername) => {
@@ -209,7 +210,7 @@ export function initialFrameTheme({
             .user-speak .user-chat-bubble::after {
                 border-left-color: ${userbubble.userbubbleBackgroundColor};
             }`;
-    if (peerbubble)
+    // if (peerbubble)
         style.innerHTML += `
             .peer-speak .user-chat-bubble::before {
                 border-right-color: ${peerbubble.peerbubbleBackgroundColor};
@@ -219,17 +220,18 @@ export function initialFrameTheme({
                 background-color: ${peerbubble.peerbubbleBackgroundColor};
                 
             }`;
-    if (friendlist)
+    // if (friendlist)
         style.innerHTML += `
             .friends-frame {
                 color:${friendlist.friendlistColor};
                 background-color: ${friendlist.friendlistBackgroundColor};
             }`;
-    if (friendlisthover)
+    // if (friendlisthover)
         style.innerHTML += `
             .friends-list:hover {
                 color:${friendlisthover.friendlisthoverColor};
                 background-color: ${friendlisthover.friendlisthoverBackgroundColor};
+                border-left: ${friendlisthover.friendlisthoverLeftBorderColor} 3px solid;
             }`;
     frame.friendlistEle = listsFrame;
     /**@type {HTMLElement} */
