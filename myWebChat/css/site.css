@@ -4,9 +4,11 @@
     margin: 0;
     padding: 0;
 }
-body{
+
+body {
     min-width: 441px;
 }
+
 .chat {
     position: relative;
     overflow: hidden;
@@ -33,7 +35,8 @@ body{
 
 .frame-middle {
     z-index: 9;
-    width: 3px;
+    height: 93vh;
+    width: 2px;
     background-color: gainsboro;
 }
 
@@ -57,7 +60,7 @@ body{
 }
 
 .friends-frame {
-    height: 93vh;
+    height: 90vh;
     list-style: none;
     overflow-y: scroll;
 }
@@ -71,9 +74,10 @@ textarea::-webkit-scrollbar {
 .friends-list {
     z-index: 9;
     display: flex;
+    position: relative;
     align-items: center;
     border-bottom: 1px solid rgb(243, 243, 243);
-    height: 80px;
+    height: 70px;
     cursor: pointer;
     list-style: none;
     /* border-radius: 3px; */
@@ -92,26 +96,6 @@ textarea::-webkit-scrollbar {
     color: rgb(255, 255, 255);
 }
 
-.chat-data {
-    width: 100%;
-    height: 68vh;
-    background-color: rgb(255, 255, 255);
-    overflow: auto;
-
-}
-
-.chat-tool {
-    height: 40px;
-    width: 100%;
-    background-color: rgb(196, 193, 197);
-}
-
-.chat-write {
-    width: 99.78%;
-    height: calc(25vh - 42px);
-    text-align: left;
-    resize: none;
-}
 
 .user-speak,
 .peer-speak {
@@ -359,9 +343,11 @@ body {
     animation: rotate 1s linear 0ms infinite;
     -webkit-animation: rotate linear 1s 0ms infinite;
 }
-.resend{
+
+.resend {
     cursor: pointer;
 }
+
 .sending::before {
     margin-right: 5px;
     width: 20px;
@@ -370,12 +356,12 @@ body {
 
 }
 
-.unread-tip{
+.unread-tip {
     width: 20px;
     height: 20px;
     position: absolute;
-    left: 18vh;
-    font-size: 18px;
+    right: 18%;
+    /* font-size: 18px; */
     background-color: red;
     vertical-align: middle;
     color: white;
@@ -385,4 +371,70 @@ body {
     -ms-border-radius: 50%;
     -o-border-radius: 50%;
     text-align: center;
+}
+
+.chat-textbox {
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+.chat-data {
+    width: 100%;
+    height: 68vh;
+    background-color: rgb(255, 255, 255);
+    overflow: auto;
+
+}
+
+.chat-tool {
+    height: 40px;
+    width: 100%;
+    background-color: rgb(196, 193, 197);
+}
+
+.chat-write {
+    width: 99.78%;
+    height: calc(25vh - 42px);
+    text-align: left;
+    outline-style: none;
+    appearance: none;
+    border-top: 1px solid transparent;
+    resize: none;
+}
+
+.chat-write:focus {
+    border-top: 1px solid rgb(223, 223, 177);
+}
+.chat-text-send-button {
+    position: absolute;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    right: 2px;
+    bottom: 20px;
+    height: 40px;
+    width: 20%;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 1px 3px 5px 1px gainsboro;
+    text-align: center;
+    border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -moz-border-radius: 5px;
+    -ms-border-radius: 5px;
+    -o-border-radius: 5px;
+}
+
+.chat-text-send-button:hover {
+    cursor: pointer;
+    background-color: rgb(255, 255, 255);
+    box-shadow: 1px 3px 5px 3px gainsboro;
+}
+
+.enter-empty {
+    display: none;
+    /* width: 150px; */
+    position: absolute;
+    padding: 10px;
+    box-shadow: 1px 2px 5px 1px gainsboro;
+    top: 0;
 }

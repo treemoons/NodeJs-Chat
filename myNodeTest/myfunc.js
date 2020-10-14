@@ -38,7 +38,11 @@ Date.prototype.formatDate = function (fmt) {
     return fmt;
 }
 
-
+/**
+ * 写入日志到文件当前/logs文件夹下,以日期命名无后缀
+ * @param {string} text 日志内容
+ * @param {string} tip 自定义的提示
+ */
 export function writeLogs(text,tip='') {
     let date = new Date();
     let filename = './logs/' + date.formatDate('yyyyMMdd');

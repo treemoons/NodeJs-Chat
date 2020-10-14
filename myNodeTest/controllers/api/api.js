@@ -54,7 +54,7 @@ export default {
      */
     gethistory: api.gethistory,
     listening: api.listening,
-    test: api.test,
+    test1: api.test,
     // }
     sentmessage: /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         async http => { }

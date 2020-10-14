@@ -11,6 +11,8 @@ import {
     ServerResponse
 } from 'http';
 import sqlite3modlue from 'sqlite3';
+import { appendFile, writeFile, writeFileSync } from 'fs';
+import { Stream } from 'stream';
 const {
     Database
 } = sqlite3modlue;
@@ -24,7 +26,7 @@ let sqlite3 = new Database('.\\data.db'); //node运行时，启动的文件夹�
 //         console.log(row)
 //         console.log(err)
 //     })
-/**@type {{name:{request:IncomingMessage,response:ServerResponse,params:string[]}}} */
+/**@type {{name:{http:{request:IncomingMessage,response:ServerResponse,params:string[]},outtime:Date}}} */
 export let listeningHttp = {}
 /**@type {number} */
 export let encodingTimes = 10;
@@ -220,8 +222,8 @@ export async function chatto(http) {
                                 });
                                 listeningHttp[data.peername][0]?.response.on('error', err => {
                                     //超时不再请求
-                                    if (listeningHttp[data.peername][1]>new Date())
-                                    listeningHttp[data.peername][0]?.response.end(chatmessage);
+                                    if (listeningHttp[data.peername][1] > new Date())
+                                        listeningHttp[data.peername][0]?.response.end(chatmessage);
                                 });
                             }
                         }
@@ -232,7 +234,7 @@ export async function chatto(http) {
     });
 }
 
-function sentSave(username,data) {
+function sentSave(username, data) {
     // listeningHttp[data.peername][0] = undefined;
     //sent before being saved 
     sqlite3.run(`UPDATE CHATDATA SET ISREAD =1 WHERE USERNAME=? AND PEERNAME=?; AND DATE=?`,
@@ -254,10 +256,30 @@ export async function listening(http) {
 export async function logout(http) {
     listeningHttp[await getloginedUser(http)] = undefined;
 }
+/**@type {{name:{http:{request:IncomingMessage,response:ServerResponse,params:string[]},img:{name:ArrayBuffer[]}}}} */
+let img = {};
 
-export function test(t) {
-    {
-        listeningHttp['treemoons'].response.end("test----这是我listening的结果");
-        t.response.end(JSON.stringify({ name: '1234', numname: 1234444 }));
-    }
+/** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
+export async function test(http) {
+    let body = '';
+    let accept = http.request.headers["test"];
+    console.log(accept);
+    let testheader = http.request.headers['content-type'];
+    console.log(testheader);
+    http.request.on('data', data => {
+        /**@type {ArrayBuffer} */
+        let d = data;
+        writeFileSync('./pp.gif',d,{encoding:'binary',flag:'as'},()=>{})
+        console.log(d.byteLength)
+    });
+    http.request.on('end', () => {
+        console.log('end...')
+        http.response.setHeader("Access-Control-Allow-Headers",'*')
+        http.response.end();
+    })
+
 }
+let a = '123456';
+console.log(a.slice(a.length - 1));
+
+console.log( parseFloat (100.11.toFixed('1'))+0.1)

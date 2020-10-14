@@ -1,4 +1,4 @@
-import { chatwindow, default as BuildFrame, getfriendid as getfriendId } from './chat-frame.js';
+import { changeTransition, chatwindow, default as BuildFrame, getAjaxData, getfriendid as getfriendId } from './chat-frame.js';
 /**要操作的目标元素
  * @type {HTMLElement}*/
 var aimOfContextMenu;
@@ -7,21 +7,32 @@ export let frame = new BuildFrame('treemoons', '../../peerpic.jpg');
 /**@type {HTMLElement}*/
 export var friendFocus;
 /**@type {HTMLElement}*/
-export let textArea = document.getElementById('text');
-
+export let textArea = document.getElementById('pretext');
+export let ajax = getAjaxData;
 export let getfriendid = getfriendId;
 window.frame = frame;
+/**
+ * 获取聊天中的图片
+ * @param {string} chattext 
+ */
+export function getChatImg(chattext) {
+    let reg = /<img.[^>]*src="(.[^"]*).[^>]*>/gi;
+    let match = chattext.match(reg);
+    return match == null ? undefined : match;
+}
+
+
 /**
  * 
  * @param {Event} e 
  * @param {(e:Event)=>void} callback 
  */
-export function keypressEnter(e, callback) {
+export function keypressEnter(e, callback, obj) {
     if (e.key) {
         let characterCode = e.key;
         if (characterCode == 'Enter') {
             e.preventDefault()
-            callback(e);
+            callback(obj);
         }
     }
 }
@@ -37,7 +48,6 @@ export function contextMenu({
     contextMenuClassNameOrId = 'context-menu',
     contextMenuItems = {
         copy: ['复制', function (e) {
-            debugger
             this.innerHTML = `<textarea readonly>${aimOfContextMenu.innerText}</textarea>`;
             // console.log(aimOfContextMenu.innerText);
             this.children[0].select();
@@ -164,31 +174,31 @@ export function initialFrameTheme({
         friendlistColor: 'black'
     },
     friendlisthover = {
-        friendlisthoverColor: 'white',
-        friendlisthoverBackgroundColor: 'gray'
+        friendlisthoverColor: '#000',
+        friendlisthoverBackgroundColor: 'gainsboro'
     },
-    isopentransition = false,
-
     // loadFriendsList =/**@param {BuildFrame} chatframe*/ chatframe => chatframe.initializaingfriendlist(),
     showChatWindow = (peername) => {
-        frame.showFrame(peername, isopentransition);
+        frame.showFrame(peername);
         contextMenu();
     },
+    isopentransition = false,
     waitDivshow = {
         isShow: true,
         begin: () => { document.querySelector('.move').style.display = 'block' },
         end: () => { document.querySelector('.move').style.display = 'none' }
     }
 } = {}) {
+    changeTransition(isopentransition);
     let styleEle = document.createElement("style");
     styleEle.id = 'style';
     let style = document.getElementById('style');
-    if (style == undefined) {
+    if (!style) {
         document.head.appendChild(styleEle);
         style = document.getElementById('style');
     }
-    if (userbubble != undefined)
-        if (style.innerHTML == null | undefined) {
+    if (userbubble)
+        if (style.innerHTML) {
             style.innerHTML = '';
         }
     style.innerHTML += `
@@ -199,7 +209,7 @@ export function initialFrameTheme({
             .user-speak .user-chat-bubble::after {
                 border-left-color: ${userbubble.userbubbleBackgroundColor};
             }`;
-    if (peerbubble != undefined)
+    if (peerbubble)
         style.innerHTML += `
             .peer-speak .user-chat-bubble::before {
                 border-right-color: ${peerbubble.peerbubbleBackgroundColor};
@@ -209,13 +219,13 @@ export function initialFrameTheme({
                 background-color: ${peerbubble.peerbubbleBackgroundColor};
                 
             }`;
-    if (friendlist != undefined)
+    if (friendlist)
         style.innerHTML += `
             .friends-frame {
                 color:${friendlist.friendlistColor};
                 background-color: ${friendlist.friendlistBackgroundColor};
             }`;
-    if (friendlisthover != undefined)
+    if (friendlisthover)
         style.innerHTML += `
             .friends-list:hover {
                 color:${friendlisthover.friendlisthoverColor};
@@ -278,22 +288,36 @@ export function initialFrameTheme({
             /** @param {KeyboardEvent} e */
             function (e) {
                 if (e.shiftKey && e.key == 'Enter') return;
-                keypressEnter(e, event => {
-                    if (this.innerHTML) {
-                        try {
-                            frame.sendChatMessage( this.innerHTML, isopentransition);
-                            this.innerHTML = null;
-                            contextMenu();
-                        } catch (e) {
-                            console.log(e)
-                        }
-                    }
-                });
+                keypressEnter(e, sent, this);
             }
-
+        document.querySelector('.chat-text-send-button').onclick = function (e) {
+            sent(textArea);
+            textArea.focus();
+        };
     }
 };
 
+/**
+ * 发送
+ * @param {HTMLElement} obj 要发送的文本html元素
+ */
+function sent(obj) {
+    if (obj.innerHTML) {
+        try {
+            frame.sendChatMessage(obj.innerHTML);
+            obj.innerHTML = null;
+            contextMenu();
+        } catch (e) {
+            console.error(e)
+        }
+    } else {
+        let tip = document.querySelector('.enter-empty');
+        tip.style.display = 'block';
+        setTimeout(() => {
+            tip.style.display = 'none'
+        }, 1000);
+    }
+}
 /**
  * 当scrolltop==0继续向上滑动的事件处理;
  * @param {{action:(e:Event)=>void,tipText:string,
@@ -305,30 +329,37 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (e, tip) => {
     tip.remove();
 },
     tipText = '更多', tipDealingText = '正在加载 ', tipClass = 'historytip', tipDealingClass = 'historyloading' }) {
-    this.onmousewheel =
-        /**
-        @param {WheelEvent} e*/
-        function (e) {
-            if (this.scrollTop === 0 && (e.wheelDelta > 0 || e.detail > 0)) {
-                let tip = this?.children[0];
-                if (tip?.getAttribute('class') == tipClass) {
-                    tip.innerText = tipDealingText;
-                    tip.className = tipDealingClass;
-                    action(e, tip);
-                } else if (this?.children[0]?.getAttribute('class') == tipDealingClass) {
-                    return;
-                } else {
-                    let tip = document.createElement('p');
-                    tip.innerText = tipText;
-                    tip.className = tipClass;
-                    this.prepend(tip);
-                    setTimeout(() => {
-                        if (tip?.getAttribute('class') == tipClass)
-                            tip.remove()
-                    }, 500);
-                }
+    // if (this.a===undefined)
+    //     console.log(this.a)
+    if (this.onwheel !== undefined)
+        this.onwheel = gethistorydata;
+    else if (this.onmousewheel !== undefined)
+        this.onmousewheel = gethistorydata;
+    else
+        this.addEventListener('DOMMouseScroll', gethistorydata)
+    /** 获取历史数据的滚动ui交互
+    @param {WheelEvent} e*/
+    function gethistorydata(e) {
+        if (this.scrollTop === 0 && (e.wheelDelta > 0 || e.detail < 0)) {
+            let tip = this?.children[0];
+            if (tip?.getAttribute('class') == tipClass) {
+                tip.innerText = tipDealingText;
+                tip.className = tipDealingClass;
+                action(e, tip);
+            } else if (this?.children[0]?.getAttribute('class') == tipDealingClass) {
+                return;
+            } else {
+                let tip = document.createElement('p');
+                tip.innerText = tipText;
+                tip.className = tipClass;
+                this.prepend(tip);
+                setTimeout(() => {
+                    if (tip?.getAttribute('class') == tipClass)
+                        tip.remove();
+                }, 500);
             }
         }
+    }
 }
 
 var search = document.getElementById('search');
@@ -339,8 +370,8 @@ export function resendmessage() {
             ele.onclick = function (e) {
                 this.className = 'sending';
                 this.innerText = '';
-                let content=this.parentElement.children[1].innerHTML;
-                frame.resent(this,friendFocus,content)
+                let content = this.parentElement.children[1].innerHTML;
+                frame.resent(this, friendFocus, content)
             }
         })
     }

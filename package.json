@@ -13,6 +13,7 @@
   "devDependencies": {
     "electron": "^10.1.2",
     "electron-builder": "^22.8.1",
+    "formidable": "^1.2.2",
     "node": "^14.11.0",
     "npm": "^6.14.8",
     "sqlite3": "^5.0.0",

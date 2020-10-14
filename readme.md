@@ -10,7 +10,7 @@
 initialFrameTheme({
     chat= document.getElementsByClassName('chat')[0], //object element
     listsFrame = document.querySelector('.chat-list .friends-frame'),// friends list element
-    chatwindowFrame = chatwindow.parentElement,, //window of chat 
+    chatwindowFrame = chatwindow.parentElement, //window of chat 
     focusfriend= { //setting forcolor or backgroudcolor chat to one ,who is the friend in friends list
         focusBackground: 'plum',
         focusColor: 'white'

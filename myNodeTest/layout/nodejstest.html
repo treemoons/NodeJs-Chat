@@ -150,18 +150,15 @@ getAjaxData({
                 },
                 data = '',
                 method = 'POST',
-                reqestHeader = [{
-                    headername: 'Content-Type',
-                    headervalue: 'application/x-www-form-urlencoded'
-                }]
+               httpheader = { 'Content-Type': 'application/x-www-form-urlencoded' }
             }) {
                 debugger;
                 // open(url,'_blank')
                 var ajax = new XMLHttpRequest();
                 ajax.open(method, url);
-                reqestHeader.forEach(header => {
-                    ajax.setRequestHeader(header.headername, header.headervalue);
-                })
+                 for (let key in httpheader) {
+                    ajax.setRequestHeader(key, httpheader[key]);
+                }
                 // ajax.setRequestHeader('Set-Cookie', 'name=username');
                 ajax.send(data);
                 ajax.onreadystatechange = function () {

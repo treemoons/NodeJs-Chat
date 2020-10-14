@@ -16,12 +16,16 @@
 //         // console.log(ma[i]+"\n")
 //     }
 // })
-import { friendFocus, resendmessage,frame } from './ui-builder.js';
+import { friendFocus, resendmessage, frame } from './ui-builder.js';
 
 export function getfriendid(friendEle) {
     return friendEle.getAttribute('data-name');
 }
 
+ let istransition=false;
+export function changeTransition(isopen){
+    istransition = isopen;
+}
 export let chatwindow = document.querySelector('.chat-data-frame .chat-data');
 
 HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
@@ -31,7 +35,14 @@ HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
 /**
  * 获取并操作Ajax数据
  *@param { { url: string, success: (text:string)=>Promise<void>), failed ?: 
-        (text:string)=>void, data ?: string, method ?: string, httptype ?:string } object  options
+        (text:string)=>void, data ?: string, method ?: 'POST'|'GET'|'DELETE'|'PUT'|'OPTIONS'|'TRACE',
+         httpheader ?:{"Content-Type"?:['application/x-www-form-urlencoded'|
+         'multipart/form-data'|'text/plain'|
+         'audio/mpeg'|'video/mpeg'|'image/pipeg'|
+         'image/jpeg'|'image/x-icon']|'application/x-www-form-urlencoded'|
+         'multipart/form-data'|'text/plain'|
+         'audio/mpeg'|'video/mpeg'|'image/pipeg'|
+         'image/jpeg'|'image/x-icon',"Set-Cookie"?:string} } object  options
  */
 export function getAjaxData({
     url,
@@ -41,12 +52,22 @@ export function getAjaxData({
     },
     data = '',
     method = 'POST',
-    httptype = 'application/x-www-form-urlencoded'
+    httpheader = { 'Content-Type': 'application/x-www-form-urlencoded' }
 }) {
     // open(url,'_blank')
     var ajax = new XMLHttpRequest();
     ajax.open(method, url);
-    ajax.setRequestHeader('Content-Type', httptype);
+    for (let key in httpheader) {
+        if ((typeof httpheader[key]) == 'string')
+            ajax.setRequestHeader(key, httpheader[key]);
+        else {
+            try {
+                httpheader[key].forEach(v => {
+                    ajax.setRequestHeader(key, v);
+                })
+            } catch { console.error('err:isn`t array') }
+        }
+    }
     ajax.send(data);
     ajax.onreadystatechange = function () {
         if (ajax.readyState == 4) {
@@ -324,9 +345,9 @@ export default class BuildBubblesFrame {
 
     /**
      * @param {string} peername 聊天对象名
-     * @param {Boolean} isopentransition 启用动画
+     * @param {Boolean} istransition 启用动画
      */
-    showFrame = (peername, isopentransition) => {
+    showFrame = (peername) => {
         try {
             //清空
             this.sigleChat.innerHTML = '';
@@ -334,7 +355,6 @@ export default class BuildBubblesFrame {
              * @type {ChatDataSigleList}
              */
 
-            debugger
             let frame = this.bubblesFrame[peername];
             if (frame) {
                 let data = frame.chatdata;
@@ -365,7 +385,7 @@ export default class BuildBubblesFrame {
                     }
                     dateTemp = v.date;
                     v.isread = 1;
-                    this.addpieceschat(v, name, pic, true, isopentransition)
+                    this.addpieceschat(v, name, pic, true, istransition)
                 });
                 frame.unreadCount = 0
                 resendmessage();
@@ -381,9 +401,9 @@ export default class BuildBubblesFrame {
      * @param {string} name 用户名
      * @param {string} pic 用户头像
      * @param {boolean} asc 升降添加
-     * @param {boolean} isopentransition 开启动画
+     * @param {boolean} istransition 开启动画
      */
-    addpieceschat = (piecesdata, name, pic, asc, isopentransition) => {
+    addpieceschat = (piecesdata, name, pic, asc) => {
         let piecesChat = document.createElement('div');
         if (piecesdata.iscurrentuser) {
             piecesChat.className = 'user-speak';
@@ -403,7 +423,7 @@ export default class BuildBubblesFrame {
             this.sigleChat?.appendChild(piecesChat);
         else
             this.sigleChat?.prepend(piecesChat);
-        if (isopentransition)
+        if (istransition)
             setTimeout(() => {
                 piecesChat.style.opacity = 1;
             }, 500);
@@ -482,11 +502,10 @@ export default class BuildBubblesFrame {
     });
     /**
      * 主动发送消息给对方
-     * @param {string} name 聊天对象名称
      * @param {string} content 内容
-     * @param {boolean} isopentransition 开启动画
+     * @param {boolean} istransition 开启动画
      */
-    sendChatMessage = async (content, isopentransition) => {
+    sendChatMessage = async (content) => {
         try {
             let name = getfriendid(friendFocus);
             let date = parseFloat(new Date().formatDate('yyyyMMdd.HHmmss'))
@@ -513,7 +532,7 @@ export default class BuildBubblesFrame {
                 date: date,
                 isread: 0
             };
-            if (isopentransition)
+            if (istransition)
                 piecesChat.style.opacity = 1;
             this.friendlistEle.prepend(friendFocus)
             //经过一系列处理存到服务器
@@ -601,7 +620,6 @@ export default class BuildBubblesFrame {
      */
     serialload = array => {
 
-        // debugger;
         var arr = [];//定义一个数组对象
         //遍历赋值
         for (let i = 0; i < array.length; i++) {

@@ -9,15 +9,17 @@
         <script src="./chat-invoke.js" type="module"></script>
         <link rel="stylesheet" href="./css/site.css">
     </head>
-<script>
-</script>
+    <script>
+    </script>
+
     <body>
         <div class="chat">
             <div class="chat-head">
                 <div>treemoons</div>
                 <div></div>
                 <div></div>
-                <div   style="text-align: center;"><span id="titlename">小小白</span><span style="font-size: 10px;">(在线)</span></div>
+                <div style="text-align: center;"><span id="titlename">小小白</span><span
+                        style="font-size: 10px;">(在线)</span></div>
                 <div></div>
                 <div></div>
             </div>
@@ -37,7 +39,24 @@
                     </div>
                     <div>
                         <ul class="friends-frame">
-                            <li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom</li>
+                            <li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li>
                         </ul>
                     </div>
                 </aside>
@@ -46,20 +65,35 @@
                 <aside class="chat-content-frame">
                     <div class="chat-data-frame">
                         <div class="chat-data">
+                            <!-- <div class="peer-speak|user-speak">
+                                <div class="sending" date="${date}"></div>
+                                <div class="user-chat-bubble">${content.replace('\n', '<br>')}</div>
+                                <img src="${this.userpic}" width="30" alt="${this.username}">
+                            </div> -->
                         </div>
                         <div class="chat-tool">
                             <div class="emoj">
                             </div>
                             <div class="picture">
-                                <input type="file" name="filepic" id="filepic">
+                                <form action="http://localhost:8888/api/test1" method="POST" enctype="multipart/form-data" name="fileform">
+                                    <input type="file" name="filepic"  accept="image/jpeg,image/png,image/gif" id="filepic">
+                                </form>
                             </div>
                         </div>
                         <div class="chat-textbox">
-                            <div contenteditable="true" name="prewwords" id="text" class="chat-write">你好 <img src="../userpic.png" width="20" alt="">
+                            <div contenteditable="true" name="prewords" id="pretext" class="chat-write">你好 <img
+                                    src="../userpic.png" width="20" alt="">
                             </div>
-                            <p>Enter</p>
+                            <p class="enter-empty">
+                                不能发送空白信息
+                                <!-- <br>You can't send empty message -->
+                            </p>
+                            <div class="chat-text-send-button" contenteditable="false">
+                             
+                                <p>发送</p>
+                            </div>
                         </div>
-                        <div class="chat-button"></div>
+                        <div class="chat-button">wwww</div>
                     </div>
                 </aside>
             </div>
