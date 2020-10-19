@@ -4,7 +4,6 @@
     margin: 0;
     padding: 0;
 }
-
 body {
     min-width: 441px;
 }
@@ -21,11 +20,13 @@ body {
     align-items: center;
     justify-content: space-between;
     height: 7vh;
+    min-height: 30px;
     width: 100%;
+    z-index: 10;
     text-indent: 2rem;
     font-size: large;
     color: rgb(65, 65, 65);
-    text-shadow: 0px 0px 1px rgb(255, 255, 255);
+    box-shadow: 0px 1px 2px 1px rgba(77, 77, 77, 0.116);
     background-color: rgb(220, 208, 252);
 }
 
@@ -43,8 +44,9 @@ body {
 
 .chat-list {
     z-index: 1;
-    height: 90vh;
+    height: 93vh;
     width: 300px;
+    background-color: rgb(250, 250, 250);
 }
 
 .chat-content-frame {
@@ -64,6 +66,11 @@ body {
     height: 93vh;
     list-style: none;
     overflow-y: scroll;
+    transition: all 0.3s linear;
+    -webkit-transition: all 0.3s linear;
+    -moz-transition: all 0.3s linear;
+    -ms-transition: all 0.3s linear;
+    -o-transition: all 0.3s linear;
 }
 
 .friends-frame::-webkit-scrollbar,
@@ -73,7 +80,7 @@ textarea::-webkit-scrollbar {
 }
 
 .friends-list {
-    border-left: transparent 3px solid;
+    margin-left: 5px;
     z-index: 9;
     display: flex;
     position: relative;
@@ -85,7 +92,7 @@ textarea::-webkit-scrollbar {
     color: #000000;
     /*border-radius: 3px;
     *//*background-color: rgb(226, 226, 226);
-    */width: 100%;
+    */width: 97%;
     transition: all 0.3s ease;
     -webkit-transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;
@@ -99,9 +106,14 @@ textarea::-webkit-scrollbar {
 }
 
 .friends-list:hover {
-    background-color: rgb(230, 230, 230);
-    border-left: #8d8d8d 3px solid;
+    /* background-color: rgb(240, 240, 240); */
+    box-shadow: 0px 3px 3px 1px gainsboro;
+    z-index: 50;
+    /* border-left: #8d8d8d 3px solid; */
     /* color: rgb(255, 255, 255); */
+}
+.friends-list:hover .unread-tip {
+    box-shadow: 0px 3px 3px 1px gainsboro;
 }
 
 
@@ -130,6 +142,7 @@ textarea::-webkit-scrollbar {
 
 .user-speak .user-chat-bubble {
     background-color:rgb(176, 177, 247);
+    box-shadow: -1px -1px 5px 2px rgb(231, 231, 231);
 }
 
 .user-speak .user-chat-bubble::after {
@@ -151,7 +164,7 @@ textarea::-webkit-scrollbar {
     border: 5px solid transparent;
     left: -10px;
     top: 7px;
-    border-right-color: rgb(250, 181, 250);
+    border-right-color: rgb(248, 198, 248);
     /* background-color: plum; */
 }
 
@@ -159,24 +172,83 @@ textarea::-webkit-scrollbar {
     position: relative;
     display: inline-block;
     text-align: left;
-    color: white;
+    color: rgb(56, 56, 56);
     padding-right: 20px;
+    max-width: 80%;
     max-width: 70%;
     padding: 10px;
     padding-left: 15px;
     margin: 0 10px;
     border-radius: 3px;
-    background-color: rgb(250, 181, 250);
+    background-color: rgb(248, 198, 248);
+    box-shadow: 1px 1px 5px 2px rgb(231, 231, 231);
 }
 
 input[type="search"]::-webkit-search-cancel-button {
     display: none;
 }
+.search{
+    padding:10px 15px;
+    position: relative;
+}
+.search>.search-input{
+    color: rgb(87, 87, 87);
+    border: gainsboro 1px solid;
+    line-height: 17px;
+    padding: 3px 30px 3px 8px ;
+    width: 100%;
+    appearance: none;
+    background: none;
+    outline: none;
+    border-radius: 3px;
+    -webkit-border-radius: 3px;
+    -moz-border-radius: 3px;
+    -ms-border-radius: 3px;
+    -o-border-radius: 3px;
+}
+.search>.search-input:focus{
+    border: darkgray 1px solid;
+}
+
+.search .icon {
+    cursor: pointer;
+    position: absolute;
+    display: inline-block;
+    right: 18px;
+    top: 13px;
+    padding-right: 10px;
+    padding-left: 3px;
+}
+.search i {
+    display: inline-block;
+    width: 12px;
+    height: 12px;
+    border: 1px solid darkgray;
+    border-radius: 100%;
+    -webkit-border-radius: 100%;
+    -moz-border-radius: 100%;
+    -ms-border-radius: 100%;
+    -o-border-radius: 100%;
+}
+
+.search i::before {
+    content: '';
+    position: absolute;
+    top: 11px;
+    right: 8px;
+    width: 2px;
+    height: 8px;
+    background-color: darkgray;
+    transform: rotate(-45deg);
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+}
+
 
 body {
-    overflow: auto;
     transition: all 0.5 ease;
-    ;
 }
 
 /* 
@@ -305,6 +377,7 @@ body {
 }
 
 /* #endregion */
+
 .historytip,
 .historyloading {
     position: relative;
@@ -367,12 +440,13 @@ body {
 }
 
 .unread-tip {
-    width: 20px;
-    height: 20px;
+    width: 18px;
+    height: 18px;
     position: absolute;
-    right: 18%;
-    /* font-size: 18px; */
-    background-color: red;
+    right: 3vw;
+    /*font-size: 18px;
+    */background-color: rgb(250, 80, 80);
+    /* box-shadow: 0 0 3px 1px rgb(230, 200, 200); */
     vertical-align: middle;
     color: white;
     border-radius: 50%;
@@ -381,6 +455,11 @@ body {
     -ms-border-radius: 50%;
     -o-border-radius: 50%;
     text-align: center;
+    transition: all 200ms linear;
+    -webkit-transition: all 200ms linear;
+    -moz-transition: all 200ms linear;
+    -ms-transition: all 200ms linear;
+    -o-transition: all 200ms linear;
 }
 
 .chat-textbox {
@@ -420,7 +499,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    right: 2px;
+    right: 10px;
     bottom: 20px;
     height: 40px;
     width: 20%;
@@ -432,10 +511,16 @@ body {
     -moz-border-radius: 5px;
     -ms-border-radius: 5px;
     -o-border-radius: 5px;
+    transition: all linear 150ms;
+    -webkit-transition: all linear 150ms;
+    -moz-transition: all linear 150ms;
+    -ms-transition: all linear 150ms;
+    -o-transition: all linear 150ms;
 }
 
 .chat-text-send-button:hover {
     cursor: pointer;
+    right: 12px;
     background-color: rgb(255, 255, 255);
     box-shadow: 1px 3px 5px 3px gainsboro;
 }

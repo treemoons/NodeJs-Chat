@@ -25,7 +25,7 @@ export function getChatImg(chattext) {
 /**
  * 
  * @param {Event} e 
- * @param {(e:Event)=>void} callback 
+ * @param {(e:HTMLElement)=>void} callback 
  */
 export function keypressEnter(e, callback, obj) {
     if (e.key) {
@@ -159,7 +159,8 @@ export function initialFrameTheme({
     chatwindowFrame = chatwindow.parentElement,
     focusfriend = {
         focusColor: '#000',
-        focusBackground: 'gainsboro'
+        focusBackground: 'white',
+        focusBorderColor:'rgb(180,180,180)'
     },
     userbubble = {
         userbubbleColor: undefined,
@@ -175,8 +176,7 @@ export function initialFrameTheme({
     },
     friendlisthover = {
         friendlisthoverColor: undefined,
-        friendlisthoverBackgroundColor: undefined,
-        friendlisthoverLeftBorderColor:undefined
+        friendlisthoverBackgroundColor: undefined
     },
     // loadFriendsList =/**@param {BuildFrame} chatframe*/ chatframe => chatframe.initializaingfriendlist(),
     showChatWindow = (peername) => {
@@ -231,7 +231,6 @@ export function initialFrameTheme({
             .friends-list:hover {
                 color:${friendlisthover.friendlisthoverColor};
                 background-color: ${friendlisthover.friendlisthoverBackgroundColor};
-                border-left: ${friendlisthover.friendlisthoverLeftBorderColor} 3px solid;
             }`;
     frame.friendlistEle = listsFrame;
     /**@type {HTMLElement} */
@@ -249,7 +248,10 @@ export function initialFrameTheme({
                     }
                     friendFocus = this;
                     this.setAttribute('style',
-                        `background-color:${focusfriend.focusBackground};color:${focusfriend.focusColor}`
+                        `background-color:${focusfriend.focusBackground};
+                        color:${focusfriend.focusColor};
+                        box-shadow: 0px 2px 4px 1px gainsboro;
+                        margin-left: 3px;`
                     );
                     if (waitDivshow.isShow) {
                         waitDivshow.begin();
@@ -343,11 +345,11 @@ HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (e, tip) => {
     @param {WheelEvent} e*/
     function gethistorydata(e) {
         if (this.scrollTop === 0 && (e.wheelDelta > 0 || e.detail < 0)) {
-            let tip = this?.children[0];
-            if (tip?.getAttribute('class') == tipClass) {
-                tip.innerText = tipDealingText;
-                tip.className = tipDealingClass;
-                action(e, tip);
+            let tipchild = this?.children[0];
+            if (tipchild?.getAttribute('class') == tipClass) {
+                tipchild.innerText = tipDealingText;
+                tipchild.className = tipDealingClass;
+                action(e, tipchild);
             } else if (this?.children[0]?.getAttribute('class') == tipDealingClass) {
                 return;
             } else {

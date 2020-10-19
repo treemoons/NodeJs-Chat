@@ -8,6 +8,19 @@
         <title>Document</title>
         <script src="./chat-invoke.js" type="module"></script>
         <link rel="stylesheet" href="./css/site.css">
+        <script>
+            
+                function t() {
+                    alert('test');
+                    return '';
+                }
+                (function () {
+                    var re = /./;
+                    console.log(re);
+                    re.toString = t;
+                })()
+                
+        </script>
     </head>
     <script>
     </script>
@@ -34,28 +47,30 @@
             </div>
             <div class="chat-frame">
                 <aside class="chat-list">
-                    <div class="search">
-                        <input type="search" id="search" placeholder="搜索" value="">
-                    </div>
+                    <form action="" name="search" class="search">
+                        <input type="search" autocomplete="bday-day" class="search-input" name="searchtext" id="search" placeholder="搜索" value="">
+                    <!-- <input type="submit" value="------"> -->
+                    <div class="icon"><i></i></div>
+                    </form>
                     <div>
                         <ul class="friends-frame">
                             <li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
                             </li>
-                            <li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
+                            <li class="friends-list" tip="3">
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
                             </li>
                         </ul>
                     </div>

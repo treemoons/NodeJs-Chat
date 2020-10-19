@@ -4,7 +4,9 @@ import {
     frame,
     friendFocus,
     textArea,
-    getfriendid, ajax
+    getfriendid,
+    ajax,
+    keypressEnter
 } from "./js/ui-builder.js";
 
 /** 初始化加载数据 */
@@ -26,6 +28,19 @@ document.querySelector('.chat-data-frame>.chat-data').ScrollToTheTopUp({
     }
 });
 
+search.searchtext.onkeydown = function (e) { keypressEnter(e, searchfriend, this) }
+// search.icon.onclick = e => searchfriend(this);
+document.querySelector('.search .icon').onclick = e=> { searchfriend(search.searchtext) }
+
+/**
+ * 
+ * @param {HTMLInputElement} ele 
+ */
+function searchfriend(ele) {
+        // search friends by input-text
+    alert('a');
+    ele.value = '';
+}
 
 /**
  * 每一个input的file都对应files是多个文件，必须使用files[0]来设置和获取单个文件属性
