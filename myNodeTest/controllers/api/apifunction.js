@@ -261,15 +261,14 @@ let img = {};
 
 /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
 export async function test(http) {
-    let body = '';
-    let accept = http.request.headers["test"];
-    console.log(accept);
-    let testheader = http.request.headers['content-type'];
-    console.log(testheader);
+    let accept = http.request.headers["datainfo"];
+    /**@type { {usertopeer: string|'username-peername', fileExtension: string|'gif',filesize: number,date:string}} */
+    let datainfo = JSON.parse(accept);
     http.request.on('data', data => {
         /**@type {ArrayBuffer} */
         let d = data;
-        writeFileSync('./pp.gif',d,{encoding:'binary',flag:'as'},()=>{})
+        let file= datainfo.fileExtension+'-'+datainfo.date
+        writeFileSync('./pp.',d,{encoding:'binary',flag:'as'},()=>{})
         console.log(d.byteLength)
     });
     http.request.on('end', () => {

@@ -51,6 +51,8 @@ function searchfriend(ele) {
 let pic = fileform.filepic;
 pic.onchange = async function (e) {
     console.log(this.files);
+    let username;
+    let peername;
     /**
      * @type {FileList[0]}
      */
@@ -58,35 +60,49 @@ pic.onchange = async function (e) {
     let datas = await file.arrayBuffer();
     let text = await file.text();
     let blob = new Blob([datas]);
+    let blobscr = URL.createObjectURL(blob);
+    let fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1);
+   /**@type { {usertopeer: string|'username-peername', fileExtension: string|'gif',filesize: number,date:string}} */
+    let datainfo = {
+        usertopeer: `${username}-${peername}`,
+        fileExtension: fileExtension,
+        filesize: file.size / (1024 * 1024),
+        date: new Date().formatDate('yyyyMMddHHmmssf')
+    }
+    if (fileExtension=='gif') {
+        
+    } else {
+        
     let l = new FileReader();
     let can = document.createElement('canvas');
     let context = can.getContext('2d');
     let img = new Image(200, 200);
-    img.src = URL.createObjectURL(blob);
+    img.src = blobscr;
     context.drawImage(img, 200, 200);
     console.log(img.src)
     can.toBlob(/**@param {Blob} d*/async d => {
         let buf = await d.arrayBuffer();
         l.readAsDataURL(d)
         l.onload = function (e) {
-
+            datainfo.filesize = l.result.byteLength;
             textArea.innerHTML += `<img src="${l.result}" width="20" height="20" alt="">`
             // let formdata = new FormData();
             // formdata.append(file.name, datas);
             // console.log(formdata)
-            console.log(datas)
-            ajax(
-                {
-                    url: 'http://localhost:8888/api/test1',
-                    data: l.result,
-                    // httptype:'text/plian;charset=utf-8',
-                    success: d => {
-                        console.log(d)
-                    }
+            // console.log(datas)
+            ajax({
+                url: 'http://localhost:8888/api/test1',
+                httpheader: {
+                    "datainfo": JSON.stringify(datainfo),
+                    'Content-Type': 'multipart/form-data'
+                },
+                data: l.result,
+                // httptype:'text/plian;charset=utf-8',
+                success: d => {
+                    console.log(d)
                 }
-
-
-            )
+            });
         }
     });
+    }
 }
