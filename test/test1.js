@@ -1,7 +1,6 @@
-import { ajax } from "../myWebChat/js/ui-builder.js";
-
-
-
+import {
+    ajax
+} from "../myWebChat/js/ui-builder.js";
 /**
  * 每一个input的file都对应files是多个文件，必须使用files[0]来设置和获取单个文件属性
  * 可以在标签中使用multiple多选
@@ -17,15 +16,22 @@ async function test(e) {
     let file = pic.files[0];
     let datas = await file.arrayBuffer();
     let text = await file.text();
-    let a = { 'Content-Type': 'multipart/form-data', 'Content-Type': 'text/plain' };
-   for(let key in a){
-       console.log(a[key])
-   }
+    let a = {
+        'Content-Type': 'multipart/form-data',
+        'Content-Type': 'text/plain'
+    };
+    for (let key in a) {
+        console.log(a[key])
+    }
     console.log(file.size)
     console.log(datas)
     ajax({
         url: 'http://localhost:8888/api/test1',
-        httpheader: { 'Content-Type':'multipart/form-data','test':'this is test header','accept':'image/png'},
+        httpheader: {
+            'Content-Type': 'multipart/form-data',
+            'test': 'this is test header',
+            'accept': 'image/png'
+        },
         data: datas,
         success: d => {
             console.log(d)
@@ -58,3 +64,24 @@ async function test(e) {
 
 }
 top.test = test;
+
+
+const object1 = {};
+
+Object.defineProperty(object1, 'property1', {
+
+    set(e) {
+        this.value = e;
+    },
+    get() {
+        return this.value
+    }
+    // writable: true
+});
+let a;
+let b = a?.Blob;
+object1?.property1 = 77;
+// throws an error in strict mode
+
+console.log(object1.property1);
+// expected output: 42

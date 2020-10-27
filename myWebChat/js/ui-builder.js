@@ -1,4 +1,10 @@
-import { changeTransition, chatwindow, default as BuildFrame, getAjaxData, getfriendid as getfriendId } from './chat-frame.js';
+import {
+    changeTransition,
+    chatdatawindow,
+    getAjaxData,
+    default as BuildFrame,
+    getfriendid as getfriendId
+} from './chat-frame.js';
 /**要操作的目标元素
  * @type {HTMLElement}*/
 var aimOfContextMenu;
@@ -6,9 +12,8 @@ var aimOfContextMenu;
 export let frame = new BuildFrame('treemoons', '../../peerpic.jpg');
 /**@type {HTMLElement}*/
 export var friendFocus;
-/**@type {HTMLElement}*/
+/**@type {HTMLInputElement}*/
 export let textArea = document.getElementById('pretext');
-export let ajax = getAjaxData;
 export let getfriendid = getfriendId;
 window.frame = frame;
 /**
@@ -21,6 +26,80 @@ export function getChatImg(chattext) {
     return match == null ? undefined : match;
 }
 
+let sendimg = {
+    data: undefined,
+    datainfo: undefined,
+}
+
+
+
+/**
+ * input/type='file' 中onchange事件
+ * @param {Event} e 
+ */
+export async function selectFile(e) {
+    let username;
+    let peername = getfriendId(friendFocus);
+    for (let i = 0; i < this.files.length; i++) {
+        /** @type {File} */
+        let file = this.files[i];
+        let filedata = await file.arrayBuffer();
+        // let text = await file.text();
+        let blob = new Blob([filedata]);
+        let blobscr = URL.createObjectURL(blob);
+        let fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1);
+        /**@type { {usertopeer: string|'username-peername', fileExtension: string|'gif',filesize: number,date:string}} */
+        let datainfo = {
+            usertopeer: `${username}-${peername}`,
+            fileExtension: fileExtension,
+            filesize: file.size,
+            date: new Date().formatDate('yyyyMMddHHmmssf')
+        }
+        let l = new FileReader();
+        let isOrigin;
+        debugger
+        /**@type {HTMLImageElement} */
+        let img = document.getElementById('canvasimg');
+        img.src = blobscr;
+        let textimg = document.createElement('img');
+        textimg.width = 200;
+        switch ((isOrigin ? true : fileExtension)) {
+            case 'png':
+            case 'jpg':
+            case 'jpeg':
+            case 'jfif':
+            case 'pjpeg':
+            case 'pjp':
+                let can = document.createElement('canvas');
+                let context = can.getContext('2d');
+                img.onload = function () {
+                    can.width = this.width;
+                    can.height = this.height;
+                    context.drawImage(img, 0, 0, this.width, this.height);
+                    can.toBlob( /**@param {Blob} d*/ async d => {
+                        debugger;
+                        l.readAsArrayBuffer(d);
+                        l.onload = function () {
+                            datainfo.filesize = l.result.byteLength;
+                            textimg.src = URL.createObjectURL(d);
+                            textArea.append(textimg);
+                            // let formdata = new FormData();
+                            // formdata.append(file.name, datas);
+                            // console.log(formdata)
+                            // console.log(datas)
+                            frame.imgsinfo.push({ imgelement: textimg, imgfile: { data: l.result, datainfo: datainfo } });
+                        }
+                    });
+                }
+                break;
+            default:
+                textimg.src = blobscr;
+                textArea.append(textimg);
+                frame.imgsinfo.push({ imgelement: textimg, imgfile: { data: filedata, datainfo: datainfo } });
+                break;
+        }
+    }
+}
 
 /**
  * 
@@ -92,7 +171,8 @@ export function contextMenu({
                     transition: all 0.5s ease;
                     opacity: 0;
                     ${style.contextMenu}
-                }${style.customize}`;
+                }
+                ${style.customize}`;
 
     if (document.getElementById(styleEle.id)) {
         document.head.removeChild(document.getElementById(styleEle.id));
@@ -156,11 +236,11 @@ export function contextMenu({
 export function initialFrameTheme({
     chat = document.querySelector('.chat'),
     listsFrame = document.querySelector('.chat-list .friends-frame'),
-    chatwindowFrame = chatwindow.parentElement,
+    chatwindowFrame = chatdatawindow.parentElement,
     focusfriend = {
         focusColor: '#000',
         focusBackground: 'white',
-        focusBorderColor:'rgb(180,180,180)'
+        focusBorderColor: 'rgb(180,180,180)'
     },
     userbubble = {
         userbubbleColor: undefined,
@@ -186,8 +266,12 @@ export function initialFrameTheme({
     isopentransition = false,
     waitDivshow = {
         isShow: true,
-        begin: () => { document.querySelector('.move').style.display = 'block' },
-        end: () => { document.querySelector('.move').style.display = 'none' }
+        begin: () => {
+            document.querySelector('.move').style.display = 'block'
+        },
+        end: () => {
+            document.querySelector('.move').style.display = 'none'
+        }
     }
 } = {}) {
     changeTransition(isopentransition);
@@ -211,7 +295,7 @@ export function initialFrameTheme({
                 border-left-color: ${userbubble.userbubbleBackgroundColor};
             }`;
     // if (peerbubble)
-        style.innerHTML += `
+    style.innerHTML += `
             .peer-speak .user-chat-bubble::before {
                 border-right-color: ${peerbubble.peerbubbleBackgroundColor};
             }
@@ -221,13 +305,13 @@ export function initialFrameTheme({
                 
             }`;
     // if (friendlist)
-        style.innerHTML += `
+    style.innerHTML += `
             .friends-frame {
                 color:${friendlist.friendlistColor};
                 background-color: ${friendlist.friendlistBackgroundColor};
             }`;
     // if (friendlisthover)
-        style.innerHTML += `
+    style.innerHTML += `
             .friends-list:hover {
                 color:${friendlisthover.friendlisthoverColor};
                 background-color: ${friendlisthover.friendlisthoverBackgroundColor};
@@ -308,9 +392,54 @@ export function initialFrameTheme({
 function sent(obj) {
     if (obj.innerHTML) {
         try {
-            frame.sendChatMessage(obj.innerHTML);
-            obj.innerHTML = null;
-            contextMenu();
+            let count = 0;
+            let name = getfriendid(friendFocus);
+            let date = parseFloat(new Date().formatDate('yyyyMMdd.HHmmss'))
+            frame.bubblesFrame[name].pushChatData({
+                iscurrentuser: true,
+                content: textArea.innerHTML,
+                date: date,
+                isread: 1
+            });
+            let piecesChat = document.createElement('div');
+            piecesChat.className = 'user-speak';
+            piecesChat.innerHTML += `
+                                <div class="sending" date="${date}"></div>
+                                <div class="user-chat-bubble"><article>${textArea.innerHTML.replace('\n', '<br>')}</article></div>
+                                <img src="${frame.userpic}"
+                                    width="30" alt="${frame.username}">`;
+            frame.sigleChat.append(piecesChat);
+            chatdatawindow.scrolltoRelativePosition(piecesChat);
+            /**@type {HTMLImageElement[]} */
+            let contentEle = piecesChat.querySelectorAll('.user-chat-bubble img');
+            if (frame.imgsinfo.length > 0)
+                frame.imgsinfo.forEach(img => {
+                    if (img.imgelement.parentElement) {
+                        getAjaxData({
+                            url: '',
+                            httpheader: {
+                                'Content-Type': 'multipart/form-data',
+                                'datainfo': img.imgfile.datainfo,
+                            },
+                            data: img.imgfile.data,
+                            success: d => {
+                                contentEle[count].src = d; //从服务器获取图片链接
+                                count++;
+                                if (count == frame.imgsinfo.length) {
+
+                                    frame.sendChatMessage(obj);
+                                    obj.innerHTML = null;
+                                    contextMenu();
+                                }
+                            }
+                        })
+                    }
+                })
+            else {
+                frame.sendChatMessage(obj);
+                obj.innerHTML = null;
+                contextMenu();
+            }
         } catch (e) {
             console.error(e)
         }
@@ -329,10 +458,15 @@ function sent(obj) {
  * tipDealingClass:string
  * }} /action格式:e=>{}
  */
-HTMLElement.prototype.ScrollToTheTopUp = function ({ action = (e, tip) => {
-    tip.remove();
-},
-    tipText = '更多', tipDealingText = '正在加载 ', tipClass = 'historytip', tipDealingClass = 'historyloading' }) {
+HTMLElement.prototype.ScrollToTheTopUp = function ({
+    action = (e, tip) => {
+        tip.remove();
+    },
+    tipText = '更多',
+    tipDealingText = '正在加载 ',
+    tipClass = 'historytip',
+    tipDealingClass = 'historyloading'
+}) {
     // if (this.a===undefined)
     //     console.log(this.a)
     if (this.onwheel !== undefined)

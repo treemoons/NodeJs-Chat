@@ -1,12 +1,11 @@
-﻿
-import {
+﻿import {
     initialFrameTheme,
     frame,
     friendFocus,
     textArea,
     getfriendid,
-    ajax,
-    keypressEnter
+    keypressEnter,
+    selectFile
 } from "./js/ui-builder.js";
 
 /** 初始化加载数据 */
@@ -28,19 +27,24 @@ document.querySelector('.chat-data-frame>.chat-data').ScrollToTheTopUp({
     }
 });
 
-search.searchtext.onkeydown = function (e) { keypressEnter(e, searchfriend, this) }
+search.searchtext.onkeydown = function (e) {
+    keypressEnter(e, searchfriend, this)
+}
 // search.icon.onclick = e => searchfriend(this);
-document.querySelector('.search .icon').onclick = e=> { searchfriend(search.searchtext) }
+document.querySelector('.search .icon').onclick = e => {
+    searchfriend(search.searchtext)
+}
 
 /**
  * 
  * @param {HTMLInputElement} ele 
  */
 function searchfriend(ele) {
-        // search friends by input-text
+    // search friends by input-text
     alert('a');
     ele.value = '';
 }
+
 
 /**
  * 每一个input的file都对应files是多个文件，必须使用files[0]来设置和获取单个文件属性
@@ -49,60 +53,4 @@ function searchfriend(ele) {
  * @type {HTMLInputElement} 
  */
 let pic = fileform.filepic;
-pic.onchange = async function (e) {
-    console.log(this.files);
-    let username;
-    let peername;
-    /**
-     * @type {FileList[0]}
-     */
-    let file = this.files[0];
-    let datas = await file.arrayBuffer();
-    let text = await file.text();
-    let blob = new Blob([datas]);
-    let blobscr = URL.createObjectURL(blob);
-    let fileExtension = file.name.substring(file.name.lastIndexOf('.') + 1);
-   /**@type { {usertopeer: string|'username-peername', fileExtension: string|'gif',filesize: number,date:string}} */
-    let datainfo = {
-        usertopeer: `${username}-${peername}`,
-        fileExtension: fileExtension,
-        filesize: file.size / (1024 * 1024),
-        date: new Date().formatDate('yyyyMMddHHmmssf')
-    }
-    if (fileExtension=='gif') {
-        
-    } else {
-        
-    let l = new FileReader();
-    let can = document.createElement('canvas');
-    let context = can.getContext('2d');
-    let img = new Image(200, 200);
-    img.src = blobscr;
-    context.drawImage(img, 200, 200);
-    console.log(img.src)
-    can.toBlob(/**@param {Blob} d*/async d => {
-        let buf = await d.arrayBuffer();
-        l.readAsDataURL(d)
-        l.onload = function (e) {
-            datainfo.filesize = l.result.byteLength;
-            textArea.innerHTML += `<img src="${l.result}" width="20" height="20" alt="">`
-            // let formdata = new FormData();
-            // formdata.append(file.name, datas);
-            // console.log(formdata)
-            // console.log(datas)
-            ajax({
-                url: 'http://localhost:8888/api/test1',
-                httpheader: {
-                    "datainfo": JSON.stringify(datainfo),
-                    'Content-Type': 'multipart/form-data'
-                },
-                data: l.result,
-                // httptype:'text/plian;charset=utf-8',
-                success: d => {
-                    console.log(d)
-                }
-            });
-        }
-    });
-    }
-}
+pic.onchange = selectFile;

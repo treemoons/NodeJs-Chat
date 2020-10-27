@@ -6,7 +6,6 @@ export default {
     default:
         /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
         async http => {
-
             try {
                 let t = 'treemoons';
                 listeningHttp[t] = [http, 30];
@@ -22,11 +21,10 @@ export default {
                     let a = 1
                     re.on('error', err => {
                         listeningHttp[t][0]?.response.end('ddd', () => {
-                             console.log('dddddddd--------')
-                         });
-                        if (a > 10) {
+                        });
+                        if (a > 2) {
                             re = undefined;
-                            listeningHttp[t][0]=undefined
+                            listeningHttp[t][0] = undefined
                         }
                         a++;
                         console.log('err1,in default.')
@@ -42,7 +40,7 @@ export default {
             finally {
             }
 
-                    throw 'error end on';
+            throw 'error end on';
 
         },
     chatto: api.chatto,

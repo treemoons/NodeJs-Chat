@@ -43,19 +43,23 @@ body {
 }
 
 .chat-list {
+    position: relative;
     z-index: 1;
     height: 93vh;
+    min-width: 180px;
     width: 300px;
     background-color: rgb(250, 250, 250);
 }
 
 .chat-content-frame {
-    height: 65vh;
+    height: 100vh;
     width: 100%;
+    overflow: hidden;
 }
 
 .chat-data-frame {
     z-index: 0;
+    width: 100%;
     position: relative;
     /* right: 0; */
     right: -300%;
@@ -174,7 +178,7 @@ textarea::-webkit-scrollbar {
     text-align: left;
     color: rgb(56, 56, 56);
     padding-right: 20px;
-    max-width: 80%;
+    word-break: normal;
     max-width: 70%;
     padding: 10px;
     padding-left: 15px;
@@ -182,6 +186,13 @@ textarea::-webkit-scrollbar {
     border-radius: 3px;
     background-color: rgb(248, 198, 248);
     box-shadow: 1px 1px 5px 2px rgb(231, 231, 231);
+}
+.user-chat-bubble article{
+    word-break: break-all;
+    word-wrap: break-word;
+    
+    width: 100%;
+    overflow: hidden;
 }
 
 input[type="search"]::-webkit-search-cancel-button {
@@ -485,7 +496,10 @@ body {
     width: 99.78%;
     height: calc(25vh - 42px);
     text-align: left;
+    overflow-y: auto;
     outline-style: none;
+    word-wrap:break-word;
+    word-break:break-all; 
     appearance: none;
     border-top: 1px solid transparent;
     resize: none;

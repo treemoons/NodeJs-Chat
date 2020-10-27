@@ -6,18 +6,18 @@
  */
 interface ChatDataSigleList {
     /**登录用户名 */
-    username:string;
+    username: string;
     /**登录头像 */
-    userpic:string;
+    userpic: string;
     /**
      * 添加一条记录
      * @param {ChatData} peer 对话记录
      */
-    pushChatData : ( /**他的话 ❤*/ peer: string) => void
+    pushChatData: ( /**他的话 ❤*/ peer: string) => void
     /**
      * @param {ChatData} peer 对话记录
      */
-    getHistoryChat : (peer: ChatData) =>void
+    getHistoryChat: (peer: ChatData) => void
 
     /** 好友用户名 
      * @type {string}*/
@@ -31,7 +31,7 @@ interface ChatDataSigleList {
     /**我们在一起的话❤
      * @type {ChatData[]}
      */
-    chatdata?: ChatData[] ;
+    chatdata?: ChatData[];
 
     /**我们之间上一次的最后一句 
      * @type {ChatData} ♥*/
@@ -60,7 +60,7 @@ interface ChatData {
     isread: boolean;
 }
 /** 创建聊天数据基础与显示client端 */
- interface BuildBubblesFrame {
+interface BuildBubblesFrame {
 
     /**登录用户名 */
     username: string;
@@ -114,7 +114,7 @@ sqlite3.serialize(() => {
     sqlite3.run(`INSERT INTO CHATDATA(USERNAME,PEERNAME,CONTENT,DATE) 
                                 VALUES(?,?,?,?);`,
         [data.applyuser, data.sendData.username, data.sendData.content, data.sendData.date],
-        (        err: { message: undefined; } | undefined) => {
+        (err: { message: undefined; } | undefined) => {
             let msg = { status: 0, msg: undefined };
             if (err != undefined)
                 msg.msg = err.message;
@@ -122,7 +122,7 @@ sqlite3.serialize(() => {
                 msg.status = 1;
             console.log(JSON.stringify(msg));
         });
-    sqlite3.all('SELECT * FROM CHATDATA', (err:any, row:any) => {
+    sqlite3.all('SELECT * FROM CHATDATA', (err: any, row: any) => {
         console.log(row)
     })
 });

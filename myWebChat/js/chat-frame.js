@@ -16,17 +16,17 @@
 //         // console.log(ma[i]+"\n")
 //     }
 // })
-import { friendFocus, resendmessage, frame } from './ui-builder.js';
+import { friendFocus, resendmessage } from './ui-builder.js';
 
 export function getfriendid(friendEle) {
     return friendEle.getAttribute('data-name');
 }
 
- let istransition=false;
-export function changeTransition(isopen){
+let istransition = false;
+export function changeTransition(isopen) {
     istransition = isopen;
 }
-export let chatwindow = document.querySelector('.chat-data-frame .chat-data');
+export let chatdatawindow = document.querySelector('.chat-data-frame .chat-data');
 
 HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
     this.scrollTo(aimPositionElement.offsetLeft, aimPositionElement.offsetTop)
@@ -262,7 +262,7 @@ export default class BuildBubblesFrame {
      * @param {string} pic 用户头像
      * @param {HTMLElement} parentEle 信息展示窗口的元素
      */
-    constructor(user, pic, parentEle = chatwindow, listEle = undefined) {
+    constructor(user, pic, parentEle = chatdatawindow, listEle = undefined) {
         this.username = user;
         this.userpic = pic;
         this.sigleChat = parentEle;
@@ -285,11 +285,18 @@ export default class BuildBubblesFrame {
     /**一个好友信息的所有标签元素的父元素
      * @type {HTMLElement}*/
     sigleChat;
+    /**@type {{imgelement:HTMLImageElement,imgfile: {data:ArrayBuffer,datainfo:{usertopeer: string|'username-peername', fileExtension: string|'gif',filesize: number,date:string}}}[]} */
+    imgsinfo = [];
+
+    /** 重置sendimgs数组 */
+    clearSendImgs() {
+        this.imgsinfo = [];
+    }
 
     /**
      * loading initializated data
      */
-    initializaingData = () => {
+    initializaingData() {
         getAjaxData({
             url: 'http://localhost:8888/api/loaddata',
             // data: '...',
@@ -332,7 +339,7 @@ export default class BuildBubblesFrame {
     /** 由于ajax异步加载，所以在调用处申明，方便引用 */
     setonclickanimotion;
     /**初始化好友列表 */
-    initializaingfriendlist = () => {
+    initializaingfriendlist() {
         this.friendlistEle.innerHTML = '';
         for (let name in this.bubblesFrame) {
             this.friendlistEle.innerHTML += `<li class="friends-list" data-name="${name}">
@@ -347,7 +354,7 @@ export default class BuildBubblesFrame {
      * @param {string} peername 聊天对象名
      * @param {Boolean} istransition 启用动画
      */
-    showFrame = (peername) => {
+    showFrame(peername) {
         try {
             //清空
             this.sigleChat.innerHTML = '';
@@ -389,7 +396,7 @@ export default class BuildBubblesFrame {
                 });
                 frame.unreadCount = 0
                 resendmessage();
-                chatwindow.scrolltoRelativePosition(chatwindow.children[chatwindow.children.length - 1]);
+                chatdatawindow.scrolltoRelativePosition(chatdatawindow.children[chatdatawindow.children.length - 1]);
             }
         } catch (e) {
             console.log(e);
@@ -403,13 +410,13 @@ export default class BuildBubblesFrame {
      * @param {boolean} asc 升降添加
      * @param {boolean} istransition 开启动画
      */
-    addpieceschat = (piecesdata, name, pic, asc) => {
+    addpieceschat(piecesdata, name, pic, asc) {
         let piecesChat = document.createElement('div');
         if (piecesdata.iscurrentuser) {
             piecesChat.className = 'user-speak';
             piecesChat.innerHTML += `
                                 ${(piecesdata.sendfailed ? '<div class="resend">重发</div>' : '')}
-                                <div class="user-chat-bubble">${piecesdata.content}</div>
+                                <div class="user-chat-bubble"><article>${piecesdata.content}</article></div>
                                 <img src="${pic}"
                                     width="30" height="30" alt="${name}">`;
         } else {
@@ -417,7 +424,7 @@ export default class BuildBubblesFrame {
             piecesChat.innerHTML += `
                                 <img src="${pic}"
                                     width="30" height="30" alt="${name}">
-                                <div class="user-chat-bubble">${piecesdata.content}</div>`;
+                                <div class="user-chat-bubble"><article>${piecesdata.content}</article></div>`;
         }
         if (asc)
             this.sigleChat?.appendChild(piecesChat);
@@ -433,7 +440,7 @@ export default class BuildBubblesFrame {
      *  更新指定条目数加载到对象数据(主要是更新新消息)
      * @param {ChatDataSigleList[]} chatDataLists load chat data with dealed counts
      */
-    updateFrame = () => {
+    updateFrame() {
         let bubbles = {};
         this.chatDataLists.forEach(v => {
             let name = v.peername;
@@ -451,6 +458,7 @@ export default class BuildBubblesFrame {
     backChatHistory(name, pieces, tip) {
         //ajax to server get
         //suppose got it into variable history
+        let count = 0;
         getAjaxData({
             url: 'http://localhost:8888/api/gethistory',
             data: JSON.stringify({ peername: name, requestcount: pieces, ignorecount: (this.bubblesFrame[name]?.chatdata?.length ? this.bubblesFrame[name].chatdata.length : 0) }),
@@ -466,7 +474,7 @@ export default class BuildBubblesFrame {
                         peerdata.getHistoryChat(data);
                         this.addpieceschat(data, name, peerdata.peerpic, false);
                     });
-                    chatwindow.scrolltoRelativePosition(tip);
+                    chatdatawindow.scrolltoRelativePosition(tip);
                 }
                 tip.remove();
             },
@@ -502,39 +510,25 @@ export default class BuildBubblesFrame {
     });
     /**
      * 主动发送消息给对方
-     * @param {string} content 内容
+     * @param {HTMLInputElement} textArea 内容
      * @param {boolean} istransition 开启动画
      */
-    sendChatMessage = async (content) => {
+    async sendChatMessage(textArea) {
         try {
-            let name = getfriendid(friendFocus);
-            let date = parseFloat(new Date().formatDate('yyyyMMdd.HHmmss'))
-            this.bubblesFrame[name].pushChatData({
-                iscurrentuser: true,
-                content: content,
-                date: date,
-                isread: 1
-            });
-            let piecesChat = document.createElement('div');
-            piecesChat.className = 'user-speak';
-            piecesChat.innerHTML += `
-                                <div class="sending" date="${date}"></div>
-                                <div class="user-chat-bubble">${content.replace('\n', '<br>')}</div>
-                                <img src="${this.userpic}"
-                                    width="30" alt="${this.username}">`;
-            this.sigleChat.append(piecesChat);
-            chatwindow.scrolltoRelativePosition(piecesChat);
-            let resend = this.sigleChat?.children[this.sigleChat.children.length - 1]?.children[0];
-            /**@type {{peername: string,content: string, date:number,isread: 0 }} */
+           
+            /**@type {{peername: string,textArea: string, date:number,isread: 0 }} */
             let chatdata = {
                 peername: name,
-                content: content,
+                content: textArea.innerHTML,
                 date: date,
                 isread: 0
             };
             if (istransition)
                 piecesChat.style.opacity = 1;
-            this.friendlistEle.prepend(friendFocus)
+            this.friendlistEle.prepend(friendFocus);
+            let resend = frame.sigleChat?.children[frame.sigleChat.children.length - 1]?.children[0];
+            //重置上传图片
+            this.imgsinfo = [];
             //经过一系列处理存到服务器
             getAjaxData({
                 url: 'http://localhost:8888/api/chato',
@@ -565,11 +559,11 @@ export default class BuildBubblesFrame {
     sentfailed = resend => {
         resend.innerHTML = '重发';
         resend.className = 'resend';
-        resend.onclick = function (e) {
-            this.className = 'sending';
-            this.innerText = '';
-            let content = this.parentElement.children[1].innerHTML;
-            frame.resent(this, friendFocus, content)
+        resend.onclick = e=> {
+            resend.className = 'sending';
+            resend.innerText = '';
+            let content = resend.parentElement.children[1].innerHTML;
+            this.resent(resend, friendFocus, content);
         }
     }
     /**
@@ -577,7 +571,7 @@ export default class BuildBubblesFrame {
      * @param {HTMLElement} resentEle 
      * @param {string} content 
      */
-    resent = (resentEle, content) => {
+    resent(resentEle, content) {
         let name = getfriendid(friendFocus);
         let date = parseFloat(new Date().formatDate('yyyyMMdd.HHmmss'))
         let chatdata = {

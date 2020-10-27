@@ -264,21 +264,21 @@ export async function test(http) {
     let accept = http.request.headers["datainfo"];
     /**@type { {usertopeer: string|'username-peername', fileExtension: string|'gif',filesize: number,date:string}} */
     let datainfo = JSON.parse(accept);
+    let filename =`${datainfo.usertopeer}=${datainfo.date}.${datainfo.fileExtension}`
     http.request.on('data', data => {
         /**@type {ArrayBuffer} */
         let d = data;
-        let file= datainfo.fileExtension+'-'+datainfo.date
-        writeFileSync('./pp.',d,{encoding:'binary',flag:'as'},()=>{})
+        writeFileSync(filename, d, { encoding: 'binary', flag: 'as' }, () => { })
         console.log(d.byteLength)
     });
     http.request.on('end', () => {
         console.log('end...')
-        http.response.setHeader("Access-Control-Allow-Headers",'*')
-        http.response.end();
+        http.response.setHeader("Access-Control-Allow-Headers", '*')
+        http.response.end(`.\\wwwwroot/src/img/${filename}`);
     })
 
 }
 let a = '123456';
 console.log(a.slice(a.length - 1));
 
-console.log( parseFloat (100.11.toFixed('1'))+0.1)
+console.log(parseFloat(100.11.toFixed('1')) + 0.1)

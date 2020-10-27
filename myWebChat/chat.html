@@ -5,27 +5,19 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Security-Policy" content="script-src 'self' 'unsafe-inline';" />
+        <meta http-equiv="Access-Control-Allow-Origin" content="*">
+        <meta http-equiv="Content-Type" content="text/html;charset=UTF-8">
+        <meta http-equiv="Content-Type" content="application/javascript">
         <title>Document</title>
         <script src="./chat-invoke.js" type="module"></script>
         <link rel="stylesheet" href="./css/site.css">
-        <script>
-            
-                function t() {
-                    alert('test');
-                    return '';
-                }
-                (function () {
-                    var re = /./;
-                    console.log(re);
-                    re.toString = t;
-                })()
-                
-        </script>
+       
     </head>
     <script>
     </script>
 
     <body>
+        <img id="canvasimg" style=" position: absolute;opacity: 0;" width="200" alt="">
         <div class="chat">
             <div class="chat-head">
                 <div>treemoons</div>
@@ -48,29 +40,58 @@
             <div class="chat-frame">
                 <aside class="chat-list">
                     <form action="" name="search" class="search">
-                        <input type="search" autocomplete="bday-day" class="search-input" name="searchtext" id="search" placeholder="搜索" value="">
-                    <!-- <input type="submit" value="------"> -->
-                    <div class="icon"><i></i></div>
+                        <input type="search" autocomplete="bday-day" class="search-input" name="searchtext" id="search"
+                            placeholder="搜索" value="">
+                        <!-- <input type="submit" value="------"> -->
+                        <div class="icon"><i></i></div>
                     </form>
                     <div>
                         <ul class="friends-frame">
                             <li class="friends-list" tip="3"><img width="30" src="../userpic.png" alt=""> mike an tom
                             </li>
                             <li class="friends-list" tip="3">
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
-                            </li><li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30" src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
+                            </li>
+                            <li class="friends-list" tip="3"><span class="unread-tip">3</span><img width="30"
+                                    src="../userpic.png" alt=""> mike an tom
                             </li>
                         </ul>
                     </div>
@@ -90,8 +111,10 @@
                             <div class="emoj">
                             </div>
                             <div class="picture">
-                                <form action="http://localhost:8888/api/test1" method="POST" enctype="multipart/form-data" name="fileform">
-                                    <input type="file" name="filepic"  accept="image/jpeg,image/png,image/gif" id="filepic">
+                                <form action="http://localhost:8888/api/test1" method="POST"
+                                    enctype="multipart/form-data" name="fileform">
+                                    <input type="file" name="filepic" accept="image/jpeg,image/png,image/gif"
+                                        id="filepic">
                                 </form>
                             </div>
                         </div>
@@ -104,7 +127,7 @@
                                 <!-- <br>You can't send empty message -->
                             </p>
                             <div class="chat-text-send-button" contenteditable="false">
-                             
+
                                 <p>发送</p>
                             </div>
                         </div>

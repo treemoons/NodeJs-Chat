@@ -71,64 +71,179 @@
 
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <div style="position: absolute;width: 100%;height: 100vh;background:-webkit-gradient(linear, 0 0, 0 60%, from(rgba(137,227,253,0.1)), to(rgba(20, 63, 181)));"></div>
-    <img src="../userpic.png" alt="">
-    <!-- <canvas width="400" height="400" ></canvas> -->
-    <!-- <form action="http://localhost:8888/api/test1" method="POST" enctype="multipart/form-data" name="fileform">
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+    </head>
+
+    <body>
+
+        <form action="http://localhost:8888/api/test1" method="POST" enctype="multipart/form-data" name="fileform">
+            <input type="file" name="filepic" accept="image/jpeg,image/png,image/gif" id="filepic">
+        </form>
+        <div id="p" style="border:  2px red solid;"></div>
+        <canvas id="canvas" width="200">height</canvas>
+        ============================= <br>
+        <img src="../userpic.png" width="200" style="opacity: 0;" id="img" alt="">
+        <a href="../index.html">ceshi</a>
+        <div contenteditable="true" id="d" style="width: 200px;height: 200px;">
+            <img src="../peerpic.jpg" width="10" alt="">
+            <div class="ccc">
+                <div class="bb">
+                    <img src="../peerpic.jpg" alt="">
+                </div>
+            </div>
+
+        </div>
+        <div class="ccc">
+            <div class="bb">
+                <img src="../peerpic.jpg" alt="">
+            </div>
+        </div>
+        <button onclick="test()">test</button>
+        <script>
+
+            let d = document.getElementById('d');
+            console.log(d.innerHTML)
+            let pimg = document.querySelector('.ccc img');
+            console.log(pimg)
+            debugger
+            pimg.src = '../userpic.png'
+            pimg.width = '200';
+            // d.innerHTML = `<img src="../userpic.png" id='i' width="20" alt="">`;
+            // let img = document.getElementById('i');
+            // console.log(img.parentElement);
+
+            // d.innerHTML = `<img src="../userpic.png" id='i2' width="20" alt="">`;
+            // console.log(img.parentElement);
+            // if (!!!img.parentElement) console.log('test')
+            // console.log(d.childElementCount)
+            //   setInterval(() => {
+            //       console.log('活动element是否是d:'+(document.activeElement == d));
+            //   }, 1000);
+            //   d.onkeydown=e=>{
+            //     console.log("按下之前的node个数："+ d.children.length)
+            //   }
+            //   d.onkeyup=e=>{
+            //       console.log(d.innerHTML);
+            //       console.log("按下之h的node个数："+d.children.length)
+            //   }
+            // let i = document.createElement('img')
+            // i.width = '200'; i.height = '200'
+            // i.src = '../userpic.png'
+            // /**@type {HTMLCanvasElement}*/
+            // let c = document.getElementById('canvas');
+            // let cc = c.getContext('2d');
+            // let a = document.getElementById('img')
+            // i.onload = function () {
+            //     console.log(this.height + '---gao');
+            //     c.width = this.width;
+            //     c.height = this.height;
+            //     cc.drawImage(this, 0, 0, this.width, this.height)
+            // }
+            // let textArea = document.getElementById('p')
+            // let pic = fileform.filepic;
+            // pic.onchange = async function () {
+            //     let file = this.files[0];
+            //     let filedata = await file.arrayBuffer();
+            //     let text = await file.text();
+            //     let blob = new Blob([filedata]);
+            //     let blobscr = URL.createObjectURL(blob);
+
+            //     let can = document.createElement('canvas');
+            //     can.width = 200;
+            //     can.height = 200;
+            //     let context = can.getContext('2d');
+            //     can.innerText = 'hh'
+            //     // textArea.append(can)
+            //     let img = document.getElementById('img');
+            //     // document.getElementById('img').src=blobscr;
+            //     img.src = blobscr;
+            //     img.onload = function () {
+            //         context.drawImage(this, 0, 0, this.width, this.height);
+            //         console.log(img.src);
+            //         can.toBlob(/**@param {Blob} d*/async d => {
+
+            //             textArea.append(can);
+
+            //             // let formdata = new FormData();
+            //             // formdata.append(file.name, datas);
+            //             // console.log(formdata)
+            //             // console.log(datas)
+
+            //         });
+            //     }
+
+            // }
+        </script>
+        <!-- <div style="position: absolute;width: 100%;height: 100vh;background:-webkit-gradient(linear, 0 0, 0 60%, from(rgba(137,227,253,0.1)), to(rgba(20, 63, 181)));"></div>
+    <img src="../userpic.png" alt=""> -->
+
+        <!-- <div id="p">111111111111</div> -->
+        <!-- <canvas width="400" height="400" ></canvas> -->
+        <!-- <form action="http://localhost:8888/api/test1" method="POST" enctype="multipart/form-data" name="fileform">
         <input type="file" name="filepic" accept="image/jpeg,image/png,image/gif" id="filepic">
     </form>
     <button onclick="test()">测试</button> <br>
     <img src="" alt="">
     <script src="./test1.js" type="module"></script> -->
-    <!-- <object style="border: 1px solid rebeccapurple; margin: 0 auto;" border="1" data="../myWebChat/chat.html" type="" width="1000" height="600"></object> -->
-<script>
-    var ConsoleManager = {
-            onOpen() {
-                alert("Console is opened")
-            },
-            onClose() {
-                alert("Console is closed")
-            },
-            init() {
-                var self = this;
-                var x = document.createElement('div');
-                var isOpening = false, isOpened = false;
-                Object.defineProperty(x, 'className', {
-                    get() {
-                        if (!isOpening) {
-                            self.onOpen();
-                            isOpening = true;
-                        }
-                        isOpened = true;
-                    }
-                });
-                setInterval(function () {
-                    isOpened = false;
-                    console.info(x);
-                    // console.clear();
-                    if (!isOpened && isOpening) {
-                        self.onClose();
-                        isOpening = false;
-                    }
-                }, 200)
+        <!-- <object style="border: 1px solid rebeccapurple; margin: 0 auto;" border="1" data="../myWebChat/chat.html" type="" width="1000" height="600"></object> -->
+        <!-- <script>
+            let p = document.getElementById('p');
+            function pp(e) {
+                this.innerText = "kkkk";
+                console.log('test')
             }
-        }
+            p.onclick = function () {
+                this.innerText = "kkkk";
+                console.log('test')
+            }; 
 
-        ConsoleManager.onOpen = function () {
-            alert("Console is opened!!!!!")
-        }
-        ConsoleManager.onClose = function () {
-            alert("Console is closed!!!!!")
-        }
-        ConsoleManager.init();
+        // var ConsoleManager = {
+        // onOpen() {
+        // alert("Console is opened")
+        // },
+        // onClose() {
+        // alert("Console is closed")
+        // },
+        // init() {
+        // var self = this;
+        // var x = document.createElement('div');
+        // var isOpening = false, isOpened = false;
+        // Object.defineProperty(x, 'className', {
+        // get() {
+        // if (!isOpening) {
+        // self.onOpen();
+        // isOpening = true;
+        // }
+        // isOpened = true;
+        // }
+        // });
+        // setInterval(function () {
+        // isOpened = false;
+        // console.info(x);
+        // // console.clear();
+        // if (!isOpened && isOpening) {
+        // self.onClose();
+        // isOpening = false;
+        // }
+        // }, 200)
+        // }
+        // }
+
+        // ConsoleManager.onOpen = function () {
+        // alert("Console is opened!!!!!")
+        // }
+        // ConsoleManager.onClose = function () {
+        // alert("Console is closed!!!!!")
+        // }
+        // ConsoleManager.init();
 
 
-</script>
-</body>
+        </script>
+    -->
+    </body>
+
 </html>
