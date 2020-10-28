@@ -405,7 +405,7 @@ function sent(obj) {
             piecesChat.className = 'user-speak';
             piecesChat.innerHTML += `
                                 <div class="sending" date="${date}"></div>
-                                <div class="user-chat-bubble"><article>${textArea.innerHTML.replace('\n', '<br>')}</article></div>
+                                <div class="user-chat-bubble">${textArea.innerHTML.replace('\n', '<br>')}</div>
                                 <img src="${frame.userpic}"
                                     width="30" alt="${frame.username}">`;
             frame.sigleChat.append(piecesChat);
@@ -451,6 +451,242 @@ function sent(obj) {
         }, 1000);
     }
 }
+
+
+/**
+ *
+ * @param {string} text
+ * @param {'infomation'|'warning'|'error'} warningtype
+ * @param {'YesNoCancel'|'YesNo'|'Yes'} messageButton
+ * @param {{yes:(args:any)=>void,no:(args:any)=>void,cancel:()=>void,args:string|number|{}|[]}} buttonsCallback
+ * @param {number} timeout unit: ms
+ */
+function messagebox(text, warningtype, messageButton, { yes = d => { }, no = d => { }, cancel = d => { }, args } = {}, timeout = undefined) {
+    //#region element
+    let tipBackground = document.createElement('div');
+    let tip = document.createElement('div');
+    let contentWindow = document.createElement('article')
+    let tittle = document.createElement('h3');
+    let warningicon = document.createElement('b');
+    let warningtip = document.createElement('span')
+    let content = document.createElement('p');
+    let buttons = document.createElement('div');
+    let btnyes = document.createElement('button');
+    let btnno, btncancel;
+    tipBackground.appendChild(tip);
+    tip.appendChild(contentWindow);
+    contentWindow.append(tittle, content, buttons);
+    tittle.append(warningicon, warningtip);
+    warningicon.innerText = '!';
+    btnyes.innerText = 'Yes';
+    switch (messageButton) {
+        case 'YesNoCancel':
+            btnno = document.createElement('button');
+            btncancel = document.createElement('button');
+            btnno.innerText = 'No'
+            btncancel.innerText = 'Cancel'
+            buttons.append(btnyes, btnno, btncancel);
+
+            break;
+        case 'YesNo':
+            btnno = document.createElement('button');
+            btnno.innerText = 'No'
+            buttons.append(btnyes, btnno);
+            break;
+        case 'Yes':
+        default:
+            buttons.appendChild(btnyes);
+            break;
+    }
+    //#endregion
+
+    //#region  style
+    tipBackground.style = `
+        position: fixed;
+        z-index: 0;
+        height: 100vh;
+        display: flex;
+        width: 0;
+        justify-content: center;
+        align-items: center;`;
+    tip.style = `
+        box-shadow: 1px 2px 7px 0px gainsboro;
+        position:relative;
+        z-index: 999;
+        max-width: 70%;
+        overflow: hidden;
+        width: auto;
+        min-width:200px;
+        border-radius: 5px;
+        transition: all linear 100ms;
+        -webkit-transition: all linear 100ms;
+        -moz-transition: all linear 100ms;
+        -ms-transition: all linear 100ms;
+        -o-transition: all linear 100ms;
+        -webkit-border-radius: 5px;
+        -moz-border-radius: 5px;
+        -ms-border-radius: 5px;
+        -o-border-radius: 5px;`;
+    contentWindow.style = ` 
+       position: relative;
+        left:0;
+        margin: 10px;
+        margin-top: 0;
+        max-width: 100%;
+        min-width: 200px;
+        word-wrap: break-word;
+        padding: 0;
+        margin:0;
+        transition: all linear 200ms;
+        -webkit-transition: all linear 200ms;
+        -moz-transition: all linear 200ms;
+        -ms-transition: all linear 200ms;
+        -o-transition: all linear 200ms;`;
+    tittle.style = `
+        background-color: rgb(248, 211, 211);
+        padding: 5px 20px;
+        margin-block-start: 0;`;
+    warningicon.style = `
+        display: inline-block;
+        text-align: center;
+        color: white;
+        width:25px;
+        border-radius: 50%;
+        -webkit-border-radius: 50%;
+        -moz-border-radius: 50%;
+        -ms-border-radius: 50%;
+        -o-border-radius: 50%;`;
+    warningtip.style = `margin-left: 10px`;
+    content.style = `
+        text-align: center;
+        width: 80%;
+        margin: 2% auto;`;
+    buttons.style = `
+        text-align: right;
+        display: flex;
+        padding-bottom: 10px;
+        justify-content: space-around;`;
+    btnyes.style = `
+        outline: none;
+        min-width: 50px;
+        color: white;
+        border: none;
+        /* box-shadow: 1px 2px 4px 0px hsl(0, 0%, 86%); */
+        background: #26bd76;
+        padding:5px 10px;`;
+    btnyes.onmouseenter = e => btnyes.style.boxShadow = '1px 2px 4px 2px hsl(0, 0 %, 86 %)';
+    btnyes.onmouseleave = e => btnyes.style.boxShadow = 'none';
+    btnyes.onclick = yesClick;
+    if (btnno) {
+        btnno.style = `
+            outline: none;
+            min-width: 50px;
+            border: none;
+            color: white;
+            /* box-shadow: 1px 2px 4px 0px #f8f8f8; */
+            background: #e65936;
+            padding:5px 10px;`;
+        btnno.onmouseenter = e => btnno.style.boxShadow = '1px 2px 4px 2px hsl(0, 0 %, 86 %)';
+        btnno.onmouseleave = e => btnno.style.boxShadow = 'none';
+        btnno.onclick = noClick;
+    }
+    if (btncancel) {
+        btncancel.style = `
+            outline: none;
+            min-width: 50px;
+            border: none;
+            color: gary;
+            /* box-shadow: 1px 2px 4px 0px #f8f8f8; */
+            background: #efefef;
+            padding:5px 10px;`;
+        btncancel.onmouseenter = e => btncancel.style.boxShadow = '1px 2px 4px 2px hsl(0, 0 %, 86 %)';
+        btncancel.onmouseleave = e => btncancel.style.boxShadow = 'none';
+        btncancel.onclick = cancelClick;
+    }
+    //#endregion
+
+    //#region warning style
+    switch (warningtype) {
+        case 'warning':
+            warningicon.style.backgroundColor = 'yellow';
+            warningtip.innerText = '警 告';
+            break;
+        case 'error':
+            warningicon.style.backgroundColor = 'red';
+            warningtip.innerText = '错 误';
+            break;
+        case 'infomation':
+        default:
+            warningicon.style.backgroundColor = 'green';
+            warningtip.innerText = '提 示';
+            break;
+    }
+    //#endregion
+    content.innerText = text;
+
+    if (parseInt(timeout))
+        setTimeout(() => {
+            close();
+        }, timeout);
+
+    //#region onclick 事件
+    function yesClick() {
+        yes(args);
+        close();
+    }
+    function noClick() {
+        no(args);
+        close();
+    }
+    function cancelClick() {
+        cancel();
+        close();
+    }
+
+    //#endregion
+
+    //#region show and close
+
+    function show() {
+        document.body.prepend(tipBackground);
+        tipBackground.style.width = '100%';
+        tip.style.width = 'auto';
+        tip.style.height = 'auto';
+        let width = getComputedStyle(tip).width
+        let height = getComputedStyle(tip).height
+        tip.style.width = '0'
+        tip.style.height = '0'
+        setTimeout(() => {
+            tip.style.width = width;
+            tip.style.height = height;
+            setTimeout(() => {
+                tip.style.height = 'auto';
+                tip.style.width = 'auto';
+            }, 100);
+        }, 100);
+    }
+    function close() {
+        let width = tip.style.width = getComputedStyle(tip).width;
+        tip.style.height = getComputedStyle(tip).height;
+        setTimeout(() => {
+            tip.style.width = '0';
+            tip.style.height = '0';
+            contentWindow.style.left = '-' + width;
+            debugger
+            setTimeout(() => {
+                if (tipBackground.parentElement) {
+                    document.body.removeChild(tipBackground);
+                }
+            }, 100);
+        }, 0);
+    }
+    //#endregion
+    show();
+}
+
+
+
+
 /**
  * 当scrolltop==0继续向上滑动的事件处理;
  * @param {{action:(e:Event)=>void,tipText:string,

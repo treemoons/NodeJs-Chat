@@ -115,7 +115,7 @@ export async function loaddata(http) {
                                                 chatsigledata.chatdata.push(chatsigle);
                                             });
                                             count++;
-                                            console.log(chatsigledata)
+                                            // console.log(chatsigledata)
                                             // if (err == null) {
                                             // chatsigledata.lastSpeak = chatsigledata.chatdata[chatsigledata.chatdata.length - 1];
 
@@ -260,7 +260,7 @@ export async function logout(http) {
 let img = {};
 
 /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
-export async function test(http) {
+export async function receivedFile(http) {
     let accept = http.request.headers["datainfo"];
     /**@type { {usertopeer: string|'username-peername', fileExtension: string|'gif',filesize: number,date:string}} */
     let datainfo = JSON.parse(accept);
@@ -274,11 +274,7 @@ export async function test(http) {
     http.request.on('end', () => {
         console.log('end...')
         http.response.setHeader("Access-Control-Allow-Headers", '*')
-        http.response.end(`.\\wwwwroot/src/img/${filename}`);
+        http.response.end(`.\\src/img/${filename}`);
     })
 
 }
-let a = '123456';
-console.log(a.slice(a.length - 1));
-
-console.log(parseFloat(100.11.toFixed('1')) + 0.1)

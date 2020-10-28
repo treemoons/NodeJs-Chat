@@ -29,7 +29,7 @@ async function createWindow() {
     // db.get('select *from relationcode limit 4,10', (err, rows) => {
     //    console.log(rows)
     // });
-    win.loadFile('index.html')
+    win.loadFile('./test/newtest.html')
 
     // 打开开发者工具
     win.webContents.openDevTools()

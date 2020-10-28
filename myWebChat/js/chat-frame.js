@@ -416,7 +416,7 @@ export default class BuildBubblesFrame {
             piecesChat.className = 'user-speak';
             piecesChat.innerHTML += `
                                 ${(piecesdata.sendfailed ? '<div class="resend">重发</div>' : '')}
-                                <div class="user-chat-bubble"><article>${piecesdata.content}</article></div>
+                                <div class="user-chat-bubble">${piecesdata.content}</div>
                                 <img src="${pic}"
                                     width="30" height="30" alt="${name}">`;
         } else {
@@ -424,7 +424,7 @@ export default class BuildBubblesFrame {
             piecesChat.innerHTML += `
                                 <img src="${pic}"
                                     width="30" height="30" alt="${name}">
-                                <div class="user-chat-bubble"><article>${piecesdata.content}</article></div>`;
+                                <div class="user-chat-bubble">${piecesdata.content}</div>`;
         }
         if (asc)
             this.sigleChat?.appendChild(piecesChat);

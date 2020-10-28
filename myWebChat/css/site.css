@@ -4,6 +4,7 @@
     margin: 0;
     padding: 0;
 }
+
 body {
     min-width: 441px;
 }
@@ -46,8 +47,7 @@ body {
     position: relative;
     z-index: 1;
     height: 93vh;
-    min-width: 180px;
-    width: 300px;
+    min-width: 100px;
     background-color: rgb(250, 250, 250);
 }
 
@@ -95,8 +95,10 @@ textarea::-webkit-scrollbar {
     list-style: none;
     color: #000000;
     /*border-radius: 3px;
-    *//*background-color: rgb(226, 226, 226);
-    */width: 97%;
+    */
+    /*background-color: rgb(226, 226, 226);
+    */
+    width: 97%;
     transition: all 0.3s ease;
     -webkit-transition: all 0.3s ease;
     -moz-transition: all 0.3s ease;
@@ -116,6 +118,7 @@ textarea::-webkit-scrollbar {
     /* border-left: #8d8d8d 3px solid; */
     /* color: rgb(255, 255, 255); */
 }
+
 .friends-list:hover .unread-tip {
     box-shadow: 0px 3px 3px 1px gainsboro;
 }
@@ -145,7 +148,7 @@ textarea::-webkit-scrollbar {
 }
 
 .user-speak .user-chat-bubble {
-    background-color:rgb(176, 177, 247);
+    background-color: rgb(176, 177, 247);
     box-shadow: -1px -1px 5px 2px rgb(231, 231, 231);
 }
 
@@ -175,10 +178,10 @@ textarea::-webkit-scrollbar {
 .user-chat-bubble {
     position: relative;
     display: inline-block;
+    word-wrap: break-word;
     text-align: left;
     color: rgb(56, 56, 56);
     padding-right: 20px;
-    word-break: normal;
     max-width: 70%;
     padding: 10px;
     padding-left: 15px;
@@ -187,10 +190,9 @@ textarea::-webkit-scrollbar {
     background-color: rgb(248, 198, 248);
     box-shadow: 1px 1px 5px 2px rgb(231, 231, 231);
 }
-.user-chat-bubble article{
-    word-break: break-all;
-    word-wrap: break-word;
-    
+
+.user-chat-bubble article {
+
     width: 100%;
     overflow: hidden;
 }
@@ -198,15 +200,17 @@ textarea::-webkit-scrollbar {
 input[type="search"]::-webkit-search-cancel-button {
     display: none;
 }
-.search{
-    padding:10px 15px;
+
+.search {
+    padding: 10px 15px;
     position: relative;
 }
-.search>.search-input{
+
+.search>.search-input {
     color: rgb(87, 87, 87);
     border: gainsboro 1px solid;
     line-height: 17px;
-    padding: 3px 30px 3px 8px ;
+    padding: 3px 30px 3px 8px;
     width: 100%;
     appearance: none;
     background: none;
@@ -217,7 +221,8 @@ input[type="search"]::-webkit-search-cancel-button {
     -ms-border-radius: 3px;
     -o-border-radius: 3px;
 }
-.search>.search-input:focus{
+
+.search>.search-input:focus {
     border: darkgray 1px solid;
 }
 
@@ -230,6 +235,7 @@ input[type="search"]::-webkit-search-cancel-button {
     padding-right: 10px;
     padding-left: 3px;
 }
+
 .search i {
     display: inline-block;
     width: 12px;
@@ -361,7 +367,8 @@ body {
     0% {
         left: 0;
     }
-/* 10%{
+
+    /* 10%{
     left: 0;
 } */
     100% {
@@ -456,7 +463,8 @@ body {
     position: absolute;
     right: 3vw;
     /*font-size: 18px;
-    */background-color: rgb(250, 80, 80);
+    */
+    background-color: rgb(250, 80, 80);
     /* box-shadow: 0 0 3px 1px rgb(230, 200, 200); */
     vertical-align: middle;
     color: white;
@@ -478,6 +486,7 @@ body {
     justify-content: center;
     position: relative;
 }
+
 .chat-data {
     width: 100%;
     height: 68vh;
@@ -498,8 +507,7 @@ body {
     text-align: left;
     overflow-y: auto;
     outline-style: none;
-    word-wrap:break-word;
-    word-break:break-all; 
+    word-wrap: break-word;
     appearance: none;
     border-top: 1px solid transparent;
     resize: none;
@@ -508,6 +516,7 @@ body {
 .chat-write:focus {
     border-top: 1px solid rgb(223, 223, 177);
 }
+
 .chat-text-send-button {
     position: absolute;
     display: flex;
