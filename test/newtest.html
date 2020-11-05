@@ -5,21 +5,76 @@
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <title>Document</title>
-        <script defer type="module">
-            document.getElementById('dddd').innerHTML='module'
+        <script >
+           
+             document.write(process.versions.node);
+            // document.getElementById('dddd').innerHTML = 'module'
         </script>
         <script src="./test1.js" type="module"></script>
     </head>
 
     <body>
+
+        <button id="quit">退出</button>
+       
+        <!DOCTYPE html>
+        <html>
+
+            <head>
+                <meta charset="utf-8">
+                <title>菜鸟教程(runoob.com)</title>
+                <style>
+                    #myDIV {
+                        background-color: coral;
+                        border: 1px solid;
+                        padding: 50px;
+                        color: white;
+                    }
+
+                    .pp {
+                        height: 80vh;
+                        width: 100vw;
+                        background-color: antiquewhite;
+                    }
+                </style>
+            </head>
+
+            <body>
+                <div class="">
+                    <div id="myDIV"> div 元素添加了 onmousemove 事件句柄，在你移动鼠标时会显示随机数。
+                        <p>点击按钮移除 DIV 的事件句柄。</p>
+                        <button onclick=" debugger;this.innerHTML='dddddd'" id="myBtn">点我</button>
+                    </div>
+                    <p id="demo"></p>
+                </div>
+                <script>
+                    document.getElementById('myDIV').addEventListener("click", myFunction, true);
+                    function myFunction() {
+                        debugger
+                        document.getElementById("demo").innerHTML = Math.random();
+
+                    }
+                    function removeHandler() {
+                        document.getElementById('myDIV').removeEventListener("click", myFunction);
+                    }
+                </script>
+
+            </body>
+
+        </html>
+        <form action="#2">
+            <input type="text">
+            <input type="text">
+            <input type="submit">
+        </form>
         <button onclick="messagebox('this is test which is messagebox via javascript language,encapsulation. the long test messages in line will be tested by the function.',
-    'error','YesNoCancel')">TEST</button>
+    'error','YesNoCancel',{},5)">TEST</button>
         <input type="text" name="" id="inp" value="">
         <div id="dddd"></div>
         <script>
-            
-                document.write("node: " + process.versions.node);
-                document.write("chrome: "+process.versions.chrome)
+
+            // document.write("node: " + process.versions.node);
+            // document.write("chrome: " + process.versions.chrome)
             function debounce(fn) {
                 let timeout = null; // 创建一个标记用来存放定时器的返回值
                 return function () {
@@ -31,13 +86,13 @@
             }
             function sayHi() {
 
-                let a='name.test';
-                console.log(a.substr(0,a.lastIndexOf('.')))
+                let a = 'name.test';
+                console.log(a.substr(0, a.lastIndexOf('.')))
                 console.log('防抖成功');
             }
 
             var inp = document.getElementById('inp');
-            inp.addEventListener('input', debounce(sayHi)); // 防抖
+            inp.addEventListener('input', debounce(sayHi), false); // 防抖
             /**
              *
              * @param {string} text
@@ -54,7 +109,7 @@
                 let contentWindow = document.createElement('article')
                 let tittle = document.createElement('h3');
                 let warningicon = document.createElement('b');
-                let warningtip = document.createElement('span')
+                let warningtip = document.createElement('span');
                 let content = document.createElement('p');
                 let buttons = document.createElement('div');
                 let btnyes = document.createElement('button');
@@ -95,7 +150,9 @@
         width: 0;
         justify-content: center;
         align-items: center;`;
+                tipBackground.onclick = tipBackgroundFlash;
                 tip.style = `
+                bottom:15%;
         box-shadow: 1px 2px 7px 0px gainsboro;
         position:relative;
         z-index: 999;
@@ -112,7 +169,8 @@
         -webkit-border-radius: 5px;
         -moz-border-radius: 5px;
         -ms-border-radius: 5px;
-        -o-border-radius: 5px;`;
+        -o-border-radius: 5px;
+        background-color:#ffffffbb`;
                 contentWindow.style = ` 
        position: relative;
         left:0;
@@ -151,7 +209,7 @@
                 buttons.style = `
         text-align: right;
         display: flex;
-        padding-bottom: 10px;
+        padding-bottom: 20px;
         justify-content: space-around;`;
                 btnyes.style = `
         outline: none;
@@ -211,11 +269,25 @@
                 //#endregion
                 content.innerText = text;
 
-                if (parseInt(timeout))
-                    setTimeout(() => {
-                        close();
-                    }, timeout);
+                if (parseInt(timeout)) {
 
+                    let warningtimeout = document.createElement('span');
+                    tittle.append(warningtimeout);
+                    warningtimeout.style = `
+                        position: absolute;
+                        right: 10px;
+                        display:inline-block;`;
+                    let count = timeout;
+                    warningtimeout.innerText = count;
+                    let timeInteral = setInterval(() => {
+                        warningtimeout.innerText = --count;
+                        if (count <= 0) {
+                            clearInterval(timeInteral);
+                            close();
+                        }
+                    }, 1000);
+
+                }
                 //#region onclick 事件
                 function yesClick() {
                     yes(args);
@@ -256,22 +328,39 @@
                 function close() {
                     let width = tip.style.width = getComputedStyle(tip).width;
                     tip.style.height = getComputedStyle(tip).height;
-                    contentWindow.style.opacity = '0'
                     setTimeout(() => {
                         tip.style.width = '0';
                         tip.style.height = '0';
-                        tip.style.minWidth='0';
+                        contentWindow.style.opacity = '0'
                         setTimeout(() => {
+                            tip.style.minWidth = '0';
                             if (tipBackground.parentElement) {
                                 document.body.removeChild(tipBackground);
                             }
                         }, 100);
-                    }, 10);
+                    }, 100);
                 }
                 //#endregion
+                //阻止冒泡
+                tip.onclick = function (e) {
+                    e.stopPropagation()
+                }
+                function tipBackgroundFlash(e) {
+                    flash(2);
+                }
+                function flash(times) {
+                    tip.style.boxShadow = '1px 2px 7px 7px gainsboro';
+
+                    setTimeout(() => {
+                        tip.style.boxShadow = '1px 2px 7px 0px gainsboro';
+                        if (times > 1)
+                            setTimeout(() => {
+                                flash(--times);
+                            }, 200);
+                    }, 200);
+                }
                 show();
             }
-
             function a() {
                 console.log('a')
             }

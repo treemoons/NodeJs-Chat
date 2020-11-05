@@ -19,7 +19,7 @@ function start() {
         }
 
         //#region deal with Controllers/Actions/parameters... via regulation expresion ,
-        
+
         let routeWithParams = pathname.pathname.toLowerCase().match(/\/.[^/?]+/g);
         let controller;
         let action;
@@ -37,7 +37,7 @@ function start() {
                 }
             }
         }
-//#endregion
+        //#endregion
         /**
          * deal with matched controllers/action/params... 
          * @param {{controller:string,action:string}} route like 'controller','action'
@@ -66,7 +66,7 @@ function start() {
                             return;
                         }
                     }
-                   
+
                     return;
                 }
             }
@@ -90,47 +90,39 @@ function start() {
                 // d cound't find route,than to do below 
                 // request without controller ,to do below,defualt redirect to index page.
 
-                switch (controller) {
-                    case 'src':
-                        response.writeHead(200, { "Content-Type": "image/jpeg;image/png;image/gif;text/html;charset=utf-8" });
 
-                        readFile("." + pathname.pathname, (e, d) => {
-                            // console.log("write html: " + d.slice(0, 10))
-                            if (e) {
-                                console.log(e)
-                            } else {
-                                console.log(d.length)
-                                response.end(d);
-                            }
-                        })
-                        break;
+                response.writeHead(200, { "Content-Type": "image/jpeg;image/png;image/gif;text/html;charset=utf-8" });
 
-                    default:
+                readFile("." + pathname.pathname, (e, d) => {
+                    // console.log("write html: " + d.slice(0, 10))
+                    if (e) {
                         response.writeHead(200, { "Content-Type": "text/json;charset=utf-8" });
                         // do other things
-                        console.log('test')
+                        console.log(e)
                         response.end("没找到！");
-                        break;
-                }
+                    } else {
+                        console.log(d.length)
+                        response.end(d);
+                    }
+                })
             }
         } else {
-        // no any controllers...
-            response.writeHead(200, { "Content-Type": "text/html;charset=utf-8" });
-            // 首页 home page
-            console.log('und')
-            readFile('.\\layout/nodejstest.html', (e, d) => {
-                // console.log("write html: " + d.slice(0, 10))
-                if (e) {
-                    console.log(e)
-                } else {
-                    response.write(d.toString());
-                    response.end();
-                }
-            })
+            // no any controllers...
+                response.writeHead(200, { "Content-Type": "text/html;charset=utf-8" });
+                // 首页 home page
+                readFile('.\\layout/nodejstest.html', (e, d) => {
+                    // console.log("write html: " + d.slice(0, 10))
+                    if (e) {
+                        console.log(e)
+                    } else {
+                        response.write(d.toString());
+                        response.end();
+                    }
+                })
         }
     }
 
-    http.createServer(onRequest).listen(8888);
+    let server = http.createServer(onRequest).listen(8888);
     console.log("Server has started.see'http://127.0.0.1:8888'");
 }
 start()

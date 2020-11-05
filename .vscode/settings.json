@@ -2,6 +2,6 @@
     "path-autocomplete.pathMappings": {
         ".\\": "${folder}/myNodeTest"
     },
-    "code-runner.cwd": "E:\\partJob\\NodeJs-Chat\\myNodeTest",
+    "code-runner.cwd": "E:\\partJob\\NodeJs-Chat\\myNodeTest","sql-formatter.dialect":"db2"
     
 }

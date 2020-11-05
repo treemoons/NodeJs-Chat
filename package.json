@@ -4,8 +4,8 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "ele": "chcp 65001 && electron . ",
-    "node": "chcp 65001 && cd e:/partJob/NodeJs-Chat/myNodeTest && node ./start.js"
+    "ele": "electron . ",
+    "node": "cd e:/partJob/NodeJs-Chat/myNodeTest && node ./start.js"
   },
   "author": "",
   "license": "ISC",
@@ -13,11 +13,10 @@
   "devDependencies": {
     "electron": "^10.1.5",
     "electron-builder": "^22.9.1",
-    "formidable": "^1.2.2",
-    "node": "^14.14.0",
+    "electron-rebuild": "^2.3.2",
+    "node": "^14.15.0",
     "npm": "^6.14.8",
-    "sqlite3": "^5.0.0",
-    "typescript": "^4.0.5"
+    "sqlite3": "^5.0.0"
   },
   "keywords": []
 }

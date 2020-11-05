@@ -11,8 +11,6 @@
             "script": "${file}",
             "cwd": "${file}"
         },
-        
-        
         {
             "name": "Chat Node Program",
             "program": "${workspaceFolder}/mynodetest/start.js",
@@ -22,8 +20,14 @@
             // ],
             "type": "pwa-node",
             "cwd": "${workspaceFolder}/mynodetest",
-            
+        },
+        {
+            "name": "Electron Process",
+            "type": "pwa-node",
+            "request": "launch",
+            "cwd": "${workspaceRoot}",
+            "runtimeExecutable": "${workspaceRoot}/node_modules/.bin/electron.cmd",
+            "program": "${workspaceRoot}/main.js"
         }
-        
     ]
 }

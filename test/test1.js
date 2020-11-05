@@ -1,6 +1,7 @@
 
-import *as test1 from './test.mjs';
+import  test1 from './test.js';
 
+test1();
 /**
  * 每一个input的file都对应files是多个文件，必须使用files[0]来设置和获取单个文件属性
  * 可以在标签中使用multiple多选
