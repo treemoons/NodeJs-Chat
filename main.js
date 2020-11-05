@@ -1,6 +1,7 @@
-﻿const  { app, BrowserWindow } =require('electron');
+﻿const electron = require('electron');
+const { BrowserWindow, app } = electron;
 // const t=require('./TEST/test')
-var win
+var win;
 async function createWindow() {
     // 创建浏览器窗口
      win = new BrowserWindow({
@@ -9,7 +10,7 @@ async function createWindow() {
         webPreferences: {
             nodeIntegration: true
         }
-    })
+     })
     //  win.menuBarVisible = false;
     // Menu.setApplicationMenu(null);
     // for (const key in getcookies) {
@@ -30,7 +31,6 @@ async function createWindow() {
     //    console.log(rows)
     // });
     win.loadFile('./test/newtest.html')
-
     // 打开开发者工具
     win.webContents.openDevTools()
 }

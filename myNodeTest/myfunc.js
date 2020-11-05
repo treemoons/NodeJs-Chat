@@ -1,4 +1,4 @@
-﻿import {  appendFileSync } from "fs";
+﻿import {  existsSync, readFileSync, writeFileSync } from "fs";
 import { ServerResponse } from "http";
 
 /**
@@ -39,30 +39,48 @@ Date.prototype.formatDate = function (fmt) {
 }
 
 /**
+ * 写入日志到文件当前/logs文件夹下,以日期命名/
+ *  {'HH:mm:ss':[{ tip: tip, content: text, date: 'yyyy-MM-dd HH:mm:ss.f'}...]}
+ * @param {string} text 日志内容
+ * @param {string} tip 自定义的提示
+ */
+export async function writeLogsAsJSON(text, tip = '') {
+    let date = new Date();
+    let filename = './logs/json' + date.formatDate('yyyyMMdd') + '.json';
+    let logs;
+    let log = { tip: tip, content: text, date: date.formatDate('yyyy-MM-dd HH:mm:ss.f') };
+    if (existsSync(filename)) {
+        let logsStr = await readFileSync(filename, '', { flag: 'r' });
+         logs= JSON.parse(logsStr);
+    } else {
+        let logs = {};
+    }
+    logs[new Date().formatDate('HH:mm:ss')] = log;
+    writeFileSync(filename, JSON.stringify(logs), { encoding: 'utf-8', flag: 'w' });
+}
+/**
  * 写入日志到文件当前/logs文件夹下,以日期命名无后缀
  * @param {string} text 日志内容
  * @param {string} tip 自定义的提示
  */
-export function writeLogs(text,tip='') {
+export function writeLogs(text, tip = '') {
     let date = new Date();
     let filename = './logs/' + date.formatDate('yyyyMMdd');
     let log =
         `\n
 ---------------------------------
-${date.formatDate('yyyy-MM-dd HH:mm:ss.f')}  ${(tip?'['+tip+']':'')}
+${date.formatDate('yyyy-MM-dd HH:mm:ss.f')}  ${(tip ? '[' + tip + ']' : '')}
 ---------------------------------
 ${text}\n`
-    appendFileSync(filename, log, { encoding: 'utf-8' }, () => {
-
-    });
+    writeFileSync(filename, log, { encoding: 'utf-8' ,flag:'a'});
 }
-    /**
- * 
- * @param {string} name 
- * @param {string} purposeString 
- * @param {string} splitMark
- * @returns {Promise<string|undefined>}
- */
+/**
+* 
+* @param {string} name 
+* @param {string} purposeString 
+* @param {string} splitMark
+* @returns {Promise<string|undefined>}
+*/
 export async function getQueryString(name, purposeString, splitMark) {
     let reg = RegExp(`${name}=([^${splitMark}]+)`);
     let arr = purposeString.match(reg);

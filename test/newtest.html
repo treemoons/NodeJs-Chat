@@ -1,15 +1,43 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-</head>
-<body>
-    <button onclick="messagebox('this is test which is messagebox via javascript language,encapsulation. ',
+
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <script defer type="module">
+            document.getElementById('dddd').innerHTML='module'
+        </script>
+        <script src="./test1.js" type="module"></script>
+    </head>
+
+    <body>
+        <button onclick="messagebox('this is test which is messagebox via javascript language,encapsulation. the long test messages in line will be tested by the function.',
     'error','YesNoCancel')">TEST</button>
-    <script>
-        
+        <input type="text" name="" id="inp" value="">
+        <div id="dddd"></div>
+        <script>
+            
+                document.write("node: " + process.versions.node);
+                document.write("chrome: "+process.versions.chrome)
+            function debounce(fn) {
+                let timeout = null; // 创建一个标记用来存放定时器的返回值
+                return function () {
+                    clearTimeout(timeout); // 每当用户输入的时候把前一个 setTimeout clear 掉
+                    timeout = setTimeout(() => { // 然后又创建一个新的 setTimeout, 这样就能保证输入字符后的 interval 间隔内如果还有字符输入的话，就不会执行 fn 函数
+                        fn.apply(this, arguments);
+                    }, 500);
+                };
+            }
+            function sayHi() {
+
+                let a='name.test';
+                console.log(a.substr(0,a.lastIndexOf('.')))
+                console.log('防抖成功');
+            }
+
+            var inp = document.getElementById('inp');
+            inp.addEventListener('input', debounce(sayHi)); // 防抖
             /**
              *
              * @param {string} text
@@ -18,8 +46,9 @@
              * @param {{yes:(args:any)=>void,no:(args:any)=>void,cancel:()=>void,args:string|number|{}|[]}} buttonsCallback
              * @param {number} timeout unit: ms
              */
-            function messagebox(text, warningtype, messageButton, { yes = d => { }, no = d => { }, cancel = d => { }, args } = {}, timeout = undefined) {
+            function messagebox(text, warningtype, messageButton, { yes = d => { }, no = d => { }, cancel = d => { }, args = undefined } = {}, timeout = undefined) {
                 //#region element
+                debugger;
                 let tipBackground = document.createElement('div');
                 let tip = document.createElement('div');
                 let contentWindow = document.createElement('article')
@@ -74,12 +103,12 @@
         overflow: hidden;
         width: auto;
         min-width:200px;
+        border-radius: 5px;
         transition: all linear 100ms;
         -webkit-transition: all linear 100ms;
         -moz-transition: all linear 100ms;
         -ms-transition: all linear 100ms;
         -o-transition: all linear 100ms;
-        border-radius: 5px;
         -webkit-border-radius: 5px;
         -moz-border-radius: 5px;
         -ms-border-radius: 5px;
@@ -87,6 +116,7 @@
                 contentWindow.style = ` 
        position: relative;
         left:0;
+        opacity:0;
         margin: 10px;
         margin-top: 0;
         max-width: 100%;
@@ -94,11 +124,11 @@
         word-wrap: break-word;
         padding: 0;
         margin:0;
-        transition: all linear 200ms;
-        -webkit-transition: all linear 200ms;
-        -moz-transition: all linear 200ms;
-        -ms-transition: all linear 200ms;
-        -o-transition: all linear 200ms;`;
+        transition: all linear 100ms;
+        -webkit-transition: all linear 100ms;
+        -moz-transition: all linear 100ms;
+        -ms-transition: all linear 100ms;
+        -o-transition: all linear 100ms;`;
                 tittle.style = `
         background-color: rgb(248, 211, 211);
         padding: 5px 20px;
@@ -113,7 +143,7 @@
         -moz-border-radius: 50%;
         -ms-border-radius: 50%;
         -o-border-radius: 50%;`;
-                warningtip.style = `margin-left: 10px;`;
+                warningtip.style = `margin-left: 10px`;
                 content.style = `
         text-align: center;
         width: 80%;
@@ -216,6 +246,7 @@
                     setTimeout(() => {
                         tip.style.width = width;
                         tip.style.height = height;
+                        contentWindow.style.opacity = '1'
                         setTimeout(() => {
                             tip.style.height = 'auto';
                             tip.style.width = 'auto';
@@ -225,23 +256,29 @@
                 function close() {
                     let width = tip.style.width = getComputedStyle(tip).width;
                     tip.style.height = getComputedStyle(tip).height;
+                    contentWindow.style.opacity = '0'
                     setTimeout(() => {
                         tip.style.width = '0';
                         tip.style.height = '0';
-                        contentWindow.style.left = '-' + width;
-                        debugger
+                        tip.style.minWidth='0';
                         setTimeout(() => {
                             if (tipBackground.parentElement) {
                                 document.body.removeChild(tipBackground);
                             }
                         }, 100);
-                    }, 0);
+                    }, 10);
                 }
                 //#endregion
                 show();
             }
-        
 
-    </script>
-</body>
+            function a() {
+                console.log('a')
+            }
+            a('undefined')
+
+
+        </script>
+    </body>
+
 </html>

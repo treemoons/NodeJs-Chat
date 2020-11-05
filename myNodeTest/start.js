@@ -2,7 +2,9 @@
 import http from 'http';
 import { setCORS, writeLogs } from './myfunc.js';
 import { parse } from 'url';
-import * as routes from './controllers.js';
+import routes from './controllers.js';
+
+let line = '--------------------------------------------------------------------------------------'
 function start() {
     /**
      * 
@@ -10,14 +12,15 @@ function start() {
      * @param {http.ServerResponse} response 
      */
     function onRequest(request, response) {
-        console.log(request.url);
         const pathname = parse(request.url);
         if (pathname.pathname == "/favicon.ico") {
             //get the favicon.ico file
             return;
         }
 
-        let routeWithParams = pathname.pathname.toLowerCase().match(/\/[^/?]+/g);
+        //#region deal with Controllers/Actions/parameters... via regulation expresion ,
+        
+        let routeWithParams = pathname.pathname.toLowerCase().match(/\/.[^/?]+/g);
         let controller;
         let action;
         let params = [];
@@ -34,37 +37,45 @@ function start() {
                 }
             }
         }
-
+//#endregion
         /**
-         * 
+         * deal with matched controllers/action/params... 
          * @param {{controller:string,action:string}} route like 'controller','action'
+         * @returns if matched,returns void,otherwise return true;
          */
-        function matchRoute({ controller, action }) {
-            if (!routes) return;
+        function notMatchRoute({ controller, action }) {
             for (let controllerName in routes) {
                 if (controller == controllerName) {
+                    if (!action) {
+                        setCORS(response);
+                        routes[controllerName]['default']({ request, response, params }).catch(err => {
+                            writeLogs(err)
+                            console.error("Default Error:  \n" + err)
+                        });
+                        return;
+                    }
                     for (let actionName in routes[controllerName]) {
                         if (action == actionName) {
                             setCORS(response)
-                            routes[controllerName][actionName]({ request, response, params }).catch(err => {
+                            routes[controllerName][actionName]({ request, response, params }).then(
+                                e => console.log(line)
+                            ).catch(err => {
                                 writeLogs(err)
                                 console.error(err)
                             });
-                            return true;
+                            return;
                         }
                     }
-                    setCORS(response)
-                    routes[controllerName]['default']({ request, response, params }).catch(err => {
-                        writeLogs(err)
-                        console.error("Default Error:  \n" + err)
-                    });
-                    return true;
+                   
+                    return;
                 }
             }
-            return false;
+            return true;
         }
-
-        console.log("actionname:" + action)
+        console.log("pathname: \x1b[36;3;1m%s\x1b[0m", pathname.pathname)
+        console.log("url: \x1b[36;3;1m%s\x1b[0m", request.url)
+        console.log('controllername: \x1b[36;3;1m%s\x1b[0m', controller)
+        console.log("actionname: \x1b[36;3;1m%s\x1b[0m", action)
         // let query = pathname.query.match(/[^&=]+=[^&]*/g)
         // console.log(query)
 
@@ -75,21 +86,38 @@ function start() {
                 }
             })
             // request with controller ,to do below
-            if (!matchRoute({ controller: controller, action: action })) {
-                // cound't find route,than to do below 
-                response.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
-                readFile('.\\layout/nodejstest.html', (e, d) => {
-                    if (e) {
-                        console.log(e)
-                    } else {
-                        response.write(d.toString());
-                        response.end();
-                    }
-                })
+            if (notMatchRoute({ controller: controller, action: action })) {
+                // d cound't find route,than to do below 
+                // request without controller ,to do below,defualt redirect to index page.
+
+                switch (controller) {
+                    case 'src':
+                        response.writeHead(200, { "Content-Type": "image/jpeg;image/png;image/gif;text/html;charset=utf-8" });
+
+                        readFile("." + pathname.pathname, (e, d) => {
+                            // console.log("write html: " + d.slice(0, 10))
+                            if (e) {
+                                console.log(e)
+                            } else {
+                                console.log(d.length)
+                                response.end(d);
+                            }
+                        })
+                        break;
+
+                    default:
+                        response.writeHead(200, { "Content-Type": "text/json;charset=utf-8" });
+                        // do other things
+                        console.log('test')
+                        response.end("没找到！");
+                        break;
+                }
             }
         } else {
-            // request without controller ,to do below,defualt redirect to index page.
-            response.writeHead(200, { "Content-Type": "text/html" });
+        // no any controllers...
+            response.writeHead(200, { "Content-Type": "text/html;charset=utf-8" });
+            // 首页 home page
+            console.log('und')
             readFile('.\\layout/nodejstest.html', (e, d) => {
                 // console.log("write html: " + d.slice(0, 10))
                 if (e) {

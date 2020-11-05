@@ -126,3 +126,5 @@ sqlite3.serialize(() => {
         console.log(row)
     })
 });
+
+console.log('test')

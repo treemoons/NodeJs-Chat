@@ -96,6 +96,8 @@
             <input type="text" name="password" value="1234" id=""><br>
             <input type="submit">
         </form>
+        图片
+        <img src="../src/img/peerpic.jpg" alt="">
         <button onclick="test()">
             测试
         </button>
@@ -106,13 +108,6 @@
                     username: 'name', content: 'data', date: new Date().getDate().toString(), isread: 0
                 }
             });
-getAjaxData({
-    url:'http://localhost:8888/api/listening',
-    success:d=>{
-        debugger
-        alert(d)
-    }
-})
             let test = () => getAjaxData({
                 url: 'http://localhost:8888/api/test1',
                 data: JSON.stringify({ peername: "name", requestcount: 0, ignorecount: 1 }),

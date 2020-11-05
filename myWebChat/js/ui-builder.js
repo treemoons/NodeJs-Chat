@@ -5,6 +5,7 @@ import {
     default as BuildFrame,
     getfriendid as getfriendId
 } from './chat-frame.js';
+
 /**要操作的目标元素
  * @type {HTMLElement}*/
 var aimOfContextMenu;
@@ -410,6 +411,7 @@ function sent(obj) {
                                     width="30" alt="${frame.username}">`;
             frame.sigleChat.append(piecesChat);
             chatdatawindow.scrolltoRelativePosition(piecesChat);
+            let contentInnerhtml = piecesChat.querySelector('.user-chat-bubble').innerHTML;
             /**@type {HTMLImageElement[]} */
             let contentEle = piecesChat.querySelectorAll('.user-chat-bubble img');
             if (frame.imgsinfo.length > 0)
@@ -427,8 +429,7 @@ function sent(obj) {
                                 count++;
                                 if (count == frame.imgsinfo.length) {
 
-                                    frame.sendChatMessage(obj);
-                                    obj.innerHTML = null;
+                                    frame.sendChatMessage(contentInnerhtml);
                                     contextMenu();
                                 }
                             }
@@ -436,13 +437,15 @@ function sent(obj) {
                     }
                 })
             else {
-                frame.sendChatMessage(obj);
-                obj.innerHTML = null;
+                frame.sendChatMessage(contentInnerhtml);
                 contextMenu();
             }
         } catch (e) {
-            console.error(e)
+            console.error("发送失败："+e)
+        } finally {
+            obj.innerHTML = null;
         }
+
     } else {
         let tip = document.querySelector('.enter-empty');
         tip.style.display = 'block';
@@ -458,10 +461,10 @@ function sent(obj) {
  * @param {string} text
  * @param {'infomation'|'warning'|'error'} warningtype
  * @param {'YesNoCancel'|'YesNo'|'Yes'} messageButton
- * @param {{yes:(args:any)=>void,no:(args:any)=>void,cancel:()=>void,args:string|number|{}|[]}} buttonsCallback
+ * @param {{yes:(args:any)=>void,no:(args:any)=>void,cancel:()=>void}} buttonsCallback
  * @param {number} timeout unit: ms
  */
-function messagebox(text, warningtype, messageButton, { yes = d => { }, no = d => { }, cancel = d => { }, args } = {}, timeout = undefined) {
+function messagebox(text, warningtype, messageButton, { yes = d => { }, no = d => { }, cancel = d => { } } = {}, timeout = undefined) {
     //#region element
     let tipBackground = document.createElement('div');
     let tip = document.createElement('div');
@@ -631,11 +634,11 @@ function messagebox(text, warningtype, messageButton, { yes = d => { }, no = d =
 
     //#region onclick 事件
     function yesClick() {
-        yes(args);
+        yes();
         close();
     }
     function noClick() {
-        no(args);
+        no();
         close();
     }
     function cancelClick() {

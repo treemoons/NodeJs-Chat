@@ -62,9 +62,12 @@ export function getAjaxData({
             ajax.setRequestHeader(key, httpheader[key]);
         else {
             try {
-                httpheader[key].forEach(v => {
-                    ajax.setRequestHeader(key, v);
-                })
+                let values = '';
+                httpheader[key].forEach(value => {
+                    values += value + ';';
+                });
+                values = values.substr(0, values.length - 1);
+                ajax.setRequestHeader(key, values);
             } catch { console.error('err:isn`t array') }
         }
     }
@@ -83,7 +86,6 @@ export function getAjaxData({
         }
     }
 }
-
 /**
  * @param {string} fmt 
  */
@@ -510,16 +512,16 @@ export default class BuildBubblesFrame {
     });
     /**
      * 主动发送消息给对方
-     * @param {HTMLInputElement} textArea 内容
+     * @param {string} content 内容
      * @param {boolean} istransition 开启动画
      */
-    async sendChatMessage(textArea) {
+    async sendChatMessage(content) {
         try {
-           
-            /**@type {{peername: string,textArea: string, date:number,isread: 0 }} */
+
+            /**@type {{peername: string,content: string, date:number,isread: 0 }} */
             let chatdata = {
                 peername: name,
-                content: textArea.innerHTML,
+                content: content,
                 date: date,
                 isread: 0
             };
@@ -527,8 +529,6 @@ export default class BuildBubblesFrame {
                 piecesChat.style.opacity = 1;
             this.friendlistEle.prepend(friendFocus);
             let resend = frame.sigleChat?.children[frame.sigleChat.children.length - 1]?.children[0];
-            //重置上传图片
-            this.imgsinfo = [];
             //经过一系列处理存到服务器
             getAjaxData({
                 url: 'http://localhost:8888/api/chato',
@@ -544,6 +544,8 @@ export default class BuildBubblesFrame {
                     } else {
                         this.sigleChat?.children[this.sigleChat.children.length - 1]?.children[0]?.remove();
                     }
+                    //重置上传图片
+                    this.imgsinfo = [];
                 },
                 failed: err => {
                     this.sentfailed(resend)
@@ -559,7 +561,7 @@ export default class BuildBubblesFrame {
     sentfailed = resend => {
         resend.innerHTML = '重发';
         resend.className = 'resend';
-        resend.onclick = e=> {
+        resend.onclick = e => {
             resend.className = 'sending';
             resend.innerText = '';
             let content = resend.parentElement.children[1].innerHTML;
