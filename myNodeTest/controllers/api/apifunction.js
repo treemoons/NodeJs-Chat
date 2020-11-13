@@ -21,9 +21,9 @@ let listeningoutime = 30;
 let sqlite3 = new Database('.\\data.db'); //node运行时，启动的文件夹的相对位置
 
 /**@type {{name:{http:{request:IncomingMessage,response:ServerResponse,params:string[]},outtime:Date}}} */
- let listeningHttp = {}
+let listeningHttp = {}
 /**@type {number} */
- let encodingTimes = 10;
+let encodingTimes = 10;
 // sqlite3.all(`select username,peername,content,date,isread from chatdata 
 //                 where ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) ORDER BY DATE ASC LIMIT ?,?`,
 //     ['treemoons', 'name', 'name', 'treemoons', 0, 1], (err, row) => {
@@ -73,7 +73,7 @@ export default {
 
     },
     /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
-    login: async  http=> {
+    login: async http => {
         http.request.on('data', /** @param {string} d */ d => {
             if (d != undefined || d != '') {
                 sqlite3.serialize(async () => {
@@ -184,7 +184,7 @@ export default {
     },
 
     /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
-    gethistory: async  http=> {
+    gethistory: async http => {
         http.request.on('data', d => {
             /**@type {{ peername: string, ignorecount: number , requestcount: number}} */
             let data = JSON.parse(d.toString());
@@ -224,7 +224,7 @@ export default {
 
     /** 发送消息
      * @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
-    chatto: async  http=> {
+    chatto: async http => {
         http.request.on('data', async d => {
             if (d) {
                 /**@type {{  peername: string, content: string, date: number,isread:number  }} */
@@ -273,7 +273,7 @@ export default {
         });
     },
 
-    sentSave:  (username, data)=> {
+    sentSave: (username, data) => {
         // listeningHttp[data.peername][0] = undefined;
         //sent before being saved 
         sqlite3.run(`UPDATE CHATDATA SET ISREAD =1 WHERE USERNAME=? AND PEERNAME=?; AND DATE=?`,
@@ -282,7 +282,7 @@ export default {
     },
 
     /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
-    listening: async  http=> {
+    listening: async http => {
         // listeningHttp[await getloginedUser(http)] = [http, getSpanDate({ seconds: listeningoutime })];
         listeningHttp['treemoons'] = [http, getSpanDate({ seconds: listeningoutime })];
         // listeningHttp['treemoons'].response.setHeader('Content-Type', 'text/plain');
@@ -293,12 +293,14 @@ export default {
      * 主动退出登录需要调用
      * @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http
      */
-    logout: async  http=> {
-        listeningHttp[await getloginedUser(http)] = undefined;
+    logout: async http => {
+        let username = await getloginedUser(http)
+        if (username)
+           delete listeningHttp[username];
     },
 
     /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
-    receivedFile: async  http=> {
+    receivedFile: async http => {
         let accept = http.request.headers["datainfo"];
         /**@type { {usertopeer: string|'username-peername', fileExtension: string|'gif',filesize: number,date:string}} */
         let datainfo = JSON.parse(accept);

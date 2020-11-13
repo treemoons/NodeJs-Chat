@@ -11,7 +11,7 @@
         <title>Document</title>
         <script src="./chat-invoke.js" type="module"></script>
         <link rel="stylesheet" href="./css/site.css">
-       
+
     </head>
     <script>
     </script>
@@ -107,15 +107,17 @@
                                 <img src="${this.userpic}" width="30" alt="${this.username}">
                             </div> -->
                         </div>
-                        <div class="chat-tool">
+                        <div class="chat-tool" >
                             <div class="emoj">
+                                <img src="../peerpic.jpg" width="25" alt="">
                             </div>
                             <div class="picture">
                                 <form action="http://localhost:8888/api/test1" method="POST"
                                     enctype="multipart/form-data" name="fileform">
                                     <input type="file" name="filepic" accept="image/jpeg,image/png,image/gif"
-                                        id="filepic">
+                                         id="filepic">
                                 </form>
+                                <img src="../peerpic.jpg" width="25" alt="">
                             </div>
                         </div>
                         <div class="chat-textbox">

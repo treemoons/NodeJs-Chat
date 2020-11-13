@@ -16,6 +16,7 @@
 //         // console.log(ma[i]+"\n")
 //     }
 // })
+"use strict"
 import { friendFocus, resendmessage } from './ui-builder.js';
 
 export function getfriendid(friendEle) {
@@ -29,8 +30,9 @@ export function changeTransition(isopen) {
 export let chatdatawindow = document.querySelector('.chat-data-frame .chat-data');
 
 HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
-    this.scrollTo(aimPositionElement.offsetLeft, aimPositionElement.offsetTop)
+    this.scrollTo(aimPositionElement.offsetLeft, aimPositionElement.offsetTop);
 }
+
 
 /**
  * 获取并操作Ajax数据
@@ -44,7 +46,7 @@ HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
          'audio/mpeg'|'video/mpeg'|'image/pipeg'|
          'image/jpeg'|'image/x-icon',"Set-Cookie"?:string} } object  options
  */
-export function getAjaxData({
+export async function getAjaxData({
     url,
     success,
     failed = error => {

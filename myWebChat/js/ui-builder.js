@@ -377,7 +377,7 @@ export function initialFrameTheme({
             /** @param {KeyboardEvent} e */
             function (e) {
                 if (e.shiftKey && e.key == 'Enter') return;
-                keypressEnter(e, sent, this);
+                keypressEnter(e, text => { sent(text); text.focus();}, this);
             }
         document.querySelector('.chat-text-send-button').onclick = function (e) {
             sent(textArea);
@@ -413,7 +413,7 @@ function sent(obj) {
             chatdatawindow.scrolltoRelativePosition(piecesChat);
             let contentInnerhtml = piecesChat.querySelector('.user-chat-bubble').innerHTML;
             /**@type {HTMLImageElement[]} */
-            let contentEle = piecesChat.querySelectorAll('.user-chat-bubble img');
+            let contentImgEles = piecesChat.querySelectorAll('.user-chat-bubble img');
             if (frame.imgsinfo.length > 0)
                 frame.imgsinfo.forEach(img => {
                     if (img.imgelement.parentElement) {
@@ -425,7 +425,7 @@ function sent(obj) {
                             },
                             data: img.imgfile.data,
                             success: d => {
-                                contentEle[count].src = d; //从服务器获取图片链接
+                                contentImgEles[count].src = d; //从服务器获取图片链接
                                 count++;
                                 if (count == frame.imgsinfo.length) {
 
@@ -454,7 +454,6 @@ function sent(obj) {
         }, 1000);
     }
 }
-
 
 /**
  *

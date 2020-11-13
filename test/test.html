@@ -186,14 +186,23 @@
         </div>
 
         <form action="http://localhost:8888/api/test1" method="POST" enctype="multipart/form-data" name="fileform">
-            <input type="file" name="filepic" accept="image/jpeg,image/png,image/gif" id="filepic">
+            <input type="file" name="filepic" accept=".cc,.js" id="filepic">
         </form>
         <div id="p" style="border:  2px red solid;"></div>
         <canvas id="canvas" width="200">height</canvas>
         ============================= <br>
         <!-- <img src="../userpic.png" width="600" id="img" alt=""> -->
         <a href="../index.html">ceshi</a>
+        <div id="edit">
+            <div></div>
+            <div id="show" style="width: 200px;height: 100px;" contenteditable="true"></div>
+            <button>test</button>
+        </div>
+        <script>
+            let edit = document.getElementById('edit');
+            edit.querySelector('button').onclick = e => edit.children[0].innerHTML = edit.querySelector('#show').innerHTML;
 
+        </script>
         <div class="ccc">
             <div class="bb">
                 <img src="../peerpic.jpg" alt="">
@@ -201,6 +210,14 @@
         </div>
         <button onclick="show()">test</button>
         <script>
+            let str = `https://qdall01.baidupcs.com/file/07c93ba06h53292475da8799a1cbaf79?
+            bkt=en-29a7ad5d1913bc6fc99ae3ceb2429cd7e0da5e4f2e9df9d181e2a6e84bfb03fe0eaaa5c39a406be4&
+            fid=794365540-250528-900325027041800&time=1604555269&sign=FDTAXUGERLQlBHSKfWqi-DCb740ccc5511e5e8fedcff06b081203-9k1rv53oGESrbfCAFDcjKnvq6EE%3D&to=92&size=10710116&sta_dx=10710116&sta_cs=1&sta_ft=zip&sta_ct=0&sta_mt=0&fm2=MH%2CXian%2CAnywhere%2C%2Cshandong%2Ccnc&ctime=1604553314&mtime=1604553314&resv0=-1&resv1=0&resv2=rlim&resv3=5&resv4=10710116&vuk=794365540&iv=-2&htype=&randtype=&newver=1&newfm=1&secfm=1&flow_ver=3&pkey=en-9ee4824ca2420bd2216315488e43c4892e40c80b6f5b0ce9554343d4f429df7856631eda07c4bea3&sl=80740430&expires=8h&rt=pr&r=140146633&vbdid=2009382083&fin=%E3%80%90OC%E5%BC%95%E5%AF%BC%E3%80%91AMD+Ryzen+V1.3.zip&fn=%E3%80%90OC%E5%BC%95%E5%AF%BC%E3%80%91AMD+Ryzen+V1.3.zip&rtype=1&dp-logid=7179915353197348716&dp-callid=0.1&hps=1&tsl=15&csl=78&fsl=-1&csign=7hqqE91nT%2F3ESwBkBGOUH2mUt%2BE%3D&so=0&ut=8&uter=4&serv=0&uc=3897261346&ti=34c17094e7d5a0c9672e09837fd3c6144dcdaffbfe6e7de8&hflag=30&adg=c_d4f12640941801fa62043f086e86e02e&reqlabel=250528_f_6ce35adf2f1d8b67d5fcae220d3defa6_-1_66421e5a891d02fbbfe878ed478458b0&by=themis`
+
+            let arr = str.match(/[^&?]*=[^&]*/g);
+            arr.forEach(v => {
+                console.log(v)
+            })
 
             let d = document.getElementById('d');
             function show() {

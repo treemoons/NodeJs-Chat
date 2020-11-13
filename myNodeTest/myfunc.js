@@ -1,8 +1,9 @@
-﻿import {  existsSync, readFileSync, writeFileSync } from "fs";
+﻿import { existsSync, readFileSync, writeFileSync } from "fs";
 import { ServerResponse } from "http";
 
+
 /**
- * @param {string} fmt 毫秒不可设置位数
+ * @param {'string'} fmt 毫秒不可设置位数
  */
 Date.prototype.formatDate = function (fmt) {
     let o = {
@@ -51,7 +52,7 @@ export async function writeLogsAsJSON(text, tip = '') {
     let log = { tip: tip, content: text, date: date.formatDate('yyyy-MM-dd HH:mm:ss.f') };
     if (existsSync(filename)) {
         let logsStr = await readFileSync(filename, '', { flag: 'r' });
-         logs= JSON.parse(logsStr);
+        logs = JSON.parse(logsStr);
     } else {
         let logs = {};
     }
@@ -72,23 +73,20 @@ export function writeLogs(text, tip = '') {
 ${date.formatDate('yyyy-MM-dd HH:mm:ss.f')}  ${(tip ? '[' + tip + ']' : '')}
 ---------------------------------
 ${text}\n`
-    writeFileSync(filename, log, { encoding: 'utf-8' ,flag:'a'});
+    writeFileSync(filename, log, { encoding: 'utf-8', flag: 'a' });
 }
+
 /**
-* 
-* @param {string} name 
-* @param {string} purposeString 
-* @param {string} splitMark
-* @returns {Promise<string|undefined>}
-*/
-export async function getQueryString(name, purposeString, splitMark) {
-    let reg = RegExp(`${name}=([^${splitMark}]+)`);
-    let arr = purposeString.match(reg);
-    if (arr) {
-        return arr[1];
-    } else {
-        return undefined;
-    }
+ * 在指定格式(?)[key]=[value][splitMark]中，根据key找到value值，若没找到，返回空
+ * @param {string} name search keywords
+ * @param {string} purposeString results pool
+ * @param {'&'|';'} splitMark
+ * 
+ */
+export async function getQueryString(name, purposeString, splitMark = '&') {
+    let reg = RegExp(`(?:${splitMark}|\\?|^)${name}=([^${splitMark}]+)`);
+    reg.test(purposeString)
+    return RegExp.$1;
 }
 
 /**
@@ -103,37 +101,30 @@ export async function getAllQueryString(purposeString, splitMark) {
     let reg = RegExp(`${name}=([^${splitMark}]+)`);
     return purposeString.match(reg);
 }
+
 /**
  * 
- * @param {string} name 
- * @param {string} value 
+ * @param {string} name
+ * @param {string} value
  * @param {{year:number, month:number, day:number, hour:number,minutes:number,seconds:number, milliseconds:number }} param2 date default now (all values is '0')
  * @param {string} path 
- * @param {boolean} httponly 
+ * @param {true|false} httponly 
  */
-export function buildCookie(name, value,
-    isexpiresdefault = true,
+export async function buildCookie(name, value,
     { year = 0, month = 0, day = 0, hours = 0, minutes = 0, seconds = 0, milliseconds = 0 } = {},
     path = undefined, httponly = false) {
-    if (!isexpiresdefault) {
-        let date = new Date();
-        date.setFullYear(date.getFullYear() + year);
-        date.setMonth(date.getMonth() + month);
-        date.setDate(date.getDate() + day);
-        date.setHours(date.getHours() + hours);
-        date.setMinutes(date.getMinutes() + minutes);
-        date.setSeconds(date.getSeconds() + seconds);
-        date.setMilliseconds(date.getMilliseconds() + milliseconds);
+    let date;
+    if (arguments[2]) {
+        date = getSpanDate({ year: year, month: month, day: day, hours: hours, minutes: minutes, seconds: seconds, milliseconds: milliseconds });
+        let cookie = `${name}=${value};${(arguments[2] ? `expires=${date};` : '')}${(path ? `path = ${path};` : '')}${(httponly ? 'httponly' : '')}`;
+        console.log(encodeURI(cookie));
+        return encodeURI(cookie);
     }
-    let cookie = `${name}=${value};${isexpiresdefault ? '' : `expires=${date};`}${(path == undefined ? '' : `path = ${path};`)}${(httponly ? 'httponly' : '')}`;
-    console.log(encodeURI(cookie));
-    return encodeURI(cookie);
 }
 /**
  * 
  * @param {string} str 
  * @param {number} times
- * @returns {Promise<string>}
  */
 export async function atobDecrypt(str, times = 1) {
     for (let i = 0; i < times; i++) {
@@ -145,7 +136,6 @@ export async function atobDecrypt(str, times = 1) {
  *
  * @param {string} str
  * @param {number} times
- * @returns {Promise<string>}
  */
 export async function btoaEncrypt(str, times = 1) {
     for (let i = 0; i < times; i++) {
@@ -176,13 +166,20 @@ export async function getloginedUser(http) {
 export function getSpanDate(
     { years = 0, months = 0, days = 0, hours = 0, minutes = 0, seconds = 0, milliseconds = 0 } = {}) {
     let date = new Date();
-    date.setFullYear(date.getFullYear() + years);
-    date.setMonth(date.getMonth() + months);
-    date.setDate(date.getDate() + days);
-    date.setHours(date.getHours() + hours);
-    date.setMinutes(date.getMinutes() + minutes);
-    date.setSeconds(date.getSeconds() + seconds);
-    date.setMilliseconds(date.getMilliseconds() + milliseconds);
+    if (years)
+        date.setFullYear(date.getFullYear() + years);
+    if (months)
+        date.setMonth(date.getMonth() + months);
+    if (days)
+        date.setDate(date.getDate() + days);
+    if (hours)
+        date.setHours(date.getHours() + hours);
+    if (minutes)
+        date.setMinutes(date.getMinutes() + minutes);
+    if (seconds)
+        date.setSeconds(date.getSeconds() + seconds);
+    if (milliseconds)
+        date.setMilliseconds(date.getMilliseconds() + milliseconds);
     return date;
 }
 /**当天获取凌晨时间 */
@@ -194,6 +191,7 @@ export function getTodayDawn() {
     date.setMilliseconds(0);
     return date;
 }
+
 /**
  * 删除除img标签以外的所有HTML标签，
  * @param {string} str 
