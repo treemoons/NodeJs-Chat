@@ -22,7 +22,7 @@ window.frame = frame;
  * @param {string} chattext 
  */
 export function getChatImg(chattext) {
-    let reg = /<img.[^>]*src="(.[^"]*).[^>]*>/gi;
+    let reg = /<img\s[^>]*src="(.[^"]*).[^>]*>/gi;
     let match = chattext.match(reg);
     return match == null ? undefined : match;
 }

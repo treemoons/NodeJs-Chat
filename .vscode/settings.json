@@ -2,6 +2,18 @@
     "path-autocomplete.pathMappings": {
         ".\\": "${folder}/myNodeTest"
     },
-    "code-runner.cwd": "E:\\partJob\\NodeJs-Chat\\myNodeTest","sql-formatter.dialect":"db2"
-    
+    "gutterpreview.paths": {
+        "/": "/electronTest/"
+    },
+    "code-runner.cwd": "E:\\partJob\\NodeJs-Chat\\myNodeTest",
+    "terminal.integrated.shellArgs.windows": [
+        "-NoExit",
+        "/c",
+        "chcp 65001"
+    ],
+    "npm-intellisense.scanDevDependencies": true,
+    "npm-intellisense.importES6": true,
+    "npm-intellisense.importQuotes": "'",
+    "npm-intellisense.importLinebreak": ";\r\n",
+    "npm-intellisense.importDeclarationType": "const"
 }

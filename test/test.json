@@ -1,3 +1,310 @@
-﻿{
-    "test":"test"
+{
+    "html.format.indentInnerHtml": true,
+    "less.lint.importStatement": "warning",
+    "less.lint.zeroUnits": "warning",
+    "less.lint.unknownVendorSpecificProperties": "warning",
+    "less.lint.universalSelector": "warning",
+    "editor.tabCompletion": "on",
+    // "team.showWelcomeMessage": false,
+    "editor.find.autoFindInSelection": "multiline",
+    "editor.formatOnPaste": true,
+    "editor.formatOnType": true,
+    "editor.suggest.shareSuggestSelections": true,
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "emmet.showSuggestionsAsSnippets": true,
+    "emmet.triggerExpansionOnTab": true,
+    "debug.flameGraph.realtimePollInterval": 0.1,
+    "debug.flameGraph.realtimeEasing": true,
+    "debug.flameGraph.realtimeViewDuration": 10,
+    "debug.javascript.autoAttachFilter": "onlyWithFlag",
+    "files.associations": {
+        "*.js": "javascript",
+        "*.csproj": "msbuild",
+        "*.SQL": "sql"
+    },
+    "emmet.syntaxProfiles": {
+        "cshtml": "css",
+        "svg": "html"
+    },
+    "emmet.includeLanguages": {
+        "aspx": "html",
+        "javascript": "javascriptreate",
+        "aspnetcorerazor": "css",
+        "js": "javascript",
+        "svg": "html"
+    },
+    "editor.multiCursorModifier": "alt",
+    "window.menuBarVisibility": "default",
+    "html-css-class-completion.enableEmmetSupport": true,
+    //  "previewServer.browsers": ["chrome","edge"],
+    //  "previewServer.ignoreDefaultBrowser": true,
+    //  "previewServer.startupProject": "Product",
+    "previewServer.port": 9999,
+    "previewServer.ui": {
+        "port": 3001,
+        "weinrePort": 8081
+    },
+    "[html]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "[aspnetcorerazor]": {
+        "editor.defaultFormatter": "ms-dotnettools.csharp",
+        // "emmet.includeLanguages": {
+        //     "aspnetcorerazor": "javascript"
+        // },
+        "editor.colorDecorators": true
+    },
+    "files.autoSave": "afterDelay",
+    // "eslint.validate": [
+    //     "javascript",
+    //     "javascriptreact",
+    //     {
+    //         "language": "html",
+    //         "autoFix": true
+    //     },
+    //     {
+    //         "language": "apsnetcorerazor",
+    //         "autoFix": true
+    //     }
+    // ],
+    "eslint.workingDirectories": [
+        "./client",
+        "./server"
+    ],
+    // "path-intellisense.mappings": {
+    //     // "~": "${workspaceRoot}/MyPersonalWeb/wwwroot",
+    //     "lib": "${workspaceRoot}/lib",
+    //     "global": "/Users/dummy/globalLibs"
+    // },
+    "path-autocomplete.triggerOutsideStrings": true,
+    "path-autocomplete.pathMappings": {
+        "/": "${folder}",
+        "~": "${folder}",
+        "$root": "${folder}/MyPersonalWeb/wwwroot" // the relative root folder is now /src
+    },
+    "editor.renderControlCharacters": true,
+    "workbench.sideBar.location": "right",
+    "editor.largeFileOptimizations": false,
+    "files.defaultLanguage": "html",
+    "files.autoGuessEncoding": true,
+    "vsicons.dontShowNewVersionMessage": true,
+    "window.zoomLevel": -1,
+    "editor.fontSize": 17,
+    "terminal.integrated.fontSize": 16,
+    //BACKGROUND
+    "background.loop": true,
+    "background.useDefault": false,
+    "background.customImages": [
+        "D:/man.png"
+    ],
+    "background.style": {
+        "content": "''",
+        "pointer-events": "none",
+        "position": "absolute",
+        "z-index": "9999", //50
+        "width": "65%",
+        "height": "100%",
+        "bottom": "0px",
+        "right": "0%",
+        "background-position": "bottom",
+        "background-repeat": "no-repeat",
+        "background-size": "100%,100%",
+        "opacity": 0.2
+    },
+    "vssolution.showMode": "activityBar",
+    "vssolution.solutionExplorerIcons": "current-theme",
+    "vssolution.showOutputChannel": true,
+    "vssolution.trackActiveItem": false,
+    "vssolution.netcoreIgnore": [
+        "bin",
+        "node_modules",
+        "obj",
+        ".ds_store"
+    ],
+    "vssolution.xxprojItemTypes": {
+        "*": "Content",
+        "cs": "Compile",
+        "cpp": "ClCompile",
+        "cc": "ClCompile",
+        "c": "ClCompile",
+        "h": "ClInclude",
+        "hpp": "ClInclude",
+        "vb": "Compile",
+        "fs": "Compile",
+        "ts": "TypeScriptCompile"
+    },
+    "vssolution.xmlspaces": "2",
+    "vssolution.altSolutionFolders": [
+        "src"
+    ],
+    "vssolution.win32Encoding": {
+        "65001": "UTF-8",
+        "932": "Shift_JIS",
+        "936": "GBK",
+        "950": "BIG5"
+    },
+    "openInDefaultBrowser.run.openWithLocalHttpServer": false,
+    "code-runner.runInTerminal": true,
+    "code-runner.executorMap": {
+        /* d:\\code.ps1 内容如下
+           param (
+    # 文件所在路径
+    [string]$fileName,
+    # tempCodeFileName
+    [string]$tempFileName = "tempCodeRunnerFile"
+)
+
+function Remove-File([string[]]$FileName) {
+    $FileName | ForEach-Object {
+        #  Write-Host "数组长度："+($FileName.Count)+",值："+$_
+        if ($null -ne $_ ) { 
+            if (Test-Path $_) {
+                Remove-Item $_;
+                #Write-Host "已删除临时文件" -ForegroundColor Gray
+                    }
+                }
+            }
+        }
+
+$dir = $fileName.Substring(0, $fileName.LastIndexOf('\') + 1);
+$extension = $fileName.Substring($fileName.LastIndexOf('.') + 1);
+# 文件全路径（参数扩展）
+$fullFileName = $dir + $tempFileName + "." + $extension;
+if (!(Test-Path $fullFileName -ErrorAction Stop)) {
+    $fullFileName = $fileName;
+    # echo 'no path:'+$fullFileName
+        }
+try {
+    switch ($extension) {
+        'html' {
+            $fullname = $dir + $tempFileName + ".js"; 
+            try {
+                Copy-Item  $fullFileName $fullname  -ErrorAction Stop; # 修改文件扩展 html->js
+                if (Test-Path ($dir + $tempFileName + ".html")) {
+                    Remove-Item ($dir + $tempFileName + ".html");
+                        }
+                    }
+            catch { 
+                Remove-File $fullname, $fullFileName;
+                Write-Host "------造成错误的文件已删除。错误详情：" -ForegroundColor Green;
+                throw ;
+                    }
+            $fullFileName = $fullname; # 更改全文件路径
+            node.exe $fullFileName ;
+            break;
+                }
+        'mjs' {}
+        'cjs' {}
+        'js' { 
+            node.exe $fullFileName;
+            break;
+                }
+        'cs' {
+            scriptcs.exe $fullFileName;
+            break;
+                }
+        'ps1' {
+            pwsh.exe $fullFileName;
+            break;
+                }
+        'ts' {
+            ts-node.cmd $fullFileName;
+            break;
+                }
+            }
+        }
+catch {}
+finally {
+    if ( ($fullFileName -ne $fileName) -or ($fileName -cmatch $tempFileName )) {
+        Remove-File $fullFileName;
+            }
+        }
+
+       */
+        "javascript": "d:\\code.ps1 $fullFileName",
+        "typescript": "d:\\code.ps1 $fullFileName ", //ts-node $fullFileName;$tempts= $fullFileName+\"tempCodeRunnerFile.ts\";
+        "html": "d:\\code.ps1 $fullFileName ",
+        // "html":"&\"C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe\" $fullFileName && d:\\code.ps1 $fullFileName html",
+        "powershell": " d:\\code.ps1 $fullFileName ", //pwsh $fullFileName;
+        "csharp": "d:\\code.ps1 $fullFileName ", //scriptcs  $fullFileName;
+        "c": "cd $dir && gcc $fileName -o $fileNameWithoutExt && $dir$fileNameWithoutExt"
+    },
+    "code-runner.defaultLanguage": "javascript",
+    // "code-runner.executorMapByGlob": {
+    //     "pom.xml": "cd $dir && mvn clean package",
+    //     "*.test.js": "tap",
+    //     "*.js": "node"
+    // },
+    "explorer.confirmDelete": false,
+    "editor.fontFamily": "Consolas,幼圆 ",
+    "sqlite.sqlite3": "c:/Windows/sqlite/sqlite3.exe",
+    "workbench.action.toogleEditeGroupLayout": "Vertical",
+    // "editor.stablePeek": true,
+    // "[sql]": {
+    //     "editor.defaultFormatter": "ms-mssql.mssql"
+    // },
+    // "[sqlite]": {
+    //     "editor.defaultFormatter": "ms-mssql.mssql"
+    // },
+    "editor.suggestSelection": "first",
+    "vsintellicode.modify.editor.suggestSelection": "automaticallyOverrodeDefaultValue",
+    "[jsonc]": {
+        "editor.defaultFormatter": "vscode.json-language-features"
+    },
+    "html-css-class-completion.includeGlobPattern": "**/*.{css,html,aspnetcorerazor}",
+    "window.closeWhenEmpty": true,
+    "terminal.integrated.commandsToSkipShell": [
+        "workbench.action.toogleEditeGroupLayout"
+    ],
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features"
+    },
+    "sqltools.useNodeRuntime": true,
+    //个人项目使用，换项目需要修改。
+    //用于图片预览的aspnetcore选项根目录
+    // 
+    "gutterpreview.paths": {
+        "~": "MyPersonalWeb/wwwroot"
+    },
+    "explorer.confirmDragAndDrop": false,
+    "[xml]": {
+        "editor.defaultFormatter": "vscode.html-language-features"
+    },
+    "svg.preview.mode": "svg",
+    "files.encoding": "utf8bom",
+    // "mssql.saveAsCsv.encoding": "utf-8bom",
+    // Print debug messages in output channel
+    "importCost.debug": true,
+    // File extensions to be parsed by the Typescript parser
+    "importCost.typescriptExtensions": [
+        "\\.tsx?$",
+        "\\.ts?$"
+    ],
+    // File extensions to be parsed by the Javascript parser
+    "importCost.javascriptExtensions": [
+        "\\.jsx?$",
+        "\\.js?$"
+    ],
+    "editor.renameOnType": true,
+    "terminal.integrated.shell.windows": "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
+    "powershell.powerShellDefaultVersion": "C:\\Program Files\\PowerShell\\7\\pwsh.exe",
+    "terminal.integrated.shellArgs.windows": [
+        "-NoExit",
+        "/c",
+        "chcp.com 65001"
+    ],
+    "javascript.referencesCodeLens.showOnAllFunctions": true,
+    "gutterpreview.enableReferenceLookup": true,
+    "editor.peekWidgetDefaultFocus": "editor",
+    "workbench.iconTheme": "vscode-icons",
+    "window.autoDetectColorScheme": true,
+    "editor.renderLineHighlightOnlyWhenFocus": true,
+    "razor.trace": "Messages",
+    // "http.proxySupport": "off",
+    "workbench.colorTheme": "Default Light+",
+    "git.confirmSync": false,
+    "[json]": {
+        "editor.defaultFormatter": "HookyQR.beautify"
+    },
+    "javascript.updateImportsOnFileMove.enabled": "always"
 }

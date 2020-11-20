@@ -1,14 +1,29 @@
-﻿console.log('test.mjs module');
-export default function () {
-        console.log('test')
-    
-}
+﻿// import { read, readFile } from 'fs';
+// readFile('.\\test/test.json',(err, d) => {
+//         if (err) {
+//                 console.log(err)
+//                 return;
+//         }
+//         let str = d.toString();
+//         console.log(str.length)
+//         let jsonstr = str.replace(/\/\*[^\*]*\*+([^\/*][^*]*\*+)*\//g, '');
+//         // console.log(jsonstr)
+//         jsonstr = jsonstr.replace(/(?<!http(:|s:)|ws:|file:\/)\/\/.*(?:\n|\s*)/g, '')
+        
+//         console.log(JSON.parse(jsonstr))
+// })
+
+// console.log('test.mjs module');
+// export default function () {
+//         console.log('test')
+
+// }
 
 const { ipcRenderer } = require('electron')
 
 document.getElementById('quit').onclick = e => {
         //在渲染器进程 (网页) 中。
-        ipcRenderer.on('asynchronous-reply', (event, arg) => {
+        ipcRenderer.on('/asynchronous/reply', (event, arg) => {
                 console.log(arg) // prints "pong"
         })
         ipcRenderer.send('asynchronous-message', 'newtest.html发送过来的文字')
@@ -21,93 +36,215 @@ console.log('test')
 console.log('\x1b[43m%s\x1b[0m', "stringToMakeYellow");  //yellow
 console.log("\x1b[35;3;1m%s #eab10e", "test");
 
-
-let a = `
-import api from './apifunction.js';
-
-import api from './apifunction.js';
-/** 默认是需要登录才能使用 */
-export default {
-    default: api.default,
-    chatto: api.chatto,
-    login: api.login,
-    /**加载所有的聊天记录，截止到未读或今天凌晨 */
-    loaddata: api.loaddata,
-    /**查找历史信息记录
-     * POST: { peername: string, ignorecount: number , requestcount: number}
+/**
+ * /*
+ * @param {string} str 
+ */
+function removeComment(str) {
+        let reg = /\/\*[^*]*\*+([^\/*][^*]*\*+)*\//g
+        let a = `/**//**
+ * 每   一个input的file都对应files是多个文件，必须使用files[0]来设置和获取单个文件属性
+ * 可以在标签中使用multiple多选
+ *  accept="image/jpeg,image/png,image/gif" 类型
+ * @type {HTMLInputElement} 
+ */
+// let pic = fileform.filepic;
+/*
+ * 对话记录
+ * <i>username和userpic为对方信息</i>
+ ***/
+class ChatDataSigleList {
+    /**  /**  * /
+     * @param {string} name 对方姓名
+     * @param {string} pic 对方头像
+     * @param {ChatData} data 对方头像
+    * */
+    constructor(name, pic, data) {
+        this.peername = name;
+        this.peerpic = pic;
+        this.chatdata = data;
+    }
+    /**
+     * 添加一条记录
+     * @param {ChatData} peer 对话记录
      */
-    gethistory: api.gethistory,
-    //**加载所有的聊天记录，截止到未读或今天凌晨 */
-    loaddata: api.loaddata,
-    /**查找历史信息记录
-     * POST: { peername: string, ignorecount: number , requestcount: number}
+    pushChatData = ( /**他的话 ❤*/ peer) => {
+        let data = this.chatdata;
+        data.push(peer);
+        this.lastSpeak = data[data.length - 1];
+    }
+    /**
+     * @param {ChatData} peer 对话记录
      */
-// console.log(a.replace(/
-/, ""))
-    gethistory: api.gethistory,`;
-let reg = /(?:^|
-        |\r)\s*\/\/.*(?:\r|
-        (?:\s*)|$)/g;
-console.log(a.match(reg));
-console.log( a.replace(reg, ""));
+    getHistoryChat = (peer) => {
+        let data = this.chatdata;
+        data.unshift(peer);
+    }
 
+    /** 好友用户名 
+     * @type {string}*/
+    peername;
 
-var str = "sssh和ssｓｓ"
+    /** 好友头像 
+     * @type {string}
+     */
+    peerpic;
 
-var str2 = str.match(/[\uff00-\uffff]/g);
+    /**我们在一起的话❤
+     * @type {ChatData[]}
+     */
+    chatdata = [];
 
-if (str != null) {
-        console.log("以下字符" + str2 + "是全角字符");
+    /**我们之间上一次的最后一句 
+     * @type {ChatData} ♥*/
+    lastSpeak;
+
+    /**当前是我在说话嘛 
+     * @type {boolean}
+     */
+    isMeSpeakNow;
+    /* @type {number} */
+    unreadCount = 0;
+}
+`
+        console.log(a.match(reg))
+        console.log(a.match(/\/\*([^\*]|(\*)*[^\*/])*(\*)*\*(?:\/)/g));
+        for (let i = 0; i < 4; i++) {
+                console.log(a.match(reg)[i] == a.match(/\/\*([^\*]|(\*)*[^\*/])*(\*)*\*(?:\/)/g)[i])
+        }
+
 
 }
+/**  /**
+ * /
+ * @param {string} convertString 
+ */
+function convertCurrency(convertString) {
+        // Constants: 
+        // let MAXIMUM_NUMBER = 99999999999.99;
+        // Predefine the radix characters and currency symbols for output: 
+        let CN_ZERO = "零";
+        let CN_ONE = "壹";
+        let CN_TWO = "贰";
+        let CN_THREE = "叁";
+        let CN_FOUR = "肆";
+        let CN_FIVE = "伍";
+        let CN_SIX = "陆";
+        let CN_SEVEN = "柒";
+        let CN_EIGHT = "捌";
+        let CN_NINE = "玖";
+        let CN_TEN = "拾";
+        let CN_HUNDRED = "佰";
+        let CN_THOUSAND = "仟";
+        let CN_TEN_THOUSAND = "万"; //with thousand and huandred  
+        let CN_HUNDRED_MILLION = "亿"; //with thousand and huandred  
+        let CN_SYMBOL = "";
+        let CN_DOLLAR = "元";
+        let CN_TEN_CENT = "角";
+        let CN_CENT = "分";
+        let CN_INTEGER = "整";
+        if (!(convertString).match(/^[1-9]\d+(?:\d+|\.\d{1,2})|^0\.\d{1,2}$/)) {
+                console.error("请输入正确的数字金额!");
+                return "";
+        }
 
-let b = /industr(?:y|ies)/g;
-console.log('industry dindustries'.match(b))
 
-let str = `
-{
-        \"LogisticCode\" : \"YT2099477499243\",
-          \"ShipperCode\" : \"YTO\",
-            \"Traces\" : [ {
-                      \"AcceptStation\" : \"【湖北省武汉市江夏区武大科技园公司】 已收件 取件人: 朱志登 (15972087420)\",
-                          \"AcceptTime\" : \"2020-11-03 18:41:28\"
-                  }, {
-                                  \"AcceptStation\" : \"【湖北省武汉市洪山区科技园公司】 已收件 取件人: 刘凯 (15071078098)\",
-                          \"AcceptTime\" : \"2020-11-03 19:18:44\"
-                  }, {
-                                  \"AcceptStation\" : \"【湖北省武汉市洪山区科技园】 已发出 下一站 【武汉转运中心公司】\",
-                          \"AcceptTime\" : \"2020-11-03 19:18:54\"
-                  }, {
-                                  \"AcceptStation\" : \"【武昌转运中心公司】 已收入\",
-                          \"AcceptTime\" : \"2020-11-03 20:38:11\"
-                  }, {
-                                  \"AcceptStation\" : \"【武昌转运中心】 已发出\",
-                          \"AcceptTime\" : \"2020-11-03 21:28:11\"
-                  }, {
-                                  \"AcceptStation\" : \"【虎门转运中心公司】 已收入\",
-                          \"AcceptTime\" : \"2020-11-05 00:36:08\"
-                  }, {
-                                  \"AcceptStation\" : \"【虎门转运中心】 已发出\",
-                          \"AcceptTime\" : \"2020-11-05 01:26:08\"
-                  }, {
-                                  \"AcceptStation\" : \"【深圳转运中心公司】 已收入\",
-                          \"AcceptTime\" : \"2020-11-05 15:52:03\"
-                  }, {
-                                  \"AcceptStation\" : \"【深圳转运中心】 已发出 下一站 【广东省深圳市宝安区灵芝公司】\",
-                          \"AcceptTime\" : \"2020-11-05 15:55:06\"
-                  }, {
-                                  \"AcceptStation\" : \"【广东省深圳市宝安区灵芝公司】 已收入\",
-                          \"AcceptTime\" : \"2020-11-05 18:07:35\"
-                  }, {
-                                  \"AcceptStation\" : \"【广东省深圳市宝安区灵芝公司】 派件中  派件人: 赵维军 电话 18521198836  如有疑问，请联系：0753-5182808\",
-                          \"AcceptTime\" : \"2020-11-06 06:23:59\"
-                  }, {
-                                  \"AcceptStation\" : \"客户签收人: 刘亚西 已签收  感谢使用圆通速递，期待再次为您服务 如有疑问请联系：18521198836，投诉电话：0753-5182808\",
-                          \"AcceptTime\" : \"2020-11-06 10:15:43\"
-                  } ],
-                        \"State\" : \"3\",
-                        \"EBusinessID\" : \"1685222\",
-                        \"Success\" : true
+        console.log(convertString.match(/^[1-9]\d+(?:\d+|\.\d{1,2})|^0\.\d{1,2}$/))
+        let inputNumberArray = convertString.split('.');
+        let resultInt = '', resultFloat = '';
+        //deal with part of float
+        console.log(inputNumberArray[1])
+        if (inputNumberArray.length > 1 && inputNumberArray[1] != '00') {
+                if (inputNumberArray[1][0] !== '0') {
+                        resultFloat += inputNumberArray[1][0] + CN_TEN_CENT;
                 }
-                      `;
-console.log(JSON.parse(str));
+                else if (inputNumberArray[0] !== '0') { // part of int is not zero
+                        resultFloat += inputNumberArray[1][0].replace(/0/, CN_ZERO) + CN_TEN_CENT;
+                }
+                if (inputNumberArray[1][1] !== '0') {
+                        resultFloat += inputNumberArray[1][1] + CN_CENT;
+                }
+                resultFloat = resultFloat
+                        .replace(/1/g, CN_ONE)
+                        .replace(/2/g, CN_TWO)
+                        .replace(/3/g, CN_THREE)
+                        .replace(/4/g, CN_FOUR)
+                        .replace(/5/g, CN_FIVE)
+                        .replace(/6/g, CN_SIX)
+                        .replace(/7/g, CN_SEVEN)
+                        .replace(/8/g, CN_EIGHT)
+                        .replace(/9/g, CN_NINE);
+        }
+        //deal with part of int
+        if (inputNumberArray[0] !== '0') {
+                let tempIntSort = inputNumberArray[0].match(/\d/g).reverse();
+                console.log(tempIntSort)
+                let loopCount = 0;
+                for (let i = 0; i < tempIntSort.length; i++) {
+                        if (i % 4 == 0 && i != 0) {
+                                loopCount++;
+                                switch (loopCount % 2) {
+                                        case 0:
+                                                if (tempIntSort[i] == 0)
+                                                        tempIntSort[i] = CN_HUNDRED_MILLION;
+                                                else
+                                                        tempIntSort[i] += CN_HUNDRED_MILLION;
+                                                break;
+                                        case 1:
+                                                if (tempIntSort[i] == 0)
+                                                        tempIntSort[i] = CN_TEN_THOUSAND;
+                                                else
+                                                        tempIntSort[i] += CN_TEN_THOUSAND;
+                                                break;
+                                }
+                        } else {
+                                if (tempIntSort[i] == '0') {
+                                        continue;
+                                }
+                                switch (i % 4) {
+                                        case 1:
+                                                tempIntSort[i] += CN_TEN;
+                                                break;
+                                        case 2:
+                                                tempIntSort[i] += CN_HUNDRED;
+                                                break;
+                                        case 3:
+                                                tempIntSort[i] += CN_THOUSAND;
+                                                break;
+                                }
+                        }
+                }
+                tempResult = '';
+                for (let i = tempIntSort.length - 1; i >= 0; i--) {
+                        tempResult += tempIntSort[i];
+                }
+                resultInt = tempResult.replace(/1/g, CN_ONE)
+                        .replace(/2/g, CN_TWO)
+                        .replace(/3/g, CN_THREE)
+                        .replace(/4/g, CN_FOUR)
+                        .replace(/5/g, CN_FIVE)
+                        .replace(/6/g, CN_SIX)
+                        .replace(/7/g, CN_SEVEN)
+                        .replace(/8/g, CN_EIGHT)
+                        .replace(/9/g, CN_NINE)
+                        .replace(/000万000/g, CN_SYMBOL)
+                        .replace(/000万/g, '0')
+                        .replace(/0{0,2}(?:万)/g, CN_TEN_THOUSAND)
+                        .replace(/0{0,3}(?:亿)/g, CN_HUNDRED_MILLION)
+                        .replace(/0+/g, CN_ZERO) + CN_DOLLAR;
+                resultInt = resultInt.replace(/零元/, CN_DOLLAR)
+        } else
+                resultInt = '';
+        console.log(resultInt);
+        return resultInt == ''
+                ? resultFloat
+                : (resultFloat == '' ? resultInt + CN_INTEGER : resultInt + resultFloat);
+
+}
+console.log(convertCurrency('100000000000.00'));
+export default {
+        
+}
+export function testclo() {
+                console.log('test')
+        }

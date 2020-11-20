@@ -25,6 +25,7 @@ if ($http.IsListening) {
 while ($http.IsListening) {
 
 
+    write-host " HTTP Server Ready!  " -f 'black' -b 'gre'
 
     # Get Request Url
     # When a request is made in a web browser the GetContext() method will return a request object
@@ -41,7 +42,7 @@ while ($http.IsListening) {
 
         # the html/data you want to send to the browser
         # you could replace this with: [string]$html = Get-Content "C:\some\path\index.html" -Raw
-        [string]$html = "<h1>A Powershell Webserver</h1><p>home page</p>" 
+        [string]$html = Get-Content ./test/newtest.html
         
         #resposed to the request
         $buffer = [System.Text.Encoding]::UTF8.GetBytes($html) # convert htmtl to bytes
@@ -99,7 +100,7 @@ while ($http.IsListening) {
         $buffer = [System.Text.Encoding]::UTF8.GetBytes($html)
         $context.Response.ContentLength64 = $buffer.Length
         $context.Response.OutputStream.Write($buffer, 0, $buffer.Length)
-        $context.Response.OutputStream.Close() 
+        $context.Response.OutputStream.Close(); 
     }
 
 

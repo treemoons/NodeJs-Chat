@@ -4,7 +4,9 @@
   "description": "",
   "main": "main.js",
   "scripts": {
-    "ele": "electron . ",
+    "ele": "electron ./electronTest/main.js ",
+    "setup": "electron-builder --win --x64 ",
+    "postinstall": "electron-builder install-app-deps",
     "node": "cd e:/partJob/NodeJs-Chat/myNodeTest && node ./start.js"
   },
   "author": "",
@@ -13,10 +15,52 @@
   "devDependencies": {
     "electron": "^10.1.5",
     "electron-builder": "^22.9.1",
-    "electron-rebuild": "^2.3.2",
-    "node": "^14.15.0",
+    "node": "^14.15.1",
     "npm": "^6.14.8",
     "sqlite3": "^5.0.0"
   },
-  "keywords": []
+  "keywords": [],
+  "build": {
+    "productName": "ChatTest",
+    "appId": "com.leon.1.1.100001",
+    "copyright": "Test",
+    "directories": {
+      "output": "../build"
+    },
+    "nsis": {
+      "oneClick": false,
+      "guid": "xxxx",
+      "perMachine": true,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "xxxx"
+    },
+    "publish": [
+      {
+        "provider": "generic",
+        "url": "http://xxxxx/"
+      }
+    ],
+    "files": [
+      {
+        "filter": [
+          "**/*",
+          "!myNodeTest/*",
+          "!myWebChat/*"
+        ]
+      }
+    ],
+    "win": {
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ]
+    }
+  }
 }

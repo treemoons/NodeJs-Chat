@@ -18,3 +18,4 @@ export default {
 export async function get() {
     console.log('test')
 }
+

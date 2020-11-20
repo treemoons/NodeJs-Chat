@@ -1,9 +1,5 @@
-
-import test1 from './test.js';
-
-test1();
 /**
- * 每一个input的file都对应files是多个文件，必须使用files[0]来设置和获取单个文件属性
+ * 每   一个input的file都对应files是多个文件，必须使用files[0]来设置和获取单个文件属性
  * 可以在标签中使用multiple多选
  *  accept="image/jpeg,image/png,image/gif" 类型
  * @type {HTMLInputElement} 
@@ -83,7 +79,7 @@ test1();
 // let b = a.Blob;
 // object1.property1 = 77;
 // // throws an error in strict mode
-
+/*
 // console.log(object1.property1);
 // // expected output: 42
 // let b = {};
@@ -91,10 +87,10 @@ test1();
 //     a();
 // }(a=>{console.log('test')});
 
-// // let a = Symbol('123');
-// // let b = Symbol('123');
-// // console.log(a == b);
-
+let a = Symbol('123');
+let b = Symbol('123');
+console.log(a == b);
+*/
  function test() {
      return new Promise((v, r) => v(true)) ;
 }
@@ -102,3 +98,6 @@ test1();
     
         console.log(await test())
 }()
+'/userpic.png'
+let a = { a: 'test', test() { console.log(this.a) } };
+a.test();

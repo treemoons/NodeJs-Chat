@@ -1,5 +1,5 @@
-﻿const electron = require('electron');
-const { BrowserWindow, app } = electron;
+﻿
+const { BrowserWindow, app }  = require('electron');
 const {exec} = require('child_process')
 // const t=require('./TEST/test')
 var win;
@@ -31,7 +31,7 @@ async function createWindow() {
     // db.get('select *from relationcode limit 4,10', (err, rows) => {
     //    console.log(rows)
     // });
-    win.loadFile('./test/newtest.html')
+    win.loadFile('../test/newtest.html')
     // 打开开发者工具
     win.webContents.openDevTools();
 }
@@ -63,11 +63,11 @@ console.log('结束');
 const { ipcMain } = require('electron');
 const { kill } = require('process');
 ipcMain.on('asynchronous-message', (event, arg) => {
-    console.log(arg) // prints "ping"
-    exec('&"e:\\partJob\\NodeJs-Chat\\test\\name.ps1"',(err,stdout,stderr)=>console.log(stdout+"\n"+err+"\n"+stderr))
-    event.reply('asynchronous-reply', 'main.js返回的消息');
+    console.log("asynchronous/reply:"+arg) // prints "ping"
+    exec('pwsh.exe &"e:\\partJob\\NodeJs-Chat\\test\\name.ps1"',(err,stdout,stderr)=>console.log(stdout+"\n"+err+"\n"+stderr+"???"))
+    event.reply('/asynchronous/reply', 'main.js返回的消息');
     setTimeout(() => {
         kill(0);
-    }, 10000);
+    }, 5000);
     // app.quit();
 })

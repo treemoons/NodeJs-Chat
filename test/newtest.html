@@ -8,6 +8,7 @@
         <script>
 
             document.write(process.versions.node);
+            document.write("ELECTRON:"+process.versions.electron)
             // document.getElementById('dddd').innerHTML = 'module'
         </script>
         <script src="./test1.js" type="module"></script>
@@ -368,6 +369,138 @@
             a('undefined')
 
 
+        </script>
+
+        <script>
+            console.log(convertCurrency('2019999999999999990.21'))
+            function convertCurrency(convertString) {
+                // Constants: 
+                // var MAXIMUM_NUMBER = 99999999999.99;
+                // Predefine the radix characters and currency symbols for output: 
+                var CN_ZERO = "零";
+                var CN_ONE = "壹";
+                var CN_TWO = "贰";
+                var CN_THREE = "叁";
+                var CN_FOUR = "肆";
+                var CN_FIVE = "伍";
+                var CN_SIX = "陆";
+                var CN_SEVEN = "柒";
+                var CN_EIGHT = "捌";
+                var CN_NINE = "玖";
+                var CN_TEN = "拾";
+                var CN_HUNDRED = "佰";
+                var CN_THOUSAND = "仟";
+                var CN_TEN_THOUSAND = "万"; //with thousand and huandred  
+                var CN_HUNDRED_MILLION = "亿"; //with thousand and huandred  
+                var CN_SYMBOL = "";
+                var CN_DOLLAR = "元";
+                var CN_TEN_CENT = "角";
+                var CN_CENT = "分";
+                var CN_INTEGER = "整";
+                // if (!(currencyDigits).match(/^[1-9]\d+(?:\d+|\.\d{1,2})|^0\.\d{1,2}$/)) {
+                //     console.error("请输入正确的数字金额!");
+                //     return "";
+                // }
+                let a = ['0012'];
+                if (a[0][0] == 0) {
+                    a[0][0] = a[0][0] += 'ee'
+                    console.log(a[0][0])
+                }
+
+                console.log(convertString.match(/^[1-9]\d+(?:\d+|\.\d{1,2})|^0\.\d{1,2}$/))
+                let inputNumberArray = convertString.split('.');
+                let resultInt = '', resultFloat = '';
+                //deal with part of float
+                console.log(inputNumberArray[1])
+                if (inputNumberArray.length > 1) {
+                    if (inputNumberArray[1][0] !== '0') {
+                        resultFloat = inputNumberArray[1][0] + CN_TEN_CENT;
+                    }
+                    else if (inputNumberArray[0] !== '0') { // part of int is not zero
+                        resultFloat = inputNumberArray[1][0].replace(/0/, CN_ZERO) + CN_TEN_CENT;
+                    }
+                    if (inputNumberArray[1][1] !== '0') {
+                        resultFloat = inputNumberArray[1][1] + CN_CENT;
+                    }
+                    resultFloat = resultFloat
+                        .replace(/1/g, CN_ONE)
+                        .replace(/2/g, CN_TWO)
+                        .replace(/3/g, CN_THREE)
+                        .replace(/4/g, CN_FOUR)
+                        .replace(/5/g, CN_FIVE)
+                        .replace(/6/g, CN_SIX)
+                        .replace(/7/g, CN_SEVEN)
+                        .replace(/8/g, CN_EIGHT)
+                        .replace(/9/g, CN_NINE);
+                }
+                console.log(resultFloat);
+                //deal with part of int
+                if (inputNumberArray[0] !== '0') {
+                    let tempIntSort = inputNumberArray[0].match(/\d/g).reverse();
+                    console.log(tempIntSort)
+                    let loopCount = 0;
+                    for (let i = 0; i < tempIntSort.length; i++) {
+                        if (i % 4 == 0 && i != 0) {
+                            loopCount++;
+                            switch (loopCount % 2) {
+                                case 0:
+                                    if (tempIntSort[i] == 0)
+                                        tempIntSort[i] = CN_HUNDRED_MILLION;
+                                    else
+                                        tempIntSort[i] += CN_HUNDRED_MILLION;
+                                    break;
+                                case 1:
+                                    if (tempIntSort[i] == 0)
+                                        tempIntSort[i] = CN_TEN_THOUSAND;
+                                    else
+                                        tempIntSort[i] += CN_TEN_THOUSAND;
+                                    break;
+                            }
+                        } else {
+                            if (tempIntSort[i] == '0') {
+
+                                continue;
+                            }
+                            switch (i % 4) {
+                                case 1:
+                                    tempIntSort[i] += CN_TEN;
+                                    break;
+                                case 2:
+                                    tempIntSort[i] += CN_HUNDRED;
+                                    break;
+                                case 3:
+                                    tempIntSort[i] += CN_THOUSAND;
+                                    break;
+                            }
+                        }
+                    }
+                    tempResult = '';
+                    for (let i = tempIntSort.length - 1; i >= 0; i--) {
+                        tempResult += tempIntSort[i];
+                    }
+                    resultInt = tempResult.replace(/1/g, CN_ONE)
+                        .replace(/2/g, CN_TWO)
+                        .replace(/3/g, CN_THREE)
+                        .replace(/4/g, CN_FOUR)
+                        .replace(/5/g, CN_FIVE)
+                        .replace(/6/g, CN_SIX)
+                        .replace(/7/g, CN_SEVEN)
+                        .replace(/8/g, CN_EIGHT)
+                        .replace(/9/g, CN_NINE)
+                        .replace(/000万000/g, CN_SYMBOL)
+                        .replace(/000万/g, CN_SYMBOL)
+                        .replace(/0{0,2}(?:万)/g, CN_TEN_THOUSAND)
+                        .replace(/0{0,3}(?:亿)/g, CN_HUNDRED_MILLION)
+                        .replace(/0+/g, CN_ZERO);
+                } else
+                    resultInt = '';
+                console.log(resultInt);
+                return resultInt == '' 
+                ? resultFloat 
+                : (resultFloat == '' ? resultInt + CN_INTEGER : resultInt + CN_DOLLAR + resultFloat);
+
+            } 
+            console.log(convertCurrency('1340000000000000000000007000000000800000808888888000.01'))
         </script>
     </body>
 
