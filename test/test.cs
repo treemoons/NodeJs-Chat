@@ -1,4 +1,5 @@
 ﻿
+using System;
 using System.Security.AccessControl;
 using System.Text.RegularExpressions;
 using System.Collections.Generic;
@@ -11,10 +12,15 @@ struct MyStruct
     public MyStruct(string a)
     {
         testa = a;
+        System.Console.WriteLine(0.1+0.2);
     }
     public string testa;
     void ss()
-    {     System.Text.RegularExpressions.Regex regex=new System.Text.RegularExpressions.Regex(@"\/\*[^*]*\*+([^\/*][^*]*\*+)*\/",System.Text.RegularExpressions.RegexOptions.IgnoreCase)
+    { 
+        System.Console.WriteLine(
+          0.3457654345678765432345678987654323456788m
+        ==0.3457654345678765432345678988m);
+          System.Text.RegularExpressions.Regex regex=new System.Text.RegularExpressions.Regex(@"\/\*[^*]*\*+([^\/*][^*]*\*+)*\/",System.Text.RegularExpressions.RegexOptions.IgnoreCase)
                 ;string s = " /**/" +
 "/*" +
 " * 对话记录" +

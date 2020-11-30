@@ -1,17 +1,43 @@
-﻿// import { read, readFile } from 'fs';
-// readFile('.\\test/test.json',(err, d) => {
-//         if (err) {
-//                 console.log(err)
-//                 return;
-//         }
-//         let str = d.toString();
-//         console.log(str.length)
-//         let jsonstr = str.replace(/\/\*[^\*]*\*+([^\/*][^*]*\*+)*\//g, '');
-//         // console.log(jsonstr)
-//         jsonstr = jsonstr.replace(/(?<!http(:|s:)|ws:|file:\/)\/\/.*(?:\n|\s*)/g, '')
-        
-//         console.log(JSON.parse(jsonstr))
-// })
+﻿import { read, readFile, write, writeFile, writeFileSync, writeSync } from 'fs';
+readFile('.\\test/mime', (err, d) => {
+        if (err) {
+                console.log(err)
+                return;
+        }
+        let str = d.toString();
+        console.log(str.length)
+        let jsonstr = str.replace(/#.*\s+/g, '');
+        // console.log(jsonstr.substr(0,1000))
+        jsonstr = jsonstr.replace(/\n\s*/g, '\n');
+        // console.log(jsonstr.substr(0, 1000));
+        jsonstr = jsonstr.replace(/\t+/g, ' ');
+
+        console.log(jsonstr.substr(0, 1000));
+        let eachLine = jsonstr.match(/.+/g);
+
+        writeFileSync('./test/mymine.js', 'switch(test){', { flag: 'a' })
+        eachLine.forEach(v => {
+
+                let exention = v.replace(/\s*([^\s]+)/, '');
+                let mime = RegExp.$1;
+                let exentions = exention.match(/[^\s]+/g);
+                let data='';
+                exentions.forEach(v => {
+                        data += `case '${v}':\n`
+                });
+                data += `result='${mime}';
+                break;
+                `
+                console.log(data)
+                writeFileSync('./test/mymine.js', data, { flag: 'a' })
+
+        })
+
+        writeFileSync('./test/mymine.js', '}', { flag: 'a' }, () => {
+        })
+        console.log(jsonstr)
+        // console.log(JSON.parse(jsonstr))
+})
 
 // console.log('test.mjs module');
 // export default function () {
@@ -33,7 +59,7 @@ console.log(" %ct %cest", "color:red", "color:blue")
 console.log('\x1b[36m%s', 'I am cyan');  //cyan
 
 console.log('test')
-console.log('\x1b[43m%s\x1b[0m', "stringToMakeYellow");  //yellow
+console.log('\x1b[42m%s\x1b[0m', "stringToMakeYellow");  //yellow
 console.log("\x1b[35;3;1m%s #eab10e", "test");
 
 /**
@@ -112,7 +138,7 @@ class ChatDataSigleList {
         for (let i = 0; i < 4; i++) {
                 console.log(a.match(reg)[i] == a.match(/\/\*([^\*]|(\*)*[^\*/])*(\*)*\*(?:\/)/g)[i])
         }
-
+console.log(0.11111000000000000000000001)
 
 }
 /**  /**
@@ -243,8 +269,8 @@ function convertCurrency(convertString) {
 }
 console.log(convertCurrency('100000000000.00'));
 export default {
-        
+
 }
 export function testclo() {
-                console.log('test')
-        }
+        console.log('test')
+}

@@ -10,16 +10,22 @@
     "node": "cd e:/partJob/NodeJs-Chat/myNodeTest && node ./start.js"
   },
   "author": "",
+  "bin": "./electronTest/main.js",
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "electron": "^10.1.5",
+    "electron": "^11.0.3",
     "electron-builder": "^22.9.1",
     "node": "^14.15.1",
     "npm": "^6.14.8",
     "sqlite3": "^5.0.0"
   },
   "keywords": [],
+  "pkg": {
+    "assert": [
+      "./**/*"
+    ]
+  },
   "build": {
     "productName": "ChatTest",
     "appId": "com.leon.1.1.100001",

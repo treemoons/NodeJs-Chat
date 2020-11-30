@@ -91,7 +91,7 @@
 
     <body>
         <span class="historyloading">..</span>
-        <form action="http://localhost:8888/api/login/thisistestparam" method="POST">
+        <form action="https://localhost:8888/api/login/test/thisistestparam" method="POST">
             <input type="text" name="username" value="treemoons" id=""> <br>
             <input type="text" name="password" value="1234" id=""><br>
             <input type="submit">
@@ -102,6 +102,7 @@
             测试
         </button>
         <script>
+            console.log(new Date().toISOString())
             let json = JSON.stringify({
                 applyuser: 'username',
                 senddata: {
@@ -109,7 +110,7 @@
                 }
             });
             let test = () => getAjaxData({
-                url: 'http://localhost:8888/api/test1',
+                url: 'https://localhost:8888/api/test1',
                 data: JSON.stringify({ peername: "name", requestcount: 0, ignorecount: 1 }),
 
                 success: d => {

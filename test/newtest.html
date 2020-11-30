@@ -4,23 +4,24 @@
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <META HTTP-EQUIV="Cache-Control" CONTENT="cache">
         <title>Document</title>
         <script>
 
             document.write(process.versions.node);
-            document.write("ELECTRON:"+process.versions.electron)
+            document.write("ELECTRON:" + process.versions.electron)
             // document.getElementById('dddd').innerHTML = 'module'
         </script>
-        <script src="./test1.js" type="module"></script>
+        <script src="./test1.js" type="module" ></script>
     </head>
 
     <body>
 
         <button id="quit">退出</button>
-
+        <p id="ajax">initialed</p>
         <!DOCTYPE html>
         <html>
-
+<img src="./pp.gif" alt="">
             <head>
                 <meta charset="utf-8">
                 <title>菜鸟教程(runoob.com)</title>
@@ -495,11 +496,11 @@
                 } else
                     resultInt = '';
                 console.log(resultInt);
-                return resultInt == '' 
-                ? resultFloat 
-                : (resultFloat == '' ? resultInt + CN_INTEGER : resultInt + CN_DOLLAR + resultFloat);
+                return resultInt == ''
+                    ? resultFloat
+                    : (resultFloat == '' ? resultInt + CN_INTEGER : resultInt + CN_DOLLAR + resultFloat);
 
-            } 
+            }
             console.log(convertCurrency('1340000000000000000000007000000000800000808888888000.01'))
         </script>
     </body>

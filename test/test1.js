@@ -91,13 +91,87 @@ let a = Symbol('123');
 let b = Symbol('123');
 console.log(a == b);
 */
- function test() {
-     return new Promise((v, r) => v(true)) ;
+
+
+/**
+ * 获取并操作Ajax数据
+ *@param { { url: string, success: (text:string)=>Promise<void>), failed ?: 
+        (text:string)=>void, data ?: string, method ?: 'POST'|'GET'|'DELETE'|'PUT'|'OPTIONS'|'TRACE',
+         httpheader ?:{"Content-Type"?:['application/x-www-form-urlencoded'|
+         'multipart/form-data'|'text/plain'|
+         'audio/mpeg'|'video/mpeg'|'image/pipeg'|
+         'image/jpeg'|'image/x-icon']|'application/x-www-form-urlencoded'|
+         'multipart/form-data'|'text/plain'|
+         'audio/mpeg'|'video/mpeg'|'image/pipeg'|
+         'image/jpeg'|'image/x-icon',"Set-Cookie"?:string} } object  options
+ */
+export async function getAjaxData({
+        url,
+        success,
+        failed = error => {
+                console.log(`error of failed data : ${error}`);
+        },
+        data = '',
+        method = 'POST',
+        httpheader = { 'Content-Type': 'application/x-www-form-urlencoded' }
+}) {
+        // open(url,'_blank')
+        var ajax = new XMLHttpRequest();
+        ajax.open(method, url);
+        for (let key in httpheader) {
+                if ((typeof httpheader[key]) == 'string')
+                        ajax.setRequestHeader(key, httpheader[key]);
+                else {
+                        try {
+                                let values = '';
+                                httpheader[key].forEach(value => {
+                                        values += value + ';';
+                                });
+                                values = values.substr(0, values.length - 1);
+                                ajax.setRequestHeader(key, values);
+                        } catch { console.error('err:isn`t array') }
+                }
+        }
+        ajax.send(data);
+        ajax.onreadystatechange = function () {
+                console.log('状态码：'+ajax.readyState+'---' + ajax.status)
+                if (ajax.readyState == 4) {
+                        if (ajax.status == 304) {
+                                try {
+                                        success(ajax.responseText);
+                                } catch (error) {
+                                        console.log(`error of success data : ${error}`);
+                                }
+                        } else
+                                if (ajax.status == 200) {
+                                        try {
+                                                success(ajax.responseText);
+                                        } catch (error) {
+                                                console.log(`error of success data : ${error}`);
+                                        }
+                                } else {
+                                        failed(ajax.responseText);
+                                }
+                }
+        }
 }
-!async function () {
-    
-        console.log(await test())
-}()
-'/userpic.png'
-let a = { a: 'test', test() { console.log(this.a) } };
-a.test();
+let i = window.history.state?.page ?? 1;
+window.history.pushState({ page: i }, 'test' + i)
+document.getElementById('quit').onclick = function () {
+        getAjaxData({
+                url: 'http://127.0.0.1:8888/api/loaddata?test=',
+                method: 'GET',
+                httpheader: { 'Content-Type': 'text/plain' },
+                success: d => {
+
+                        let ajax = document.getElementById('ajax');
+                        ajax.innerText = d;
+                }
+
+        })
+}
+
+console.log(
+        'https://mail.qq.com/cgi-bin/frame_html?sid=gVye5JuFu6keX24x&r=e95825cf7831bda7fb391f0412e0448d' ==
+        'https://mail.qq.com/cgi-bin/frame_html?sid=gVye5JuFu6keX24x&r=e95825cf7831bda7fb391f0412e0448d'
+)

@@ -1,4 +1,4 @@
-﻿import { IncomingMessage, ServerResponse } from 'http';
+﻿import { Http2ServerRequest , Http2ServerResponse } from 'http2';
 import api from './apifunction.js';
 /** 默认是需要登录才能使用 */
 export default {
@@ -13,7 +13,7 @@ export default {
     gethistory: api.gethistory,
     listening: api.listening,
     // }
-    sentmessage: /** @param {{request:IncomingMessage,response:ServerResponse,params:string[]}} http */
+    sentmessage: /** @param {{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}} http */
         async http => { }
 
 }
