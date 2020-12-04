@@ -5,7 +5,7 @@
 	getTodayDawn,
 	getloginedUser,
 	getSpanDate
-} from '../../myfunc.js'; //相对该文件的相对位置
+} from '../../src/utils/utils.js'; //相对该文件的相对位置
 import {
 	Http2ServerRequest,
 	Http2ServerResponse
@@ -24,7 +24,7 @@ let sqlite3 = new Database('.\\data.db'); //node运行时，启动的文件夹�
 let listeningHttp = {}
 /**@type {number} */
 let encodingTimes = 10;
-// sqlite3.all(`select username,peername,content,date,isread from chatdata 
+// sqlite3.all(`select username,peername,content,date,isread from T_CHAT_DATA 
 //                 where ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) ORDER BY DATE ASC LIMIT ?,?`,
 //     ['treemoons', 'name', 'name', 'treemoons', 0, 1], (err, row) => {
 //         console.log(row)
@@ -85,7 +85,7 @@ export default {
 							if (err != undefined || row.Y != 0) {
 								let key = await btoaEncrypt('token', encodingTimes);
 								let value = await btoaEncrypt(username, encodingTimes);
-								let cookie =await buildCookie(key, value, {
+								let cookie = await buildCookie(key, value, {
 									seconds: 30
 								});
 								http.response.writeHead(200, {
@@ -116,10 +116,10 @@ export default {
 			sqlite3.serialize(() => {
 				/**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:number,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}[]} */
 				let chatdatarray = [];
-				// sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
+				// sqlite3.get(`SELECT USERPIC FROM T_USER_LOGIN WHERE USERNAME=?;`,
 				//     username, (err,/**@type {{date:number|Number,peerpic:string}} */ row) => {
 				//         if (err.isNullOrUndefined()) {
-				sqlite3.all(`SELECT distinct peername FROM(select peername as peername from CHATDATA where USERNAME=? union select username from chatdata  where peername=?) `,
+				sqlite3.all(`SELECT distinct peername FROM(select peername as peername from T_CHAT_DATA where USERNAME=? union select username from T_CHAT_DATA  where peername=?) `,
 					[username, username],
 					(err, /** @type {{peername:string}[]}*/
 						peers) => {
@@ -127,14 +127,14 @@ export default {
 							peers.forEach(peer => {
 								/**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:number,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}} */
 								let chatsigledata = {};
-								sqlite3.all(`SELECT username,peername,content,date,isread FROM CHATDATA WHERE (DATE>= 
-                                        (SELECT DATE FROM CHATDATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))
+								sqlite3.all(`SELECT username,peername,content,date,isread FROM T_CHAT_DATA WHERE (DATE>= 
+                                        (SELECT DATE FROM T_CHAT_DATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))
                                          AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1) OR DATE>=${parseFloat(getTodayDawn().formatDate('yyyyMMdd.HHmmss'))}) 
                                          AND ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))  ORDER BY DATE ASC`,
 									[username, peer.peername, peer.peername, username, username, peer.peername, peer.peername, username],
 									(err, /** @type {{username:string,peername:string,content:string,date:Number,isread:Number}[]}*/
 										rows) => {
-										sqlite3.get(`SELECT USERPIC FROM USERLOGIN WHERE USERNAME=?;`,
+										sqlite3.get(`SELECT USERPIC FROM T_USER_LOGIN WHERE USERNAME=?;`,
 											peer.peername,
 											(err, /**@type {{userpic:string}} */ row) => {
 												if (err == undefined || err == null())
@@ -189,10 +189,11 @@ export default {
 		http.request.on('data', d => {
 			/**@type {{ peername: string, ignorecount: number , requestcount: number}} */
 			let data = JSON.parse(d.toString());
-			console.log("apifunction.js--->192:" + data);
+			console.log("apifunction.js--->192:")
+			console.log(data);
 			let username = 'treemoons' //await getloginedUser(http); // 获取登录过后的用户名，使用base64加密，加密次数为encodingTimes；
 			if (username)
-				sqlite3.all(`select username,peername,content,date,isread from chatdata 
+				sqlite3.all(`select username,peername,content,date,isread from T_CHAT_DATA 
                         where ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?)) ORDER BY DATE desc LIMIT ?,?`,
 					[username, data.peername, data.peername, username, data.ignorecount, data.requestcount],
 					(err, rows) => {
@@ -244,7 +245,7 @@ export default {
 					http.response.end(JSON.stringify(msg))
 				}
 				function insertSql() {
-					sqlite3.run(`INSERT INTO CHATDATA(USERNAME,PEERNAME,CONTENT,DATE,ISREAD) VALUES(?,?,?,?,0);`,
+					sqlite3.run(`INSERT INTO T_CHAT_DATA(USERNAME,PEERNAME,CONTENT,DATE,ISREAD) VALUES(?,?,?,?,0);`,
 						[username, data.peername, data.content,],
 						async err => {
 							if (!err) {
@@ -277,7 +278,7 @@ export default {
 	sentSave: (username, data) => {
 		// listeningHttp[data.peername][0] = undefined;
 		//sent before being saved 
-		sqlite3.run(`UPDATE CHATDATA SET ISREAD =1 WHERE USERNAME=? AND PEERNAME=?; AND DATE=?`,
+		sqlite3.run(`UPDATE T_CHAT_DATA SET ISREAD =1 WHERE USERNAME=? AND PEERNAME=?; AND DATE=?`,
 			[username, data.peername, data.date],
 			err => { });
 	},
@@ -317,7 +318,7 @@ export default {
 			http.response.setHeader("Access-Control-Allow-Headers", '*')
 			http.response.end(`.\\src/img/${filename}`);
 		})
-		
+
 	}
 
 

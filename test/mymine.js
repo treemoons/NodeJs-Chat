@@ -1,4 +1,4 @@
-console.log('test')
+
 export default function getMIME(test) {
     let result = '';
     switch (test) {
@@ -2525,3 +2525,7 @@ export default function getMIME(test) {
     return result;
 }
 console.log(getMIME('ps1'))
+export function a() {
+    console.log('test')
+}
+export let b = 'b';

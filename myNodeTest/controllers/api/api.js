@@ -1,4 +1,4 @@
-﻿import { Http2ServerRequest , Http2ServerResponse } from 'http2';
+﻿import { Http2ServerRequest, Http2ServerResponse } from 'http2';
 import api from './apifunction.js';
 /** 默认是需要登录才能使用 */
 export default {
@@ -13,7 +13,15 @@ export default {
     gethistory: api.gethistory,
     listening: api.listening,
     // }
-    sentmessage: /** @param {{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}} http */
-        async http => { }
+    sentmessage: {
+        test:/** @param {{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}} http */
+            async http => {
+
+                http.response.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' })
+                // do other things
+                http.response.end(`sentmessage: {
+        test！`);
+            }
+    }
 
 }

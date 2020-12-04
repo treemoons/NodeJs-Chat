@@ -1,3 +1,9 @@
+import *as test from './mymine.js';
+console.log(test['default'])
+
+const { ipcRenderer } = require('electron')
+
+
 /**
  * 每   一个input的file都对应files是多个文件，必须使用files[0]来设置和获取单个文件属性
  * 可以在标签中使用multiple多选
@@ -57,8 +63,13 @@
 //     })
 // }
 // console.log(img)
+/** */
+function* asyncf() {
+        let i = 0;
+        while (3 > i)
+                yield* ++i;
 
-
+}
 // }
 // top.test = test;
 
@@ -134,7 +145,7 @@ export async function getAjaxData({
         }
         ajax.send(data);
         ajax.onreadystatechange = function () {
-                console.log('状态码：'+ajax.readyState+'---' + ajax.status)
+                console.log('状态码：' + ajax.readyState + '---' + ajax.status)
                 if (ajax.readyState == 4) {
                         if (ajax.status == 304) {
                                 try {
@@ -167,7 +178,6 @@ document.getElementById('quit').onclick = function () {
                         let ajax = document.getElementById('ajax');
                         ajax.innerText = d;
                 }
-
         })
 }
 
@@ -175,3 +185,21 @@ console.log(
         'https://mail.qq.com/cgi-bin/frame_html?sid=gVye5JuFu6keX24x&r=e95825cf7831bda7fb391f0412e0448d' ==
         'https://mail.qq.com/cgi-bin/frame_html?sid=gVye5JuFu6keX24x&r=e95825cf7831bda7fb391f0412e0448d'
 )
+document.getElementById('quit').onclick = e => {
+        document.getElementsByClassName('progress')[0].style.width = '100%'
+        //在渲染器进程 (网页) 中。
+        ipcRenderer.on('/asynchronous/reply', (event, arg) => {
+                console.log(arg) // prints "pong"
+        })
+        ipcRenderer.send('asynchronous-message', 'newtest.html发送过来的文字');
+        let text = document.querySelectorAll('.bg .text');
+        let i = 0;
+        let time = setInterval(() => {
+                text[0].innerHTML = i + '%'
+                text[1].innerHTML = i + '%'
+                i++;
+                if (i > 100)
+                        clearInterval(time)
+        }, 50);
+
+}

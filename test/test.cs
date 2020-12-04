@@ -16,7 +16,7 @@ struct MyStruct
     }
     public string testa;
     void ss()
-    { 
+    { xxx
         System.Console.WriteLine(
           0.3457654345678765432345678987654323456788m
         ==0.3457654345678765432345678988m);

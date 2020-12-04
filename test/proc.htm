@@ -17,15 +17,15 @@
                 font: 20px/300px '微软雅黑';
                 display: none;
             }
-            div:hover{
-                cursor:help;
+
+            div:hover {
+                cursor: help;
             }
         </style>
         <div style="background-color: rgb(235, 235, 235);display: block;">
-&#8238;你好
+            &#8238;你好
         </div>
         <script>
-            console.log(import.meta.url)
             console.log('\u202e; 123456');
             console.log('test')
             window.onload = function () {
@@ -50,10 +50,10 @@
                     oBox.innerHTML = '请将文件拖拽到此区域';
                 };
                 oBox.ondrop = function (ev) {
-                   console.log( ev.dataTransfer);
-                   console.log(ev.dataTransfer.getData('text/plain'))
+                    console.log(ev.dataTransfer);
+                    console.log(ev.dataTransfer.getData('text/plain'))
                     var oFile = ev.dataTransfer.files[0];
-                    console.log('ofile:'+oFile)
+                    console.log('ofile:' + oFile)
                     var reader = new FileReader();
                     //读取成功
                     reader.onload = function () {
@@ -79,7 +79,7 @@
                         }
                         oM.value = scale * 100;
                     };
-                    reader.readAsText(oFile,'asiic');
+                    reader.readAsText(oFile, 'asiic');
                     return false;
                 };
             };
@@ -87,8 +87,25 @@
     </head>
 
     <body>
+        <button id="noclick">no click</button>
         <meter id="m1" value="0" min="0" max="100"></meter>
         <div id="box">请将文件拖拽到此区域</div>
+        <script>
+            let noclick = document.getElementById('noclick');
+            if (noclick.onclick) {
+                console.log('exist')
+            } else
+                console.error('no exist')
+            noclick.onclick = function () {
+                console.log('no click');
+            }
+            noclick.onclick();
+
+            if (noclick.onclick) {
+                console.warn('exist')
+            } else
+                console.error('no exist')
+        </script>
     </body>
 
 </html>

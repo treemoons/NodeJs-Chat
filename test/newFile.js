@@ -1,5 +1,3 @@
-import { readFile } from 'fs';
-
 
 String.prototype.replaceParameterValue= function ( symbol, value) {
     let reg = new RegExp(`(?<=[^\\\\])\\$\{${symbol}}`, 'g')

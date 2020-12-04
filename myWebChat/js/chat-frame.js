@@ -36,15 +36,17 @@ HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
 
 /**
  * 获取并操作Ajax数据
- *@param { { url: string, success: (text:string)=>Promise<void>), failed ?: 
-				(text:string)=>void, data ?: string, method ?: 'POST'|'GET'|'DELETE'|'PUT'|'OPTIONS'|'TRACE',
+ *@param { { url: string, success: (text:string)=>void), failed ?: 
+				(text:string)=>void, data ?: string | Document | Blob | ArrayBufferView | ArrayBuffer | FormData | URLSearchParams | ReadableStream<Uint8Array>,
+				responseType:'text'|'blob'|'arrayBuffer'|'document'|'json', method ?: 'POST'|'GET'|'DELETE'|'PUT'|'OPTIONS'|'TRACE',
 				 httpheader ?:{"Content-Type"?:['application/x-www-form-urlencoded'|
 				 'multipart/form-data'|'text/plain'|
 				 'audio/mpeg'|'video/mpeg'|'image/pipeg'|
 				 'image/jpeg'|'image/x-icon']|'application/x-www-form-urlencoded'|
 				 'multipart/form-data'|'text/plain'|
 				 'audio/mpeg'|'video/mpeg'|'image/pipeg'|
-				 'image/jpeg'|'image/x-icon',"Set-Cookie"?:string} } object  options
+				 'image/jpeg'|'image/x-icon',"Set-Cookie"?:string},
+				ajaxOtherEvent:(ajax:XMLHttpRequest)=>void } object  options
  */
 
 export async function getAjaxData({
@@ -54,8 +56,10 @@ export async function getAjaxData({
 		console.log(`error of failed data : ${error}`);
 	},
 	data = '',
+	responseType = '',
 	method = 'POST',
-	httpheader = { 'Content-Type': 'application/x-www-form-urlencoded' }
+	httpheader = { 'Content-Type': 'application/x-www-form-urlencoded' },
+	ajaxOtherEvent = undefined
 }) {
 	// open(url,'_blank')
 	var ajax = new XMLHttpRequest();
@@ -74,20 +78,29 @@ export async function getAjaxData({
 			} catch { console.error('err:isn`t array') }
 		}
 	}
-	ajax.send(data);
-	ajax.onreadystatechange = function () {
-		if (ajax.readyState == 4) {
+	if (ajaxOtherEvent)
+		ajaxOtherEvent(ajax);
+	ajax.responseType = responseType;
+	try {
+		ajax.onload = function () {
 			if (ajax.status == 200) {
-				try {
-					success(ajax.responseText);
-				} catch (error) {
-					console.log(`error of success data : ${error}`);
-				}
+				success(ajax.response);
 			} else {
-				failed(ajax.responseText);
+				failed(ajax.response);
+			}
+		}
+	} catch (error) {
+		ajax.onreadystatechange = function () {
+			if (ajax.readyState == 4) {
+				if (ajax.status == 200) {
+					success(ajax.response);
+				} else {
+					failed(ajax.response);
+				}
 			}
 		}
 	}
+	ajax.send(data);
 }
 /**
  * @param {string} fmt 
@@ -303,7 +316,7 @@ export default class BuildBubblesFrame {
 	 */
 	initializaingData() {
 		getAjaxData({
-			url: 'http://localhost:8888/api/loaddata',
+			url: 'https://localhost:8888/api/loaddata',
 			// data: '...',
 			success: d => {
 				if (d) {
@@ -465,7 +478,7 @@ export default class BuildBubblesFrame {
 		//suppose got it into variable history
 		let count = 0;
 		getAjaxData({
-			url: 'http://localhost:8888/api/gethistory',
+			url: 'https://localhost:8888/api/gethistory',
 			data: JSON.stringify({ peername: name, requestcount: pieces, ignorecount: (this.bubblesFrame[name]?.chatdata?.length ? this.bubblesFrame[name].chatdata.length : 0) }),
 			success: d => {
 				if (d) {
@@ -494,7 +507,7 @@ export default class BuildBubblesFrame {
 	}
 
 	listening = () => getAjaxData({
-		url: 'http://localhost:8888/api/listening',
+		url: 'https://localhost:8888/api/listening',
 		success: d => {
 			this.listening();
 			if (d) {
@@ -534,7 +547,7 @@ export default class BuildBubblesFrame {
 			let resend = frame.sigleChat?.children[frame.sigleChat.children.length - 1]?.children[0];
 			//经过一系列处理存到服务器
 			getAjaxData({
-				url: 'http://localhost:8888/api/chato',
+				url: 'https://localhost:8888/api/chato',
 				data: JSON.stringify(chatdata),
 				success: d => {
 					/**@type {{ status: number, msg: undefined }} */
@@ -586,7 +599,7 @@ export default class BuildBubblesFrame {
 			isread: 0
 		};
 		getAjaxData({
-			url: 'http://localhost:8888/api/chato',
+			url: 'https://localhost:8888/api/chato',
 			data: JSON.stringify(chatdata),
 			success: d => {
 				/**@type {{ status: number, msg: undefined }} */

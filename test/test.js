@@ -1,4 +1,7 @@
-﻿import { read, readFile, write, writeFile, writeFileSync, writeSync } from 'fs';
+﻿
+
+
+const { read, readFile, write, writeFile, writeFileSync, writeSync } = require('fs');
 readFile('.\\test/mime', (err, d) => {
         if (err) {
                 console.log(err)
@@ -44,16 +47,6 @@ readFile('.\\test/mime', (err, d) => {
 //         console.log('test')
 
 // }
-
-const { ipcRenderer } = require('electron')
-
-document.getElementById('quit').onclick = e => {
-        //在渲染器进程 (网页) 中。
-        ipcRenderer.on('/asynchronous/reply', (event, arg) => {
-                console.log(arg) // prints "pong"
-        })
-        ipcRenderer.send('asynchronous-message', 'newtest.html发送过来的文字')
-}
 
 console.log(" %ct %cest", "color:red", "color:blue")
 console.log('\x1b[36m%s', 'I am cyan');  //cyan
@@ -141,6 +134,12 @@ class ChatDataSigleList {
 console.log(0.11111000000000000000000001)
 
 }
+
+let a = ()=>{};
+let b = { a: () => console.log('test') };
+let c = b.a;
+c()
+console.log(typeof a=="object")
 /**  /**
  * /
  * @param {string} convertString 

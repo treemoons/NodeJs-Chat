@@ -10,7 +10,7 @@ import {
  * @type {HTMLElement}*/
 var aimOfContextMenu;
 /**@type {BuildFrame} */
-export let frame = new BuildFrame('treemoons', '../../peerpic.jpg');
+export let frame = new BuildFrame('treemoons', 'https://localhost:8888/src/img/peerpic.jpg');
 /**@type {HTMLElement}*/
 export var friendFocus;
 /**@type {HTMLInputElement}*/

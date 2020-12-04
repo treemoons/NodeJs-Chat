@@ -17,4 +17,5 @@ server.on('stream', (stream, headers) => {
 });
 
 server.listen(8443);
-console.log('https://localhost:8443')
+
+console.log('https://localhost:8443');

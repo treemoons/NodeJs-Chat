@@ -1,7 +1,7 @@
 ﻿import { readFile, readFileSync } from 'fs';
 import http from 'http';
 import http2 from 'http2';
-import { loadSource, notMatchRoute } from './myfunc.js';
+import { loadSource, notMatchRoute } from './src/utils/utils.js';
 import { parse } from 'url';
 
 function start() {
@@ -45,9 +45,6 @@ function start() {
 		//#endregion
 		console.log("pathname: \x1b[36;3;1m%s\x1b[0m", pathname.pathname)
 		console.log("url: \x1b[36;3;1m%s\x1b[0m", request.url)
-		console.log('controllername: \x1b[36;3;1m%s\x1b[0m', controller)
-		console.log("actionname: \x1b[36;3;1m%s\x1b[0m", action)
-		console.log("params: \x1b[36;3;1m%s\x1b[0m", params)
 		// let query = pathname.query.match(/[^&=]+=[^&]*/g)
 		// console.log(query)
 
@@ -77,9 +74,16 @@ function start() {
 				// request without controller ,to do below,defualt redirect to index page.
 
 				// go back home
+
+				response.writeHead(200, { 'Content-Type': 'text/plain;charset=utf-8' })
+				// do other things
+				response.end("没找到！");
+			}
+		}
+		else {
+			
 				response.writeHead(301, { "Location": '/' });
 				response.end();
-			}
 		}
 	}
 	let cert = readFileSync('.\\ssl/localhost.crt');

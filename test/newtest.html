@@ -12,16 +12,102 @@
             document.write("ELECTRON:" + process.versions.electron)
             // document.getElementById('dddd').innerHTML = 'module'
         </script>
-        <script src="./test1.js" type="module" ></script>
+        <script src="./test1.js" type="module"></script>
+        <style>
+            .text {
+
+                position: absolute;
+
+                left: 35vw;
+
+                transform: translateX(-50%);
+
+                font-size: 25px;
+
+            }
+
+
+
+            .bg {
+
+                background: #fff;
+
+                border-radius: 5px;
+
+                border: 1px solid #6cf;
+
+                width: 70vw;
+
+                height: 50px;
+
+                line-height: 50px;
+
+                position: relative;
+
+            }
+
+
+
+            .bg>.text {
+
+                color: #6cf;
+
+            }
+
+
+
+            .progress {
+
+                position: absolute;
+
+                height: 100%;
+
+                background: #6cf;
+
+                overflow: hidden;
+                transition: all 5s ease;
+            }
+
+            .progress>.text {
+
+                color: #fff;
+
+            }
+        </style>
+        <div class="bg">
+
+            <span class="text">0%</span>
+
+            <div class="progress" style="width: 0%;">
+
+                <span class="text">0%</span>
+
+            </div>
+
+        </div>
     </head>
 
     <body>
 
-        <button id="quit">退出</button>
+        <button id="quit" class="aaa" >退出</button>
+        <script type="module">
+            
+                ipcMain.on('asynchronous-message', (event, arg) => {
+                    console.log("asynchronous/reply:" + arg) // prints "ping"
+                    // exec('pwsh.exe &"e:\\partJob\\NodeJs-Chat\\test\\name.ps1"', (err, stdout, stderr) => console.log(stdout + "\n" + err + "\n" + stderr + "???"))
+                    event.reply('/asynchronous/reply', 'main.js返回的消息');
+                    setTimeout(() => {
+                        kill(0);
+                    }, 5000);
+                    // app.quit();
+                })
+        </script>
+
         <p id="ajax">initialed</p>
         <!DOCTYPE html>
         <html>
-<img src="./pp.gif" alt="">
+            <img src="./pp.gif" alt="">
+
             <head>
                 <meta charset="utf-8">
                 <title>菜鸟教程(runoob.com)</title>
@@ -42,6 +128,17 @@
             </head>
 
             <body>
+                <div class="p">
+                    <div class="pp ppp">
+                        ppppp
+                    </div>
+                    <div class="pp ppp">
+                        ppppp
+                    </div>
+                </div>
+                <script>document.querySelector('.p').onclick = e =>
+                        document.querySelectorAll('.p .pp')[0].innerHTML = 'wwww'
+                </script>
                 <div class="">
                     <div id="myDIV"> div 元素添加了 onmousemove 事件句柄，在你移动鼠标时会显示随机数。
                         <p>点击按钮移除 DIV 的事件句柄。</p>
