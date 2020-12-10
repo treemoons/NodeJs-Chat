@@ -36,17 +36,19 @@ HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
 
 /**
  * 获取并操作Ajax数据
- *@param { { url: string, success: (text:string)=>void), failed ?: 
-				(text:string)=>void, data ?: string | Document | Blob | ArrayBufferView | ArrayBuffer | FormData | URLSearchParams | ReadableStream<Uint8Array>,
-				responseType:'text'|'blob'|'arrayBuffer'|'document'|'json', method ?: 'POST'|'GET'|'DELETE'|'PUT'|'OPTIONS'|'TRACE',
-				 httpheader ?:{"Content-Type"?:['application/x-www-form-urlencoded'|
-				 'multipart/form-data'|'text/plain'|
-				 'audio/mpeg'|'video/mpeg'|'image/pipeg'|
-				 'image/jpeg'|'image/x-icon']|'application/x-www-form-urlencoded'|
-				 'multipart/form-data'|'text/plain'|
-				 'audio/mpeg'|'video/mpeg'|'image/pipeg'|
-				 'image/jpeg'|'image/x-icon',"Set-Cookie"?:string},
-				ajaxOtherEvent:(ajax:XMLHttpRequest)=>void } object  options
+ *@param { { url: string, success: (text:string)=>void),
+		failed ?: (text:string)=>void,
+		data ?: string | Document | Blob | ArrayBufferView | ArrayBuffer | FormData | URLSearchParams | ReadableStream<Uint8Array>,
+		responseType:'text'|'blob'|'arrayBuffer'|'document'|'json',
+		method ?: 'POST'|'GET'|'DELETE'|'PUT'|'OPTIONS'|'TRACE',
+			httpheader ?:{"Content-Type"?:['application/x-www-form-urlencoded'|
+			'multipart/form-data'|'text/plain'|
+			'audio/mpeg'|'video/mpeg'|'image/pipeg'|
+			'image/jpeg'|'image/x-icon']|'application/x-www-form-urlencoded'|
+			'multipart/form-data'|'text/plain'|
+			'audio/mpeg'|'video/mpeg'|'image/pipeg'|
+			'image/jpeg'|'image/x-icon',"Set-Cookie"?:string},
+		ajaxOtherEvent:(ajax:XMLHttpRequest)=>void } object  options
  */
 
 export async function getAjaxData({
@@ -81,7 +83,7 @@ export async function getAjaxData({
 	if (ajaxOtherEvent)
 		ajaxOtherEvent(ajax);
 	ajax.responseType = responseType;
-	try {
+	if ('onload' in ajax) {
 		ajax.onload = function () {
 			if (ajax.status == 200) {
 				success(ajax.response);
@@ -89,7 +91,7 @@ export async function getAjaxData({
 				failed(ajax.response);
 			}
 		}
-	} catch (error) {
+	} else {
 		ajax.onreadystatechange = function () {
 			if (ajax.readyState == 4) {
 				if (ajax.status == 200) {

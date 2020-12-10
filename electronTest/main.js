@@ -1,7 +1,7 @@
 ﻿!async function () {
     const electron= require('electron')
         , { kill } = await import('process');
-    const { BrowserWindow, app, ipcMain } = electron;
+    const { BrowserWindow, app, ipcMain ,Notification} = electron;
     console.log(app.getPath.toString())
     // const t=require('./TEST/test')
     var win;
@@ -47,10 +47,11 @@
 
         }
     })
+    app.setAppUserModelId('myElectron')
     app.on('activate', () => {
         // 在macOS上，当单击dock图标并且没有其他窗口打开时，
         // 通常在应用程序中重新创建一个窗口。
-        if (electron .BrowserWindow.getAllWindows().length === 0) {
+        if (BrowserWindow.getAllWindows().length === 0) {
             createWindow()
         }
     });
@@ -62,4 +63,13 @@
     // 部分 API 在 ready 事件触发后才能使用。
     app.whenReady().then(createWindow)
     // 在主进程中.
+    ipcMain.on('asynchronous-message', (event, arg) => {
+        console.log("asynchronous/reply:" + arg) // prints "ping"
+       // exec('pwsh.exe &"e:\\partJob\\NodeJs-Chat\\test\\name.ps1"', (err, stdout, stderr) => console.log(stdout + "\n" + err + "\n" + stderr + "???"))
+        event.reply('/asynchronous/reply', 'main.js返回的消息');
+        setTimeout(() => {
+             kill(0);
+        }, 5000);
+        // app.quit();
+    })
 }();

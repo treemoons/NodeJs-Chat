@@ -4,3 +4,4 @@ export default {
     api: apiController,
     mytest: test,
 }
+

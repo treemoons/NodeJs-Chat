@@ -14,9 +14,8 @@ sqlite3.serialize(() => {
     // });
     sqlite3.all(`PRAGMA table_info('t_chat_data')`, (err, rows) => {
        
-        console.log('err:\n' + err);
         if (err) {
-            console.log(rows)
+        console.log('err:\n' + err);
         }
         rows.forEach(v => {
             console.log(v);

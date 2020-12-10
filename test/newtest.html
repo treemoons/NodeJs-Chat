@@ -34,7 +34,7 @@
 
                 border-radius: 5px;
 
-                border: 1px solid #6cf;
+                border: 1px solid #9f81f1;
 
                 width: 70vw;
 
@@ -50,7 +50,7 @@
 
             .bg>.text {
 
-                color: #6cf;
+                color: #9f81f1;
 
             }
 
@@ -62,7 +62,7 @@
 
                 height: 100%;
 
-                background: #6cf;
+                background: #9f81f1;
 
                 overflow: hidden;
                 transition: all 5s ease;
@@ -89,18 +89,24 @@
 
     <body>
 
-        <button id="quit" class="aaa" >退出</button>
-        <script type="module">
-            
-                ipcMain.on('asynchronous-message', (event, arg) => {
-                    console.log("asynchronous/reply:" + arg) // prints "ping"
-                    // exec('pwsh.exe &"e:\\partJob\\NodeJs-Chat\\test\\name.ps1"', (err, stdout, stderr) => console.log(stdout + "\n" + err + "\n" + stderr + "???"))
-                    event.reply('/asynchronous/reply', 'main.js返回的消息');
-                    setTimeout(() => {
-                        kill(0);
-                    }, 5000);
-                    // app.quit();
-                })
+        <button id="quit" class="aaa">退出</button>
+        <script>
+            // 实例化不会进行通知
+            let notification = new Notification('titleName', {
+                // 通知的标题, 将在通知窗口的顶部显示
+                title: 'Boss',
+                // 通知的副标题, 显示在标题下面 macOS
+                subtitle: '重要消息',
+                // 通知的正文文本, 将显示在标题或副标题下面
+                body: '@所有人 放假！！！',
+                // false有声音，true没声音
+                silent: false,
+                // 通知的超时持续时间 'default' or 'never'
+                timeoutType: 'default',
+                hasReply:true,
+                replyPlaceholder:'???'
+            })
+            console.log('notice')
         </script>
 
         <p id="ajax">initialed</p>

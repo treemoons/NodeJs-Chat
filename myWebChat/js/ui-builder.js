@@ -432,6 +432,9 @@ function sent(obj) {
                                     frame.sendChatMessage(contentInnerhtml);
                                     contextMenu();
                                 }
+                            },
+                            ajaxOtherEvent: ajax => {
+                                
                             }
                         })
                     }
@@ -462,8 +465,8 @@ function sent(obj) {
  * @param {'YesNoCancel'|'YesNo'|'Yes'} messageButton
  * @param {{yes:(args:any)=>void,no:(args:any)=>void,cancel:()=>void}} buttonsCallback
  * @param {number} timeout unit: ms
- */
-function messagebox(text, warningtype, messageButton, { yes = d => { }, no = d => { }, cancel = d => { } } = {}, timeout = undefined) {
+ */ 
+export function messagebox(text, warningtype, messageButton, { yes = d => { }, no = d => { }, cancel = d => { } } = {}, timeout = undefined) {
     //#region element
     let tipBackground = document.createElement('div');
     let tip = document.createElement('div');

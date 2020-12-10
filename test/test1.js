@@ -1,7 +1,7 @@
 import *as test from './mymine.js';
 console.log(test['default'])
 
-const { ipcRenderer } = require('electron')
+const { ipcRenderer, Notification } = require('electron')
 
 
 /**
@@ -188,9 +188,6 @@ console.log(
 document.getElementById('quit').onclick = e => {
         document.getElementsByClassName('progress')[0].style.width = '100%'
         //在渲染器进程 (网页) 中。
-        ipcRenderer.on('/asynchronous/reply', (event, arg) => {
-                console.log(arg) // prints "pong"
-        })
         ipcRenderer.send('asynchronous-message', 'newtest.html发送过来的文字');
         let text = document.querySelectorAll('.bg .text');
         let i = 0;
