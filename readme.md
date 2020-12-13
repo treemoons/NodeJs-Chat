@@ -49,7 +49,7 @@ initialFrameTheme({
 > # **NodeJs** 
 -  Use grammar ES6 at latest,node version -v14.8
 
-- just  `node ${workspaceFolder}/myNodeTest/start.js`. replace `${workspaceFolder}` with your absolute path
+- just  ` cd ${workspaceFolder}/myNodeTest && node ./start.js`. replace `${workspaceFolder}` with your absolute path
 
 - All route in the directory named controllers
 
@@ -79,6 +79,15 @@ let data={
         isread:number
         }[] 
     }[]
+```
+***the information of uploaded file ,which is transport by httpheader***
+``` ts
+let fileInformation= {
+     usertopeer: string|'username-peername', 
+     fileExtension: string|'gif'|'png'|'jpg',
+     filesize: number,
+     date:string
+     }
 ```
 ---
 ># **Electron**
