@@ -98,9 +98,11 @@ let fileInformation= {
  
 ***dependencise*** in `"${wordspaceFolder}/package.json"`
 ```json
-"dependencies": {
-    "electron": "^10.1.1",
-    "node": "^14.8.0",
+  "devDependencies": {
+    "electron": "^11.1.0",
+    "electron-builder": "^22.9.1",
+    "node": "^14.15.1",
+    "npm": "^6.14.9",
     "sqlite3": "^5.0.0"
-  }
+  },
 ```
