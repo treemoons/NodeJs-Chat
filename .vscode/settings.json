@@ -1,9 +1,10 @@
 {
     "path-autocomplete.pathMappings": {
-        ".\\": "${folder}/myNodeTest"
+        ".\\": "${folder}/myNodeTest",
+        "~":"${folder}/electronTest"
     },
     "gutterpreview.paths": {
-        "/": "/electronTest/"
+        "~": "/electronTest/"
     },
     "code-runner.cwd": "E:\\partJob\\NodeJs-Chat\\myNodeTest",
     "terminal.integrated.shellArgs.windows": [

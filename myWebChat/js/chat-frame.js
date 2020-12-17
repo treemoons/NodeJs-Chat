@@ -19,17 +19,31 @@
 "use strict"
 import { friendFocus, resendmessage } from './ui-builder.js';
 
+/**
+ * 
+ * @param {HTMLDivElement} friendEle 
+ */
 export function getfriendid(friendEle) {
 	return friendEle.getAttribute('data-name');
 }
 
 let istransition = false;
+/**
+ * 过渡动画开关
+ * @param {boolean} isopen 
+ */
 export function changeTransition(isopen) {
 	istransition = isopen;
 }
+/** 聊天信息记录框 */
 export let chatdatawindow = document.querySelector('.chat-data-frame .chat-data');
 
-HTMLElement.prototype.scrolltoRelativePosition = function (aimPositionElement) {
+HTMLElement.prototype.scrolltoRelativePosition =
+	/**
+	 * 定位到标签内部滚联位置(类似于anchor)
+	 * @param {HTMLDivElement} aimPositionElement 
+	 */
+	function (aimPositionElement) {
 	this.scrollTo(aimPositionElement.offsetLeft, aimPositionElement.offsetTop);
 }
 
@@ -293,7 +307,8 @@ export default class BuildBubblesFrame {
 	username = '';
 	/**登录头像 */
 	userpic = '';
-	/**@type {HTMLElement} */
+	/** Specify  loading lists of friends
+	 * @type {HTMLElement} */
 	friendlistEle;
 
 	sigleBubbleFrame;
@@ -326,7 +341,7 @@ export default class BuildBubblesFrame {
 					this.serialload(this.chatDataLists);
 					this.updateFrame(this.chatDataLists);
 					this.initializaingfriendlist();
-					this.setonclickanimotion();
+					this.setOnclickAnimotion();
 					// 调整提示气泡
 				}
 				else {
@@ -357,7 +372,7 @@ export default class BuildBubblesFrame {
 	}
 
 	/** 由于ajax异步加载，所以在调用处申明，方便引用 */
-	setonclickanimotion;
+	setOnclickAnimotion;
 	/**初始化好友列表 */
 	initializaingfriendlist() {
 		this.friendlistEle.innerHTML = '';
@@ -516,9 +531,9 @@ export default class BuildBubblesFrame {
 				//deal with new pieces of data of chat
 				/**@type {{peername: string,content: string, date:number,isread: 0 }} */
 				let data = JSON.stringify(d);
-				this.bubblesFrame[name].chatdata.push({ iscurrentuser: false, content: data.content, date: data.date, isread: data.isread });
+				this.bubblesFrame[data.peername].chatdata.push({ iscurrentuser: false, content: data.content, date: data.date, isread: data.isread });
 				this.serialload(this.chatDataLists);
-				this.bubblesFrame[name].unreadCount++;
+				this.bubblesFrame[data.peername].unreadCount++;
 				this.initializaingfriendlist();
 				//go on listening
 			}
@@ -535,10 +550,11 @@ export default class BuildBubblesFrame {
 	 */
 	async sendChatMessage(content) {
 		try {
-
+			let date = new Date().formatDate('yyyyMMddHHmmssf');
+			let peername = getfriendid(friendFocus);
 			/**@type {{peername: string,content: string, date:number,isread: 0 }} */
 			let chatdata = {
-				peername: name,
+				peername: peername,
 				content: content,
 				date: date,
 				isread: 0
@@ -546,7 +562,7 @@ export default class BuildBubblesFrame {
 			if (istransition)
 				piecesChat.style.opacity = 1;
 			this.friendlistEle.prepend(friendFocus);
-			let resend = frame.sigleChat?.children[frame.sigleChat.children.length - 1]?.children[0];
+			let resend = this.sigleChat?.children[this.sigleChat.children.length - 1]?.children[0];
 			//经过一系列处理存到服务器
 			getAjaxData({
 				url: 'https://localhost:8888/api/chato',
@@ -558,7 +574,7 @@ export default class BuildBubblesFrame {
 						msg = JSON.parse(d)
 					if ((msg?.status && msg?.status == 0) || !msg?.status) {
 						this.sentfailed(resend)
-						this.bubblesFrame[name].chatdata[this.bubblesFrame[name].chatdata.length - 1].sendfailed = true;
+						this.bubblesFrame[peername].chatdata[this.bubblesFrame[peername].chatdata.length - 1].sendfailed = true;
 					} else {
 						this.sigleChat?.children[this.sigleChat.children.length - 1]?.children[0]?.remove();
 					}
@@ -567,7 +583,7 @@ export default class BuildBubblesFrame {
 				},
 				failed: err => {
 					this.sentfailed(resend)
-					this.bubblesFrame[name].chatdata[this.bubblesFrame[name].chatdata.length - 1].sendfailed = true;
+					this.bubblesFrame[peername].chatdata[this.bubblesFrame[peername].chatdata.length - 1].sendfailed = true;
 				}
 			})
 		} catch { }

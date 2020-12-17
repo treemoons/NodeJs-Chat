@@ -56,3 +56,50 @@ view.TitleBar.ButtonInactiveForegroundColor = Colors.White; //失去焦点时，
 **很遗憾，并不能，上面说过，使用了那个方法会是控件表面覆盖上透明层，但透明层是相对于窗体背后透明的，而非背后的控件。**
 所以，我们只能在那个Grid之外而且是它之上（控件层次的上方，代码的上方）添加其他控件。我的做法是，保留那个Grid作为根Grid，但是**删掉**对它的命名。然后是xaml的page标签里面的内容呈现如下：
 ![呵呵](http://r.photo.store.qq.com/psc?/V11J2BXr3TLcNh/WUyRLVwskOVTItG8F0x768kqwQGsBKB6K*vun3EpaRrxraAToqleVUi8rha8n48QpW8DFgjG*mhu04tM*0rYOTbOc2wthnVNuula.NHIJR0!/r)
+
+```flow
+
+//定义类型和描述
+
+st=>start: 开始
+
+e=>end: 结束
+
+op=>operation: 我的操作
+
+cond=>condition: 判断确认？
+
+st->op->cond
+
+cond(yes)->e
+
+cond(no)->op
+
+```
+
+$$ x \href{why-equal.html}{=} y^2 + 1 $$
+$ x = {-b \pm \sqrt{b^2-4ac} \over 2a}. $
+|      a       | b                 |             c |
+|:------------:|:------------------|--------------:|
+|     居中   | 左对齐    |     右对齐 |
+| ============ | ================= | ============= |
+
+这是文字……
+
+- [ ] 选项一
+- [ ] 选项二  
+- [ ] [选项3]
+```mermaid
+gantt
+dateFormat  YYYY-MM-DD
+title Adding GANTT diagram to mermaid
+excludes weekdays 2014-01-10
+
+section A section     
+Completed task            :done,    des1, 2014-01-06,2014-01-08
+Active task               :active,  des2, 2014-01-09, 3d
+Future task               :         des3, after des2, 5d
+Future task2               :         des4, after des3, 5d
+Future task               :         des5, after des4, 5d
+Future task2               : done,       des6, after des5, 5d
+```

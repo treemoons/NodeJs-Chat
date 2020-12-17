@@ -102,5 +102,6 @@ for (let i = 0; i < 10; i++){
             console.log(i)
             break;
     } 
-    if (i == 1) break;
+    if (i == 6) break;
 }   
+

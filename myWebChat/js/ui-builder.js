@@ -321,7 +321,7 @@ export function initialFrameTheme({
     /**@type {HTMLElement} */
     let a;
     // loadFriendsList(frame);
-    frame.setonclickanimotion = () => {
+    frame.setOnclickAnimotion = () => {
         let lists = listsFrame.children;
         if (lists.length > 0) {
             for (let i = 0; i < lists.length; i++) {
