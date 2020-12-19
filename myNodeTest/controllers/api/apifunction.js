@@ -20,7 +20,7 @@ const utf8 = 'utf-8';
 let listeningoutime = 30;
 let sqlite3 = new Database('.\\data.db'); //node运行时，启动的文件夹的相对位置
 
-/**@type {{name:{http:{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]},outtime:Date}}} */
+/**@type {{userHTTP:{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}}} */
 let listeningHttp = {}
 /**@type {number} */
 let encodingTimes = 10;
@@ -237,14 +237,6 @@ export default {
 				};
 				let username = 'treemoons'// await getloginedUser(http);
 				if (username) {
-					insertSql();
-				} else {
-					http.response.writeHead(200, {
-						"Content-Type": "text/plain"
-					});
-					http.response.end(JSON.stringify(msg))
-				}
-				function insertSql() {
 					sqlite3.run(`INSERT INTO T_CHAT_DATA(USERNAME,PEERNAME,CONTENT,DATE,ISREAD) VALUES(?,?,?,?,0);`,
 						[username, data.peername, data.content,],
 						async err => {
@@ -255,38 +247,40 @@ export default {
 								//send to logined
 
 								//检查是否对方登录超时
-								if (listeningHttp[data.peername][0] && await getloginedUser(listeningHttp[data.peername][0])) {
-									let chatmessage = JSON.stringify({ peername: name, content: data.content, date: data.date, isread: 0 })
-									listeningHttp[data.peername][0]?.response.end(chatmessage);
-									listeningHttp[data.peername][0]?.response.once('finish', err => {
+								if (listeningHttp[data.peername] && await getloginedUser(listeningHttp[data.peername])) {
+									let chatmessage = JSON.stringify({ peername: data.peername, content: data.content, date: data.date, isread: 0 })
+									listeningHttp[data.peername]?.response.end(chatmessage);
+									listeningHttp[data.peername]?.response.once('finish', err => {
 										sentSave(username, data);
 									});
-									listeningHttp[data.peername][0]?.response.on('error', err => {
+									listeningHttp[data.peername]?.response.on('error', err => {
 										//超时不再请求
-										if (listeningHttp[data.peername][1] > new Date())
-											listeningHttp[data.peername][0]?.response.end(chatmessage);
+										if (!listeningHttp[data.peername])
+											listeningHttp[data.peername]?.response.end(chatmessage);
 									});
 								}
 							}
 							http.response.end(JSON.stringify(msg))
 						});
+				} else {
+					http.response.writeHead(200, {
+						"Content-Type": "text/plain"
+					});
+					http.response.end(JSON.stringify(msg))
 				}
 			}
 		});
 	},
 
-	sentSave: (username, data) => {
-		// listeningHttp[data.peername][0] = undefined;
-		//sent before being saved 
-		sqlite3.run(`UPDATE T_CHAT_DATA SET ISREAD =1 WHERE USERNAME=? AND PEERNAME=?; AND DATE=?`,
-			[username, data.peername, data.date],
-			err => { });
-	},
-
 	/** @param {{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}} http */
 	listening: async http => {
 		// listeningHttp[await getloginedUser(http)] = [http, getSpanDate({ seconds: listeningoutime })];
-		listeningHttp['treemoons'] = [http, getSpanDate({ seconds: listeningoutime })];
+		listeningHttp['treemoons'] = http;
+		setTimeout(() => {
+			delete listeningHttp['username'];
+		}, listeningoutime);
+		// getSpanDate({ seconds: listeningoutime });
+
 		// listeningHttp['treemoons'].response.setHeader('Content-Type', 'text/plain');
 	},
 
@@ -317,9 +311,15 @@ export default {
 			console.log('end...')
 			http.response.setHeader("Access-Control-Allow-Headers", '*')
 			http.response.end(`.\\src/img/${filename}`);
-		})
-
+		});
 	}
 
+}
 
+function sentSave(username, data) {
+	// listeningHttp[data.peername][0] = undefined;
+	//sent before being saved 
+	sqlite3.run(`UPDATE T_CHAT_DATA SET ISREAD =1 WHERE USERNAME=? AND PEERNAME=?; AND DATE=?`,
+		[username, data.peername, data.date],
+		err => { });
 }
