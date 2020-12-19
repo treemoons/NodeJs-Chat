@@ -1,11 +1,12 @@
 ﻿# MY NODEJS TEST 
 > # **myWebChat** 
-## This is client window for chatting with others.
--  adds below:
+## This is client window for chatting with others,which is a component that can be CORS of website.
+- this is component after user logined，username could be encrypted by function that `atob` or `btoa` to decrypt the part.
+-  adds the following into your html :
  ```html
  <object data="./NodeJs-Chat/myWebChat/chat.html" type="text/html"></object>
  ```
-- Then you can use the function to change the default color of theme or other UI settings
+- Then you can use the JavaScript function to change the default color of theme or other UI settings<br>(I recommend to add code to parameters that is function ,instead of deleting existed code )
 ```js
 initialFrameTheme({
     chat= document.getElementsByClassName('chat')[0], //object element
@@ -49,7 +50,7 @@ initialFrameTheme({
 > # **NodeJs** 
 -  Use grammar ES6 at latest,node version -v14.8
 
-- just  ` cd ${workspaceFolder}/myNodeTest && node ./start.js`. replace `${workspaceFolder}` with your absolute path
+- Cmd  ` cd ${workspaceFolder}/myNodeTest && node ./start.js`. <br>Replace `${workspaceFolder}` with your real workspace folder
 
 - All route in the directory named controllers
 

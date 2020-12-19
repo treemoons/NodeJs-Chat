@@ -17,7 +17,10 @@
 //     }
 // })
 "use strict"
-import { friendFocus, resendmessage } from './ui-builder.js';
+import {
+	friendFocus,
+	resendmessage
+} from './ui-builder.js';
 
 /**
  * 
@@ -44,8 +47,8 @@ HTMLElement.prototype.scrolltoRelativePosition =
 	 * @param {HTMLDivElement} aimPositionElement 
 	 */
 	function (aimPositionElement) {
-	this.scrollTo(aimPositionElement.offsetLeft, aimPositionElement.offsetTop);
-}
+		this.scrollTo(aimPositionElement.offsetLeft, aimPositionElement.offsetTop);
+	}
 
 
 /**
@@ -74,7 +77,9 @@ export async function getAjaxData({
 	data = '',
 	responseType = '',
 	method = 'POST',
-	httpheader = { 'Content-Type': 'application/x-www-form-urlencoded' },
+	httpheader = {
+		'Content-Type': 'application/x-www-form-urlencoded'
+	},
 	ajaxOtherEvent = undefined
 }) {
 	// open(url,'_blank')
@@ -91,7 +96,9 @@ export async function getAjaxData({
 				});
 				values = values.substr(0, values.length - 1);
 				ajax.setRequestHeader(key, values);
-			} catch { console.error('err:isn`t array') }
+			} catch {
+				console.error('err:isn`t array')
+			}
 		}
 	}
 	if (ajaxOtherEvent)
@@ -118,6 +125,7 @@ export async function getAjaxData({
 	}
 	ajax.send(data);
 }
+
 /**
  * @param {string} fmt 
  */
@@ -154,6 +162,36 @@ Date.prototype.formatDate = function (fmt) {
 	}
 	return fmt;
 }
+/**
+ * 
+ * @param {string} DateString 
+ * @param {string} formatString 
+ */
+export function backToDate(DateString, formatString) {
+	let date = new Date();
+	let o = {
+		"y+|Y+": date.setFullYear, //月份    
+		"M+": date.setMonth, //月份           
+		"d+|D+": date.setDate, //日             
+		"H+|h+": date.setHours, //小时           
+		"m+": date.setMinutes, //分           
+		"s+": date.setSeconds, //秒                    
+		"f+": date.setMilliseconds //毫秒           
+	};
+	for (let k in o) {
+		if (new RegExp(`(${k})`).test(formatString)) {
+			console.log('reg:', RegExp.$1)
+			let length = RegExp.$1.length;
+			let index = formatString.indexOf(RegExp.$1);
+			let tempDate = DateString.substr(index, length);
+			if (k == 'M+')
+				o[k].call(date, parseInt(tempDate) - 1)
+			else
+				o[k].call(date, parseInt(tempDate))
+		}
+	}
+	return date;
+}
 
 /**当天获取凌晨时间 */
 export function getTodayDawn() {
@@ -180,7 +218,6 @@ export function formatBackDate(formated) {
 	let millisecond = dateString.substr(14);
 	return new Date(year, month, day, hour, minute, second, millisecond);
 }
-
 /**
  * 对话记录
  * <i>username和userpic为对方信息</i>
@@ -343,8 +380,7 @@ export default class BuildBubblesFrame {
 					this.initializaingfriendlist();
 					this.setOnclickAnimotion();
 					// 调整提示气泡
-				}
-				else {
+				} else {
 					//没有任何消息记录和好友
 				}
 			},
@@ -462,9 +498,9 @@ export default class BuildBubblesFrame {
 																<div class="user-chat-bubble">${piecesdata.content}</div>`;
 		}
 		if (asc)
-			this.sigleChat?.appendChild(piecesChat);
+			this.sigleChat ?.appendChild(piecesChat);
 		else
-			this.sigleChat?.prepend(piecesChat);
+			this.sigleChat ?.prepend(piecesChat);
 		if (istransition)
 			setTimeout(() => {
 				piecesChat.style.opacity = 1;
@@ -496,7 +532,11 @@ export default class BuildBubblesFrame {
 		let count = 0;
 		getAjaxData({
 			url: 'https://localhost:8888/api/gethistory',
-			data: JSON.stringify({ peername: name, requestcount: pieces, ignorecount: (this.bubblesFrame[name]?.chatdata?.length ? this.bubblesFrame[name].chatdata.length : 0) }),
+			data: JSON.stringify({
+				peername: name,
+				requestcount: pieces,
+				ignorecount: (this.bubblesFrame[name] ?.chatdata ?.length ? this.bubblesFrame[name].chatdata.length : 0)
+			}),
 			success: d => {
 				if (d) {
 					/**
@@ -531,7 +571,12 @@ export default class BuildBubblesFrame {
 				//deal with new pieces of data of chat
 				/**@type {{peername: string,content: string, date:number,isread: 0 }} */
 				let data = JSON.stringify(d);
-				this.bubblesFrame[data.peername].chatdata.push({ iscurrentuser: false, content: data.content, date: data.date, isread: data.isread });
+				this.bubblesFrame[data.peername].chatdata.push({
+					iscurrentuser: false,
+					content: data.content,
+					date: data.date,
+					isread: data.isread
+				});
 				this.serialload(this.chatDataLists);
 				this.bubblesFrame[data.peername].unreadCount++;
 				this.initializaingfriendlist();
@@ -562,7 +607,7 @@ export default class BuildBubblesFrame {
 			if (istransition)
 				piecesChat.style.opacity = 1;
 			this.friendlistEle.prepend(friendFocus);
-			let resend = this.sigleChat?.children[this.sigleChat.children.length - 1]?.children[0];
+			let resend = this.sigleChat ?.children[this.sigleChat.children.length - 1] ?.children[0];
 			//经过一系列处理存到服务器
 			getAjaxData({
 				url: 'https://localhost:8888/api/chato',
@@ -572,11 +617,11 @@ export default class BuildBubblesFrame {
 					let msg;
 					if (d)
 						msg = JSON.parse(d)
-					if ((msg?.status && msg?.status == 0) || !msg?.status) {
+					if ((msg ?.status && msg ?.status == 0) || !msg ?.status) {
 						this.sentfailed(resend)
 						this.bubblesFrame[peername].chatdata[this.bubblesFrame[peername].chatdata.length - 1].sendfailed = true;
 					} else {
-						this.sigleChat?.children[this.sigleChat.children.length - 1]?.children[0]?.remove();
+						this.sigleChat ?.children[this.sigleChat.children.length - 1] ?.children[0] ?.remove();
 					}
 					//重置上传图片
 					this.imgsinfo = [];
@@ -624,7 +669,7 @@ export default class BuildBubblesFrame {
 				let msg;
 				if (d)
 					msg = JSON.parse(d)
-				if ((msg?.status && msg?.status == 0) || !msg?.status) {
+				if ((msg ?.status && msg ?.status == 0) || !msg ?.status) {
 					this.sentfailed(resentEle)
 				} else {
 					/**@type {ChatData[]} */
@@ -650,7 +695,7 @@ export default class BuildBubblesFrame {
 	 */
 	serialload = array => {
 
-		var arr = [];//定义一个数组对象
+		var arr = []; //定义一个数组对象
 		//遍历赋值
 		for (let i = 0; i < array.length; i++) {
 			arr.push({
@@ -665,7 +710,7 @@ export default class BuildBubblesFrame {
 			for (let j = 0; j < arr.length - 1; j++) {
 				for (let k = 0; k < arr.length - j - 1; k++) {
 					var temp = arrs[k];
-					if (arrs[k].key > arrs[k + 1].key) {//比较相邻的值，>为从小到大，<从大到小；
+					if (arrs[k].key > arrs[k + 1].key) { //比较相邻的值，>为从小到大，<从大到小；
 						arrs[k] = arrs[k + 1];
 						arrs[k + 1] = temp;
 					}

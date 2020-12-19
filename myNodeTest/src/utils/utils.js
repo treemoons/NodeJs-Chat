@@ -192,6 +192,7 @@ export async function btoaEncrypt(str, times = 1) {
  * @param {{request:Http2ServerRequest}} http request.cookie
  */
 export async function getloginedUser(http) {
+	if (!http) return undefined;
 	let loginCookie = await getQueryString(await btoaEncrypt('token', encodingTimes), http.request.headers.cookie, ';');
 	if (loginCookie)
 		return await atobDecrypt(loginCookie, encodingTimes);
