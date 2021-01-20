@@ -4,7 +4,8 @@
 	buildCookie,
 	getTodayDawn,
 	getloginedUser,
-	getSpanDate
+	getSpanDate,
+	tokenKey
 } from '../../src/utils/utils.js'; //相对该文件的相对位置
 import {
 	Http2ServerRequest,
@@ -31,10 +32,9 @@ let encodingTimes = 10;
 //         console.log(err)
 //     })
 
-
-export default {
+class API {
 	/** @param {{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}} http */
-	default: async http => {
+	async default(http) {
 		try {
 			let t = 'treemoons';
 			listeningHttp[t] = [http, 30];
@@ -71,9 +71,9 @@ export default {
 
 		throw 'error end on';
 
-	},
+	}
 	/** @param {{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}} http */
-	login: async http => {
+	async login(http) {
 		http.request.on('data', /** @param {string} d */ d => {
 			if (d != undefined || d != '') {
 				sqlite3.serialize(async () => {
@@ -83,9 +83,8 @@ export default {
 						[username, getQueryString('password', d.toString(), '&')],
 						async (err, row) => {
 							if (err != undefined || row.Y != 0) {
-								let key = await btoaEncrypt('token', encodingTimes);
 								let value = await btoaEncrypt(username, encodingTimes);
-								let cookie = await buildCookie(key, value, {
+								let cookie = await buildCookie(tokenKey, value, {
 									seconds: 30
 								});
 								http.response.writeHead(200, {
@@ -105,10 +104,10 @@ export default {
 			}
 		})
 
-	},
+	}
 
 	/** @param {{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}} http */
-	loaddata: async http => {
+	async loaddata(http) {
 		/** 加载的表示好友个数 */
 		let count = 0;
 		let username = 'treemoons' //await getloginedUser(http); // 获取登录过后的用户名，使用base64加密，加密次数为encodingTimes；
@@ -127,10 +126,11 @@ export default {
 							peers.forEach(peer => {
 								/**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:string,content:string,date:number,isread:number}[],lastSpeak:string,isMeSpeakNow:boolean}} */
 								let chatsigledata = {};
+								/** 获取所有未读，或者今日已读 */
 								sqlite3.all(`SELECT username,peername,content,date,isread FROM T_CHAT_DATA WHERE (DATE>= 
-                                        (SELECT DATE FROM T_CHAT_DATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))
-                                         AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1) OR DATE>=${parseFloat(getTodayDawn().formatDate('yyyyMMdd.HHmmss'))}) 
-                                         AND ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))  ORDER BY DATE ASC`,
+                                (SELECT DATE FROM T_CHAT_DATA WHERE ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))
+                                 AND ISREAD =0 ORDER BY DATE ASC LIMIT 0,1) OR DATE>=${parseFloat(getTodayDawn().formatDate('yyyyMMdd.HHmmss'))}) 
+                                 AND ((USERNAME =? AND PEERNAME=?) or(USERNAME =? AND PEERNAME=?))  ORDER BY DATE ASC`,
 									[username, peer.peername, peer.peername, username, username, peer.peername, peer.peername, username],
 									(err, /** @type {{username:string,peername:string,content:string,date:Number,isread:Number}[]}*/
 										rows) => {
@@ -171,10 +171,8 @@ export default {
 													});
 													http.response.end(JSON.stringify(chatdatarray, (k, v) => v, '    '))
 												}
-											}
-										);
-									}
-								);
+											});
+									});
 							});
 						else {
 							http.response.end()
@@ -182,10 +180,10 @@ export default {
 					});
 			});
 
-	},
+	}
 
 	/** @param {{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}} http */
-	gethistory: async http => {
+	async gethistory(http) {
 		http.request.on('data', d => {
 			/**@type {{ peername: string, ignorecount: number , requestcount: number}} */
 			let data = JSON.parse(d.toString());
@@ -222,11 +220,11 @@ export default {
 
 		})
 
-	},
+	}
 
 	/** 发送消息
 	 * @param {{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}} http */
-	chatto: async http => {
+	async chatto(http) {
 		http.request.on('data', async d => {
 			if (d) {
 				/**@type {{  peername: string, content: string, date: number,isread:number  }} */
@@ -270,10 +268,10 @@ export default {
 				}
 			}
 		});
-	},
+	}
 
 	/** @param {{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}} http */
-	listening: async http => {
+	async listening(http) {
 		// listeningHttp[await getloginedUser(http)] = [http, getSpanDate({ seconds: listeningoutime })];
 		listeningHttp['treemoons'] = http;
 		setTimeout(() => {
@@ -282,21 +280,21 @@ export default {
 		// getSpanDate({ seconds: listeningoutime });
 
 		// listeningHttp['treemoons'].response.setHeader('Content-Type', 'text/plain');
-	},
+	}
 
 
 	/**
 	 * 主动退出登录需要调用
 	 * @param {{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}} http
 	 */
-	logout: async http => {
+	async logout(http) {
 		let username = await getloginedUser(http)
 		if (username)
 			delete listeningHttp[username];
-	},
+	}
 
 	/** @param {{request:Http2ServerRequest,response:Http2ServerResponse,params:string[]}} http */
-	receivedFile: async http => {
+	async receivedFile(http) {
 		let accept = http.request.headers["datainfo"];
 		/**@type { {usertopeer: string|'username-peername', fileExtension: string|'gif',filesize: number,date:string}} */
 		let datainfo = JSON.parse(accept);
@@ -323,3 +321,5 @@ function sentSave(username, data) {
 		[username, data.peername, data.date],
 		err => { });
 }
+
+export default new API();

@@ -1,5 +1,5 @@
 ﻿import { Http2ServerRequest, Http2ServerResponse } from 'http2';
-import api from './apifunction.js';
+import api from './apidetail.js';
 /** 默认是需要登录才能使用 */
 export default {
     default: api.default,

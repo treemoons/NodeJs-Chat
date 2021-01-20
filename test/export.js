@@ -67,4 +67,4 @@ function backToDate(formatString, format) {
   return date;
 }
 
-console.log(backToDate('2010-12-22 12:22:33.12', 'yyyy-MM-dd hh:mm:ss.fff').formatDate('yyyy-MM-dd hh:mm:ss.f'))
+console.log('12-22 12:22:33.12'===backToDate('12-22 12:22:33.12', 'MM-dd hh:mm:ss.fff').formatDate('MM-dd hh:mm:ss.f'))

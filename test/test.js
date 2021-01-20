@@ -139,9 +139,12 @@ let a = ()=>{};
 let b = { a: () => console.log('test') };
 let c = b.a;
 c()
-console.log(typeof a=="object")
-/**  /**
- * /
+
+console.log(encodeURIComponent('eyJuYW1lIjoi5Lit5paH5ZCNIn0='))
+
+
+/**
+ * 
  * @param {string} convertString 
  */
 function convertCurrency(convertString) {
@@ -168,18 +171,15 @@ function convertCurrency(convertString) {
         let CN_TEN_CENT = "角";
         let CN_CENT = "分";
         let CN_INTEGER = "整";
-        if (!(convertString).match(/^[1-9]\d+(?:\d+|\.\d{1,2})|^0\.\d{1,2}$/)) {
-                console.error("请输入正确的数字金额!");
-                return "";
-        }
+    
 
-
-        console.log(convertString.match(/^[1-9]\d+(?:\d+|\.\d{1,2})|^0\.\d{1,2}$/))
+        let tempResult = '';
+        console.log(convertString.match(/^[1-9]d+(?:d+|.d{1,2})|^0.d{1,2}$/))
         let inputNumberArray = convertString.split('.');
         let resultInt = '', resultFloat = '';
         //deal with part of float
         console.log(inputNumberArray[1])
-        if (inputNumberArray.length > 1 && inputNumberArray[1] != '00') {
+        if (inputNumberArray?.length > 1 && inputNumberArray[1] != '00') {
                 if (inputNumberArray[1][0] !== '0') {
                         resultFloat += inputNumberArray[1][0] + CN_TEN_CENT;
                 }
@@ -201,6 +201,7 @@ function convertCurrency(convertString) {
                         .replace(/9/g, CN_NINE);
         }
         //deal with part of int
+        console.log(inputNumberArray[0])
         if (inputNumberArray[0] !== '0') {
                 let tempIntSort = inputNumberArray[0].match(/\d/g).reverse();
                 console.log(tempIntSort)
@@ -239,7 +240,6 @@ function convertCurrency(convertString) {
                                 }
                         }
                 }
-                tempResult = '';
                 for (let i = tempIntSort.length - 1; i >= 0; i--) {
                         tempResult += tempIntSort[i];
                 }
@@ -266,10 +266,4 @@ function convertCurrency(convertString) {
                 : (resultFloat == '' ? resultInt + CN_INTEGER : resultInt + resultFloat);
 
 }
-console.log(convertCurrency('100000000000.00'));
-export default {
-
-}
-export function testclo() {
-        console.log('test')
-}
+console.log(convertCurrency('20726.00') =='贰万零柒佰贰拾陆元整')

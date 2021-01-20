@@ -81,7 +81,7 @@ let data={
         }[] 
     }[]
 ```
-***the information of uploaded file ,which is transport by httpheader***
+***the information of uploaded file ,which is transported by httpheader***
 ``` ts
 let fileInformation= {
      usertopeer: string|'username-peername', 

@@ -324,6 +324,7 @@ class ChatData {
 	/**@type {boolean} */
 	sendfailed;
 }
+
 /** 创建聊天数据基础与显示client端 */
 export default class BuildBubblesFrame {
 
@@ -389,6 +390,7 @@ export default class BuildBubblesFrame {
 			}
 		})
 	}
+
 	translatedataFormat = d => {
 		/**@type {{peername:string,peerpic:string,chatdata:{iscurrentuser:boolean,content:string,date:number,isread:number}[]}[]} */
 		let data = JSON.parse(d);

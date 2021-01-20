@@ -88,7 +88,7 @@ function start() {
 	}
 	let cert = readFileSync('.\\ssl/localhost.crt');
 	let key = readFileSync('.\\ssl/localhost.key');
-	// let server = http.createServer(onRequest).listen(8008);
+	 let server = http.createServer(onRequest).listen(8008);
 	let server2 = http2.createSecureServer({ cert: cert, key: key }, onRequest)
 
 	// server2.on('error', (err) => console.error(err));

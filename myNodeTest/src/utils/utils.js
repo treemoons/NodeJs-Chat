@@ -2,7 +2,7 @@
 import { Http2ServerRequest, Http2ServerResponse } from "http2";
 import routes from '../../controllers.js';
 import mine from './longfunctions/getMIMEByFileName.js';
-
+console.log(mine('.pdf'))
 export const getMIMEByFileName = mine;
 /**
  * @param {'string'} fmt 毫秒不可设置位数
@@ -105,10 +105,10 @@ export async function getAllQueryString(purposeString, splitMark) {
 export let line = '--------------------------------------------------------------------------------------'
 
 /**
- * deal with matched controllers/action/params... 
- * @param {{controller:string,action:string}} arguments[0] like 'controller','action'
+ * deal with matched controllers/action/params... or not
+ * @param {{controller:string,action:string}} arg arguments[0] like 'controller','action'
  * @param {{ request:Http2ServerRequest, response:Http2ServerResponse, params:string[] }}
- * @returns if matched,returns void,otherwise return true;
+ * @returns if not matched,returns true,otherwise return false;
  */
 export async function notMatchRoute({ controller, action }, http) {
 	/**@type {{ request, response, params:string[] }} */
@@ -118,7 +118,7 @@ export async function notMatchRoute({ controller, action }, http) {
 	let actionRoute = routes[controller];
 	params.unshift(action);
 	let parameters, i = 0;
-	while (actionRoute) {
+	while (actionRoute) { //traverse until catching function of action
 		switch (typeof actionRoute) {
 			case 'function':
 				if (i != params.length)
@@ -136,6 +136,8 @@ export async function notMatchRoute({ controller, action }, http) {
 				actionRoute = actionRoute[params[i]];
 				i++;
 				break;
+			case 'undefined':
+				return true;
 		}
 	}
 	return true;
@@ -185,15 +187,15 @@ export async function btoaEncrypt(str, times = 1) {
 	return str;
 }
 
-
-
+/**token 加密作为cookie键 */
+export let tokenKey = await btoaEncrypt('token', encodingTimes);
 /**
  * 根据cookie查看是否登录,30分钟过期。
  * @param {{request:Http2ServerRequest}} http request.cookie
  */
 export async function getloginedUser(http) {
 	if (!http) return undefined;
-	let loginCookie = await getQueryString(await btoaEncrypt('token', encodingTimes), http.request.headers.cookie, ';');
+	let loginCookie = await getQueryString(tokenKey, http.request.headers.cookie, ';');
 	if (loginCookie)
 		return await atobDecrypt(loginCookie, encodingTimes);
 	else

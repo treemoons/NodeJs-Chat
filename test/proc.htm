@@ -1,9 +1,11 @@
 <!doctype html>
-<html>
+<html lang="zh-cn">
 
     <head>
         <meta charset="utf-8">
+        <meta http-equiv="Access-Control-Allow-Origin" content="https://www.cn.bing.com">
         <title>www.jb51.net JS文件拖拽上传</title>
+
         <!-- <style>
             div {
                 width: 300px;
@@ -22,81 +24,80 @@
                 cursor: help;
             } -->
         </style>
-         <script>
-            
-                /**
-                 * @param {string} text
-                 * @param {'infomation'|'warning'|'error'} warningtype
-                 * @param {'YesNoCancel'|'YesNo'|'Yes'} messageButton
-                 * @param {{yes:(args:any)=>void,no:(args:any)=>void,cancel:()=>void,timeout:number}} buttonsCallback
-                 * @param {{
-                        yesColor :string, yesBackground :string,
-                        noColor :string, noBackground :string,
-                        cancelColor :string, cancelBackground :string,
-                        infoColor :string, infoBackground :string,
-                        warningColor :string, warningBackground :string,
-                        errorColor :string, errorBackground :string,
-                        tittleBarForeColor :string, tittleBarBackground :string,
-                        contentForeColor :string, contentBackground :string,
-                        Color :string, backgroundColor:string}} 
-                        COLOR OF MESSAGE BOX 
-                 */
-                 async function messagebox(text, warningtype, messageButton,
-                    { yes = d => { }, no = d => { }, cancel = d => { }, timeout = undefined } = {},
-                    {
-                        yesColor = 'white', yesBackground = '#26bd76',
-                        noColor = 'white', noBackground = '#e65936',
-                        cancelColor = 'gray', cancelBackground = '#efefef',
-                        infoColor = 'white', infoBackground = '#26bd76',
-                        warningColor = 'white', warningBackground = '#e65936',
-                        errorColor = 'gray', errorBackground = '#efefef',
-                        tittleBarForeColor = '', tittleBarBackground = '#b9b9ff',
-                        contentForeColor = '', contentBackground = '',
-                        Color = '', backgroundColor = '#ffffffbb'
-                    } = {}) {
-                    //#region element
-                    debugger;
-                    if (!document.getElementById('tipBackground_of_messagebox')) {
-                        let tipBackground = document.createElement('div');
-                        tipBackground.id = 'tipBackground_of_messagebox';
-                        let tip = document.createElement('div');
-                        let contentWindow = document.createElement('article')
-                        let tittle = document.createElement('h3');
-                        let warningicon = document.createElement('b');
-                        let warningtip = document.createElement('span')
-                        let content = document.createElement('p');
-                        let buttons = document.createElement('div');
-                        let btnyes = document.createElement('button');
-                        let btnno, btncancel;
-                        tipBackground.appendChild(tip);
-                        tip.appendChild(contentWindow);
-                        contentWindow.append(tittle, content, buttons);
-                        tittle.append(warningicon, warningtip);
-                        warningicon.innerText = '!';
-                        btnyes.innerText = 'Yes';
-                        switch (messageButton) {
-                            case 'YesNoCancel':
-                                btnno = document.createElement('button');
-                                btncancel = document.createElement('button');
-                                btnno.innerText = 'No'
-                                btncancel.innerText = 'Cancel'
-                                buttons.append(btnyes, btnno, btncancel);
+        <script>
+            /**
+             * @param {string} text
+             * @param {'infomation'|'warning'|'error'} warningtype
+             * @param {'YesNoCancel'|'YesNo'|'Yes'} messageButton
+             * @param {{yes:(args:any)=>void,no:(args:any)=>void,cancel:()=>void,timeout:number}} buttonsCallback
+             * @param {{
+                    yesColor :string, yesBackground :string,
+                    noColor :string, noBackground :string,
+                    cancelColor :string, cancelBackground :string,
+                    infoColor :string, infoBackground :string,
+                    warningColor :string, warningBackground :string,
+                    errorColor :string, errorBackground :string,
+                    tittleBarForeColor :string, tittleBarBackground :string,
+                    contentForeColor :string, contentBackground :string,
+                    Color :string, backgroundColor:string}} 
+                    COLOR OF MESSAGE BOX 
+             */
+            async function messagebox(text, warningtype, messageButton,
+                { yes = d => { }, no = d => { }, cancel = d => { }, timeout = undefined } = {},
+                {
+                    yesColor = 'white', yesBackground = '#26bd76',
+                    noColor = 'white', noBackground = '#e65936',
+                    cancelColor = 'gray', cancelBackground = '#efefef',
+                    infoColor = 'white', infoBackground = '#26bd76',
+                    warningColor = 'white', warningBackground = '#e65936',
+                    errorColor = 'gray', errorBackground = '#efefef',
+                    tittleBarForeColor = '', tittleBarBackground = '#b9b9ff',
+                    contentForeColor = '', contentBackground = '',
+                    Color = '', backgroundColor = '#ffffffbb'
+                } = {}) {
+                //#region element
+                debugger;
+                if (!document.getElementById('tipBackground_of_messagebox')) {
+                    let tipBackground = document.createElement('div');
+                    tipBackground.id = 'tipBackground_of_messagebox';
+                    let tip = document.createElement('div');
+                    let contentWindow = document.createElement('article')
+                    let tittle = document.createElement('h3');
+                    let warningicon = document.createElement('b');
+                    let warningtip = document.createElement('span')
+                    let content = document.createElement('p');
+                    let buttons = document.createElement('div');
+                    let btnyes = document.createElement('button');
+                    let btnno, btncancel;
+                    tipBackground.appendChild(tip);
+                    tip.appendChild(contentWindow);
+                    contentWindow.append(tittle, content, buttons);
+                    tittle.append(warningicon, warningtip);
+                    warningicon.innerText = '!';
+                    btnyes.innerText = 'Yes';
+                    switch (messageButton) {
+                        case 'YesNoCancel':
+                            btnno = document.createElement('button');
+                            btncancel = document.createElement('button');
+                            btnno.innerText = 'No'
+                            btncancel.innerText = 'Cancel'
+                            buttons.append(btnyes, btnno, btncancel);
 
-                                break;
-                            case 'YesNo':
-                                btnno = document.createElement('button');
-                                btnno.innerText = 'No'
-                                buttons.append(btnyes, btnno);
-                                break;
-                            case 'Yes':
-                            default:
-                                buttons.appendChild(btnyes);
-                                break;
-                        }
-                        //#endregion
+                            break;
+                        case 'YesNo':
+                            btnno = document.createElement('button');
+                            btnno.innerText = 'No'
+                            buttons.append(btnyes, btnno);
+                            break;
+                        case 'Yes':
+                        default:
+                            buttons.appendChild(btnyes);
+                            break;
+                    }
+                    //#endregion
 
-                        //#region  style
-                        tipBackground.style = `
+                    //#region  style
+                    tipBackground.style = `
         position: fixed;
         z-index: 0;
         height: 100vh;
@@ -104,8 +105,8 @@
         width: 0;
         justify-content: center;
         align-items: center;`;
-                        tipBackground.onclick = tipBackgroundFlash;
-                        tip.style = `
+                    tipBackground.onclick = tipBackgroundFlash;
+                    tip.style = `
                 bottom:15%;
         box-shadow: 1px 2px 7px 0px gainsboro;
         position:relative;
@@ -126,7 +127,7 @@
         -o-border-radius: 5px;
         background-color:${backgroundColor};
         color: ${Color}`;
-                        contentWindow.style = ` 
+                    contentWindow.style = ` 
        position: relative;
         left:0;
         opacity:0;
@@ -142,12 +143,12 @@
         -moz-transition: all linear 100ms;
         -ms-transition: all linear 100ms;
         -o-transition: all linear 100ms;`;
-                        tittle.style = `
+                    tittle.style = `
         padding: 5px 20px;
         margin-block-start: 0;
         background-color:${tittleBarBackground};
         color: ${tittleBarForeColor}`;
-                        warningicon.style = `
+                    warningicon.style = `
         font-size:16px;
         display: inline-block;
         text-align: center;
@@ -157,19 +158,19 @@
         -moz-border-radius: 50%;
         -ms-border-radius: 50%;
         -o-border-radius: 50%;`;
-                        warningtip.style = `margin-left: 10px`;
-                        content.style = `
+                    warningtip.style = `margin-left: 10px`;
+                    content.style = `
         text-align: center;
         width: 80%;
         margin: 2% auto;
         background-color:${contentForeColor};
         color: ${contentBackground}`;
-                        buttons.style = `
+                    buttons.style = `
         text-align: right;
         display: flex;
         padding-bottom: 20px;
         justify-content: space-around;`;
-                        btnyes.style = `
+                    btnyes.style = `
         outline: none;
         min-width: 50px;
         color: white;
@@ -178,11 +179,11 @@
         padding:5px 10px;
         background-color:${yesBackground};
         color: ${yesColor}`;
-                        btnyes.onmouseenter = e => btnyes.style.boxShadow = '1px 2px 4px 2px hsl(0, 0 %, 86 %)';
-                        btnyes.onmouseleave = e => btnyes.style.boxShadow = 'none';
-                        btnyes.onclick = yesClick;
-                        if (btnno) {
-                            btnno.style = `
+                    btnyes.onmouseenter = e => btnyes.style.boxShadow = '1px 2px 4px 2px hsl(0, 0 %, 86 %)';
+                    btnyes.onmouseleave = e => btnyes.style.boxShadow = 'none';
+                    btnyes.onclick = yesClick;
+                    if (btnno) {
+                        btnno.style = `
             outline: none;
             min-width: 50px;
             border: none;
@@ -190,12 +191,12 @@
             padding:5px 10px;
             background-color:${noBackground};
             color: ${noColor}`;
-                            btnno.onmouseenter = e => btnno.style.boxShadow = '1px 2px 4px 2px hsl(0, 0 %, 86 %)';
-                            btnno.onmouseleave = e => btnno.style.boxShadow = 'none';
-                            btnno.onclick = noClick;
-                        }
-                        if (btncancel) {
-                            btncancel.style = `
+                        btnno.onmouseenter = e => btnno.style.boxShadow = '1px 2px 4px 2px hsl(0, 0 %, 86 %)';
+                        btnno.onmouseleave = e => btnno.style.boxShadow = 'none';
+                        btnno.onclick = noClick;
+                    }
+                    if (btncancel) {
+                        btncancel.style = `
             outline: none;
             min-width: 50px;
             border: none;
@@ -203,137 +204,137 @@
             padding:5px 10px;
             background-color:${cancelBackground};
             color: ${cancelColor}`;
-                            btncancel.onmouseenter = e => btncancel.style.boxShadow = '1px 2px 4px 2px hsl(0, 0 %, 86 %)';
-                            btncancel.onmouseleave = e => btncancel.style.boxShadow = 'none';
-                            btncancel.onclick = cancelClick;
-                        }
-                        //#endregion
+                        btncancel.onmouseenter = e => btncancel.style.boxShadow = '1px 2px 4px 2px hsl(0, 0 %, 86 %)';
+                        btncancel.onmouseleave = e => btncancel.style.boxShadow = 'none';
+                        btncancel.onclick = cancelClick;
+                    }
+                    //#endregion
 
-                        //#region warning style
-                        switch (warningtype) {
-                            case 'warning':
-                                warningicon.style.color = warningColor;
-                                warningicon.style.backgroundColor = warningBackground;
-                                warningtip.innerText = '警 告';
-                                break;
-                            case 'error':
-                                warningicon.style.color = errorColor;
-                                warningicon.style.backgroundColor = errorBackground;
-                                warningtip.innerText = '错 误';
-                                break;
-                            case 'infomation':
-                            default:
-                                warningicon.style.color = infoColor;
-                                warningicon.style.backgroundColor = infoBackground;
-                                warningtip.innerText = '提 示';
-                                break;
-                        }
-                        //#endregion
+                    //#region warning style
+                    switch (warningtype) {
+                        case 'warning':
+                            warningicon.style.color = warningColor;
+                            warningicon.style.backgroundColor = warningBackground;
+                            warningtip.innerText = '警 告';
+                            break;
+                        case 'error':
+                            warningicon.style.color = errorColor;
+                            warningicon.style.backgroundColor = errorBackground;
+                            warningtip.innerText = '错 误';
+                            break;
+                        case 'infomation':
+                        default:
+                            warningicon.style.color = infoColor;
+                            warningicon.style.backgroundColor = infoBackground;
+                            warningtip.innerText = '提 示';
+                            break;
+                    }
+                    //#endregion
 
-                        //#region  content shows
+                    //#region  content shows
 
-                        content.innerText = text;
-                        if (parseInt(timeout)) {
+                    content.innerText = text;
+                    if (parseInt(timeout)) {
 
-                            let warningtimeout = document.createElement('span');
-                            tittle.append(warningtimeout);
-                            warningtimeout.style = `
+                        let warningtimeout = document.createElement('span');
+                        tittle.append(warningtimeout);
+                        warningtimeout.style = `
                         position: absolute;
                         right: 10px;
                         display:inline-block;`;
-                            let count = timeout;
-                            warningtimeout.innerText = count;
-                            let timeInteral = setInterval(() => {
-                                warningtimeout.innerText = --count;
-                                if (count <= 0) {
-                                    clearInterval(timeInteral);
-                                    close();
-                                }
-                            }, 1000);
-                        }
-                        //#endregion
-
-                        //#region onclick 事件
-                        async function yesClick() {
-                            yes();
-                            close();
-                        }
-                        async function noClick() {
-                            no();
-                            close();
-                        }
-                        async function cancelClick() {
-                            cancel();
-                            close();
-                        }
-
-                        //#endregion
-
-                        //#region show and close
-
-                        async function show() {
-                            document.body.prepend(tipBackground);
-                            tipBackground.style.width = '100%';
-                            tip.style.width = 'auto';
-                            tip.style.height = 'auto';
-                            let width = getComputedStyle(tip).width
-                            let height = getComputedStyle(tip).height
-                            tip.style.width = '0'
-                            tip.style.height = '0'
-                            setTimeout(() => {
-                                tip.style.width = width;
-                                tip.style.height = height;
-                                contentWindow.style.opacity = '1'
-                                setTimeout(() => {
-                                    tip.style.height = 'auto';
-                                    tip.style.width = 'auto';
-                                }, 100);
-                            }, 100);
-                        }
-                        async function close() {
-                            let width = tip.style.width = getComputedStyle(tip).width;
-                            tip.style.height = getComputedStyle(tip).height;
-                            setTimeout(() => {
-                                tip.style.width = '0';
-                                tip.style.height = '0';
-                                contentWindow.style.opacity = '0'
-                                setTimeout(() => {
-                                    tip.style.minWidth = '0';
-                                    if (tipBackground.parentElement) {
-                                        document.body.removeChild(tipBackground);
-                                    }
-                                }, 100);
-                            }, 100);
-                        }
-                        //#endregion
-                        //阻止冒泡
-                        tip.onclick = async function (e) {
-                            e.stopPropagation()
-                        }
-
-                        //#region  warning animation that you choice is necessary 
-                        async function tipBackgroundFlash(e) {
-                            flash(2);
-                        }
-                        async function flash(times) {
-                            tip.style.boxShadow = '1px 2px 7px 7px gainsboro';
-
-                            setTimeout(() => {
-                                tip.style.boxShadow = '1px 2px 7px 0px gainsboro';
-                                if (times > 1)
-                                    setTimeout(() => {
-                                        flash(--times);
-                                    }, 200);
-                            }, 200);
-                        }
-                        //#endregion
-
-                        show();
-
+                        let count = timeout;
+                        warningtimeout.innerText = count;
+                        let timeInteral = setInterval(() => {
+                            warningtimeout.innerText = --count;
+                            if (count <= 0) {
+                                clearInterval(timeInteral);
+                                close();
+                            }
+                        }, 1000);
                     }
-                }
+                    //#endregion
 
-              
+                    //#region onclick 事件
+                    async function yesClick() {
+                        yes();
+                        close();
+                    }
+                    async function noClick() {
+                        no();
+                        close();
+                    }
+                    async function cancelClick() {
+                        cancel();
+                        close();
+                    }
+
+                    //#endregion
+
+                    //#region show and close
+
+                    async function show() {
+                        document.body.prepend(tipBackground);
+                        tipBackground.style.width = '100%';
+                        tip.style.width = 'auto';
+                        tip.style.height = 'auto';
+                        let width = getComputedStyle(tip).width
+                        let height = getComputedStyle(tip).height
+                        tip.style.width = '0'
+                        tip.style.height = '0'
+                        setTimeout(() => {
+                            tip.style.width = width;
+                            tip.style.height = height;
+                            contentWindow.style.opacity = '1'
+                            setTimeout(() => {
+                                tip.style.height = 'auto';
+                                tip.style.width = 'auto';
+                            }, 100);
+                        }, 100);
+                    }
+                    async function close() {
+                        let width = tip.style.width = getComputedStyle(tip).width;
+                        tip.style.height = getComputedStyle(tip).height;
+                        setTimeout(() => {
+                            tip.style.width = '0';
+                            tip.style.height = '0';
+                            contentWindow.style.opacity = '0'
+                            setTimeout(() => {
+                                tip.style.minWidth = '0';
+                                if (tipBackground.parentElement) {
+                                    document.body.removeChild(tipBackground);
+                                }
+                            }, 100);
+                        }, 100);
+                    }
+                    //#endregion
+                    //阻止冒泡
+                    tip.onclick = async function (e) {
+                        e.stopPropagation()
+                    }
+
+                    //#region  warning animation that you choice is necessary 
+                    async function tipBackgroundFlash(e) {
+                        flash(2);
+                    }
+                    async function flash(times) {
+                        tip.style.boxShadow = '1px 2px 7px 7px gainsboro';
+
+                        setTimeout(() => {
+                            tip.style.boxShadow = '1px 2px 7px 0px gainsboro';
+                            if (times > 1)
+                                setTimeout(() => {
+                                    flash(--times);
+                                }, 200);
+                        }, 200);
+                    }
+                    //#endregion
+
+                    show();
+
+                }
+            }
+
+
             // console.log('\u202e; 123456');
             // console.log('test')
             // window.onload = function () {
@@ -396,12 +397,45 @@
 
     <body>
         <a href="//nan.com"></a>
-        <button onclick="messagebox('?????theis is a test messagebox that shows.','warning','YesNoCancel',{},{Color:'gray'})">
-        messagebox</button>
+        <button
+            onclick="messagebox('?????theis is a test messagebox that shows.','warning','YesNoCancel',{},{Color:'gray'})">
+            messagebox</button>
+        <form action="" name="f">
+            <textarea name="test" autofocus 好='hao' id="" cols="30" rows="10"></textarea>
+        </form>
+        input
+        <script>
+            console.log(f.test.getAttribute("好"))
+        </script>
+        <iframe id="ifr" src="https://cn.bing.com/dict/search?q=season" frameborder="0"></iframe>
+        <input type="text" autofocus name="" id="">
+        <div style="width: 200px;height: 100px;" contenteditable="true"></div>
+        <input type="text">
         <!-- <button id="noclick">no click</button>
         <meter id="m1" value="0" min="0" max="100"></meter>
         <div id="box">请将文件拖拽到此区域</div> -->
+        <button id="translate"> translate</button>
         <script>
+
+            let ifr = document.getElementById('ifr');
+            ifr.onload = function() {
+                let t = document.getElementById('translate');
+                t.onclick = e => {
+                    document.domain='bing.com';
+                    getAjaxData({
+                        url:'https://cn.bing.com/dict/search?q=season',
+                        method:"GET",
+                        success:d=>{
+console.log(d)
+                        },
+                        httpheader:{"Content-Type":"text/html"}
+                    })
+                    let i= document.querySelector('iframe');
+                   console.log('-------')
+                  f.test.value=i;
+                  console.log(i)
+                }
+            }
             // let noclick = document.getElementById('noclick');
             // if (noclick.onclick) {
             //     console.log('exist')
@@ -416,6 +450,84 @@
             //     console.warn('exist')
             // } else
             //     console.error('no exist')
+
+
+    /**
+     * 获取并操作Ajax数据
+     *@param { { url: string, success: (text:string)=>void),
+            failed ?: (text:string)=>void,
+            data ?: string | Document | Blob | ArrayBufferView | ArrayBuffer | FormData | URLSearchParams | ReadableStream<Uint8Array>,
+            responseType:'text'|'blob'|'arrayBuffer'|'document'|'json',
+            method ?: 'POST'|'GET'|'DELETE'|'PUT'|'OPTIONS'|'TRACE',
+                httpheader ?:{"Content-Type"?:['application/x-www-form-urlencoded'|
+                'multipart/form-data'|'text/plain'|
+                'audio/mpeg'|'video/mpeg'|'image/pipeg'|
+                'image/jpeg'|'image/x-icon']|'application/x-www-form-urlencoded'|
+                'multipart/form-data'|'text/plain'|
+                'audio/mpeg'|'video/mpeg'|'image/pipeg'|
+                'image/jpeg'|'image/x-icon',"Set-Cookie"?:string},
+            ajaxOtherEvent:(ajax:XMLHttpRequest)=>void } object  options
+     */
+
+     async function getAjaxData({
+        url,
+        success,
+        failed = error => {
+            console.log(`error of failed data : ${error}`);
+        },
+        data = '',
+        responseType = '',
+        method = 'POST',
+        httpheader = {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        ajaxOtherEvent = undefined
+    }) {
+        // open(url,'_blank')
+        var ajax = new XMLHttpRequest();
+        ajax.open(method, url);
+        for (let key in httpheader) {
+            if ((typeof httpheader[key]) == 'string')
+                ajax.setRequestHeader(key, httpheader[key]);
+            else {
+                try {
+                    let values = '';
+                    httpheader[key].forEach(value => {
+                        values += value + ';';
+                    });
+                    values = values.substr(0, values.length - 1);
+                    ajax.setRequestHeader(key, values);
+                } catch {
+                    console.error('err:isn`t array')
+                }
+            }
+        }
+        if (ajaxOtherEvent)
+            ajaxOtherEvent(ajax);
+        ajax.responseType = responseType;
+        if ('onload' in ajax) {
+            ajax.onload = function () {
+                if (ajax.status == 200) {
+                    success(ajax.response);
+                } else {
+                    failed(ajax.response);
+                }
+            }
+        } else {
+            ajax.onreadystatechange = function () {
+                if (ajax.readyState == 4) {
+                    if (ajax.status == 200) {
+                        success(ajax.response);
+                    } else {
+                        failed(ajax.response);
+                    }
+                }
+            }
+        }
+        ajax.send(data);
+    }
+
+
         </script>
     </body>
 

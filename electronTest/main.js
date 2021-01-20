@@ -1,11 +1,20 @@
-﻿!async function () {
-    const electron= require('electron')
-        , { kill } = await import('process');
+﻿!async function (arg) {
+    const electron = require('electron');
+    const { argv, kill } = require('process');
+    const {} = require('')
+    arg = argv[1];
+    if (arg) {
+        console.log(argv)
+        
+        return 
     const { BrowserWindow, app, ipcMain ,Notification} = electron;
     console.log(app.getPath.toString())
     // const t=require('./TEST/test')
-    var win;
-    async function createWindow() {
+        var win;
+        /**
+         *  ?? `window` ??
+         */
+     function createWindow() {
         // 创建浏览器窗口
         win = new BrowserWindow({
             width: 800,
@@ -68,7 +77,7 @@
        // exec('pwsh.exe &"e:\\partJob\\NodeJs-Chat\\test\\name.ps1"', (err, stdout, stderr) => console.log(stdout + "\n" + err + "\n" + stderr + "???"))
         event.reply('/asynchronous/reply', 'main.js返回的消息');
         setTimeout(() => {
-             kill(0);
+           
         }, 5000);
         // app.quit();
     })

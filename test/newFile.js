@@ -21,7 +21,6 @@ async function s() {
     return re;
 };
 let a =await s().then(e => e()).then(w => w()).then(e => e());
-
 a();
 async function asyncTest(test) {
     return test;
@@ -105,3 +104,11 @@ for (let i = 0; i < 10; i++){
     if (i == 6) break;
 }   
 
+let str = '123rtyuihgxfgh45weretrtyuyiuo678';
+console.log(str.match(/(?<!\w{2})\w/g))
+console.log(str.replace(/(?<=\w{2})(?<!\w{7})\w/g, '*'))
+
+let obj1 = {
+    name: '',
+    arr:[1,2,3]
+}

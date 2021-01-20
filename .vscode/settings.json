@@ -16,5 +16,6 @@
     "npm-intellisense.importES6": true,
     "npm-intellisense.importQuotes": "'",
     "npm-intellisense.importLinebreak": ";\r\n",
-    "npm-intellisense.importDeclarationType": "const"
+    "npm-intellisense.importDeclarationType": "const",
+    // "openInDefaultBrowser.run.openWithLocalHttpServer": true
 }

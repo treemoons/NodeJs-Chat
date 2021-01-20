@@ -1,0 +1,62 @@
+
+<script>
+
+     async function getAjaxData({
+      url,
+      success,
+      failed = error => {
+        console.log(`error of failed data : ${error}`);
+      },
+      data = '',
+      responseType = '',
+      method = 'POST',
+      httpheader = {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      ajaxOtherEvent = undefined
+    }) {
+      // open(url,'_blank')
+      var ajax = new XMLHttpRequest();
+      ajax.open(method, url);
+      for (let key in httpheader) {
+        if ((typeof httpheader[key]) == 'string')
+          ajax.setRequestHeader(key, httpheader[key]);
+        else {
+          try {
+            let values = '';
+            httpheader[key].forEach(value => {
+              values += value + ';';
+            });
+            values = values.substr(0, values.length - 1);
+            ajax.setRequestHeader(key, values);
+          } catch {
+            console.error('err:isn`t array')
+          }
+        }
+      }
+      if (ajaxOtherEvent)
+        ajaxOtherEvent(ajax);
+      ajax.responseType = responseType;
+      if ('onload' in ajax) {
+        ajax.onload = function () {
+          if (ajax.status == 200) {
+            success(ajax.response);
+          } else {
+            failed(ajax.response);
+          }
+        }
+      } else {
+        ajax.onreadystatechange = function () {
+          if (ajax.readyState == 4) {
+            if (ajax.status == 200) {
+              success(ajax.response);
+            } else {
+              failed(ajax.response);
+            }
+          }
+        }
+      }
+      ajax.send(data);
+    }
+
+</script>

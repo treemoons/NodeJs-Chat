@@ -2,7 +2,7 @@
   "name": "test1",
   "version": "1.0.0",
   "description": "",
-  "main": "main.js",
+  "main": "./electronTest/main.js",
   "type": "commonjs",
   "scripts": {
     "ele": "electron ./electronTest/main.js  ",
